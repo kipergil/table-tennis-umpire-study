@@ -20,13 +20,12 @@ Every card cites its source clause, using the official ITTF numbering.
 - Progress stays in the browser. **More → Back up your progress** exports and restores it.
 - **How to use** page (the **?** in the menu) explains how studying works, every menu option, the question types and keyboard shortcuts. First-time visitors see a welcome panel on Home that links to it.
 
-## Publish on GitHub Pages
+## Deployment
 
-The workflow in `.github/workflows/pages.yml` checks every card, runs the tests and deploys the site whenever `main` changes. One-time setup:
+The site is hosted on **Vercel**: https://table-tennis-umpire-study.vercel.app
 
-1. Merge this branch into `main`.
-2. In the repository, open **Settings → Pages** and set **Source** to **GitHub Actions**.
-3. The site appears at `https://<user>.github.io/<repository>/` once the workflow finishes.
+- Every push to `main` deploys to production automatically; every other branch and pull request gets a preview link.
+- The GitHub Actions workflow in `.github/workflows/check.yml` validates every card and runs the tests on pushes to `main` and on pull requests. It does not deploy anything.
 
 ## Run locally
 

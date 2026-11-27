@@ -698,7 +698,7 @@ async function boot() {
     allCards = decks.flat();
     byId = Object.fromEntries(allCards.map((c) => [c.id, c]));
   } catch (e) {
-    app.innerHTML = `<div class="panel"><h2 class="h">The cards didn't load</h2><p class="note">Love-All needs to be opened from a web address (for example GitHub Pages or a local server), not straight from a file on disk. Details: ${esc(e.message)}</p></div>`;
+    app.innerHTML = `<div class="panel"><h2 class="h">The cards didn't load</h2><p class="note">Love-All needs to be opened from a web address (for example its website or a local server), not straight from a file on disk. Details: ${esc(e.message)}</p></div>`;
     return;
   }
   setManifest(manifest);
