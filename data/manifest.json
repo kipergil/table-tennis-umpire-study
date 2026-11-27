@@ -1,0 +1,28 @@
+{
+  "decks": [
+    { "file": "data/cards/basic.json", "pack": "core" }
+  ],
+  "levels": [
+    { "id": "basic", "name": "Basic", "planned": 62 },
+    { "id": "intermediate", "name": "Intermediate", "planned": 116 },
+    { "id": "advanced", "name": "Advanced", "planned": 112 }
+  ],
+  "topics": [
+    { "id": "equipment", "name": "Equipment" },
+    { "id": "definitions", "name": "Definitions" },
+    { "id": "service", "name": "Service" },
+    { "id": "rally", "name": "Return, let & point" },
+    { "id": "game", "name": "Game, match & order" },
+    { "id": "expedite", "name": "Expedite system" },
+    { "id": "officials", "name": "Officials & appeals" },
+    { "id": "continuity", "name": "Time-outs & intervals" },
+    { "id": "behaviour", "name": "Advice & behaviour" },
+    { "id": "clothing", "name": "Clothing & conditions" },
+    { "id": "signals", "name": "Calls & signals" },
+    { "id": "para", "name": "Para table tennis" }
+  ],
+  "sources": {
+    "Law": "The Laws of Table Tennis, ITTF 2023-24 (issue of 22 July 2024)",
+    "HMO": "ITTF Handbook for Match Officials, 17th edition (July 2023)"
+  }
+}
