@@ -302,7 +302,7 @@ function renderResult() {
     }).join('') : '<p class="note">Every answer was right. Try a harder level or a shorter time limit.</p>'}
   </div>
   <div class="row exits"><button class="btn ghost" data-act="new2">New exam</button><button class="btn" data-act="done">Done: back to Home</button></div>
-  ${supportHTML('line')}`;
+  ${supportHTML('exam')}`;
   const root = ctx.app;
   root.querySelector('[data-act="again"]').addEventListener('click', () => start(r.cfg));
   const done = () => { result = null; ctx.go('home'); };

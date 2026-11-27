@@ -187,7 +187,7 @@ function renderHome() {
       </button>`).join('')}</div>` :
       `<p class="note">Answer a few cards and your three weakest topics will appear here, ready to drill.</p>`}
   </div>
-  ${supportHTML('line')}`;
+  ${supportHTML('home')}`;
 
   app.querySelector('[data-act="review"]')?.addEventListener('click', () => startSession('review'));
   app.querySelector('[data-act="learn"]')?.addEventListener('click', () => startSession('learn'));
@@ -494,7 +494,7 @@ function renderFinished() {
       ${from !== 'home' ? '<button class="btn ghost" data-act="home">Home</button>' : ''}
     </div>
   </div>
-  ${supportHTML('line')}`;
+  ${supportHTML('session')}`;
   const leave = (to) => { lastSummary = null; go(to); };
   app.querySelector('[data-act="close"]').addEventListener('click', () => leave(from || 'home'));
   app.querySelector('[data-act="missed"]')?.addEventListener('click', () => startSession('drill', { ids: sm.missed }, sm.from));
@@ -609,7 +609,7 @@ function renderMore() {
       <div class="row"><button class="btn danger" data-act="reset-yes">Yes, delete my progress</button><button class="btn ghost" data-act="reset-no">Cancel</button></div>` :
       '<button class="btn ghost" data-act="reset">Reset all progress…</button>'}
   </div>
-  ${supportHTML('panel')}
+  ${supportHTML('more')}
   <a class="panel tool" href="#help"><b>How to use Love-All</b><span class="small">How studying works, the menu, question types and keyboard shortcuts.</span></a>
   <div class="panel">
     <h2 class="h">Sources</h2>

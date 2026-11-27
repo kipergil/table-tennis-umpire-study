@@ -114,7 +114,7 @@ export function renderHelp() {
   </section>
 
   <a class="btn" href="#home">Start studying</a>
-  ${supportHTML('line')}`;
+  ${supportHTML('help')}`;
 
   ctx.app.querySelectorAll('[data-jump]').forEach((b) => b.addEventListener('click', () => {
     const el = document.getElementById(`h-${b.dataset.jump}`);
