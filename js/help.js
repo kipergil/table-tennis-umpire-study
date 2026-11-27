@@ -1,5 +1,7 @@
 // "How to use" page: what Love-All is, how studying works, the menu, question types, shortcuts.
 
+import { supportHTML } from './ui.js';
+
 let ctx = null;
 export function initHelp(c) { ctx = c; }
 
@@ -111,7 +113,8 @@ export function renderHelp() {
     <p class="small">Love-All is a study aid. Before officiating, always check the current ITTF Handbook and follow your referee's briefing.</p>
   </section>
 
-  <a class="btn" href="#home">Start studying</a>`;
+  <a class="btn" href="#home">Start studying</a>
+  ${supportHTML('line')}`;
 
   ctx.app.querySelectorAll('[data-jump]').forEach((b) => b.addEventListener('click', () => {
     const el = document.getElementById(`h-${b.dataset.jump}`);

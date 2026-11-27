@@ -27,6 +27,14 @@ The site is hosted on **Vercel**: https://table-tennis-umpire-study.vercel.app
 - Every push to `main` deploys to production automatically; every other branch and pull request gets a preview link.
 - The GitHub Actions workflow in `.github/workflows/check.yml` validates every card and runs the tests on pushes to `main` and on pull requests. It does not deploy anything.
 
+## Donation link
+
+A "Support Love-All" link (Ko-fi) appears on Home, More, How to use, and after sessions and exams. It stays hidden until a link is set in `data/manifest.json`:
+
+```json
+"support": { "platform": "Ko-fi", "url": "https://ko-fi.com/yourname" }
+```
+
 ## Run locally
 
 The app loads its cards with `fetch`, so it must be served over HTTP rather than opened as a file:

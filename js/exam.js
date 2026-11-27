@@ -1,5 +1,5 @@
 // Configurable exam simulation: no feedback until the end, then a full review.
-import { esc, fmt, shuffle, levelTag, topicName, levelName, cardTags, diagramSVG, explain, optionOrder, optsClass, questionFigure,
+import { esc, fmt, shuffle, levelTag, topicName, levelName, cardTags, diagramSVG, explain, optionOrder, optsClass, questionFigure, supportHTML,
   stepperHTML, wireStepper, fmtTime, fmtDate, LEVEL_ORDER } from './ui.js';
 import { isCorrect, answerText, responseText } from './grading.js';
 
@@ -301,7 +301,8 @@ function renderResult() {
       </details>`;
     }).join('') : '<p class="note">Every answer was right. Try a harder level or a shorter time limit.</p>'}
   </div>
-  <div class="row exits"><button class="btn ghost" data-act="new2">New exam</button><button class="btn" data-act="done">Done: back to Home</button></div>`;
+  <div class="row exits"><button class="btn ghost" data-act="new2">New exam</button><button class="btn" data-act="done">Done: back to Home</button></div>
+  ${supportHTML('line')}`;
   const root = ctx.app;
   root.querySelector('[data-act="again"]').addEventListener('click', () => start(r.cfg));
   const done = () => { result = null; ctx.go('home'); };

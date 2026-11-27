@@ -275,6 +275,10 @@ a.icon { display: grid; place-items: center; text-decoration: none; color: var(-
 .exits .btn { flex: 1 1 130px; }
 .next-steps .exits { margin-top: 4px; }
 .result-date { margin: -8px 0 0; }
+.support-line { text-align: center; font-size: .88rem; color: var(--muted); margin: 4px 0 0; }
+.support-line a { font-weight: 600; color: var(--table); }
+.support .support-btn { background: #FF5E5B; color: #fff; }
+.support .support-btn:hover { filter: brightness(.95); }
 .confirm { border-color: var(--ball-bar); }
 .brow { display: grid; grid-template-columns: minmax(0, 11rem) 1fr 44px; gap: 10px; align-items: center; font-size: .9rem; }
 .brow .meter { margin: 0; }
