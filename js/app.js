@@ -6,6 +6,7 @@ import { answerText, checkNumber, isCorrect, expandCard } from './grading.js';
 import { initExam, renderExam, examKey, examActive } from './exam.js';
 import { initTrainer, renderTrainer } from './trainer.js';
 import { initStats, renderStats } from './stats.js';
+import { initHelp, renderHelp } from './help.js';
 
 const app = document.getElementById('app');
 const nav = document.getElementById('nav');
@@ -89,7 +90,7 @@ function weakestTopics() {
 }
 
 /* ---------- routing ---------- */
-const VIEWS = { home: renderHome, study: renderStudy, exam: renderExam, trainer: renderTrainer, library: renderLibrary, stats: renderStats, more: renderMore };
+const VIEWS = { home: renderHome, study: renderStudy, exam: renderExam, trainer: renderTrainer, library: renderLibrary, stats: renderStats, more: renderMore, help: renderHelp };
 const NAV_FOR = { trainer: 'study' };
 
 function route() {
@@ -134,6 +135,11 @@ function renderHome() {
   app.innerHTML = `
   <div class="topbar"><span class="brand">Love<em>-</em>All</span><span class="small">${st ? `${st}-day streak` : 'Start a streak today'}</span></div>
   ${lastSummary ? summaryHTML(lastSummary, true) : ''}
+  ${P.settings.welcomed ? '' : `<div class="panel welcome">
+    <h2 class="h">Welcome to Love-All</h2>
+    <p class="note">Learn the table tennis rules an umpire needs with short daily reviews, practice exams and a doubles serving-order trainer. Take two minutes to see how it works.</p>
+    <div class="row"><a class="btn" href="#help" data-act="welcome-help">How to use</a><button class="btn ghost" data-act="welcome-close">Got it, start studying</button></div>
+  </div>`}
   <div class="panel">
     <div class="spread">
       <div><div class="small">Due today</div><div class="big">${due}</div></div>
@@ -179,6 +185,9 @@ function renderHome() {
   app.querySelector('[data-act="learn"]')?.addEventListener('click', () => startSession('learn'));
   app.querySelectorAll('[data-drill-topic]').forEach((b) => b.addEventListener('click', () => startSession('drill', { topic: b.dataset.drillTopic })));
   app.querySelector('[data-act="dismiss"]')?.addEventListener('click', () => { lastSummary = null; renderHome(); });
+  const welcomed = () => { P.settings.welcomed = true; save(); };
+  app.querySelector('[data-act="welcome-help"]')?.addEventListener('click', welcomed);
+  app.querySelector('[data-act="welcome-close"]')?.addEventListener('click', () => { welcomed(); renderHome(); });
 }
 
 /* ---------- study: chooser + session ---------- */
@@ -555,6 +564,7 @@ function renderMore() {
       <div class="row"><button class="btn danger" data-act="reset-yes">Yes, delete my progress</button><button class="btn ghost" data-act="reset-no">Cancel</button></div>` :
       '<button class="btn ghost" data-act="reset">Reset all progress…</button>'}
   </div>
+  <a class="panel tool" href="#help"><b>How to use Love-All</b><span class="small">How studying works, the menu, question types and keyboard shortcuts.</span></a>
   <div class="panel">
     <h2 class="h">Sources</h2>
     <p class="note">Every card cites its source: <b>Law</b> = ${esc(manifest.sources.Law)}; <b>HMO</b> = ${esc(manifest.sources.HMO)}. Clause numbers follow the official ITTF numbering. Always check the current ITTF Handbook and your referee's briefing before officiating.</p>
@@ -649,7 +659,7 @@ async function boot() {
     return;
   }
   setManifest(manifest);
-  initExam(ctx); initTrainer(ctx); initStats(ctx);
+  initExam(ctx); initTrainer(ctx); initStats(ctx); initHelp(ctx);
   window.addEventListener('hashchange', onHashChange);
   render();
   registerOffline();

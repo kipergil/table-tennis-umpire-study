@@ -18,6 +18,7 @@ Every card cites its source clause, using the official ITTF numbering.
 - **Stats**: answers per day, reviews coming up, progress per level, accuracy by topic, exam history and trainer score.
 - **Works offline** once opened, and can be installed on a phone with "Add to Home Screen".
 - Progress stays in the browser. **More → Back up your progress** exports and restores it.
+- **How to use** page (the **?** in the menu) explains how studying works, every menu option, the question types and keyboard shortcuts. First-time visitors see a welcome panel on Home that links to it.
 
 ## Publish on GitHub Pages
 
@@ -46,6 +47,7 @@ js/exam.js                practice exam
 js/trainer.js             doubles serving-order trainer (screen)
 js/doubles.js             doubles serving-order logic (no DOM, unit-tested)
 js/stats.js               stats page and charts
+js/help.js                "How to use" page
 js/grading.js             answer checking (unit-tested)
 js/scheduler.js           SM-2-style spaced-repetition scheduler (unit-tested)
 js/storage.js             progress in localStorage, export/import
