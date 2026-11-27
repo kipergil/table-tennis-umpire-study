@@ -5,7 +5,7 @@ Spaced-repetition flashcards for table tennis umpires, built from:
 - **Law**: *The Laws of Table Tennis*, ITTF 2023-24 (issue of 22 July 2024)
 - **HMO**: ITTF *Handbook for Match Officials*, 17th edition (July 2023)
 
-Cards come in three levels (Basic, Intermediate, Advanced) and four formats: flip, multiple choice, number recall and "Umpire's Call" scenarios. Every card cites its source clause.
+Cards come in three levels (Basic, Intermediate, Advanced) and four formats: multiple choice, select all that apply, number (with − / + stepper) and "Umpire's Call" scenarios. Every card cites its source clause.
 
 ## Status
 
@@ -62,8 +62,9 @@ node --test tests/*.test.mjs       # scheduler tests
 }
 ```
 
-- `flip` cards use `a` (the answer).
-- `number` cards use `value`, `unit`, and optionally `tolerance` and `accept`.
+- `number` cards use `value`, `unit`, and `min`, `max`, `step` for the − / + stepper (an empty box starts at `min` or `max`, so `min` must not be the answer). Optional: `tolerance`, `accept`.
+- `multi` cards ("select all that apply") use `options` (3–6) and `answers` (indices of every correct option). The answer only counts if exactly the correct options are selected.
+- `flip` cards (free recall, using `a` for the answer) are still supported by the app but no longer used, because self-graded recall proved less clear on a web page.
 - `mcq` and `scenario` cards use `options` and `answer` (the index of the correct option). Options are shuffled unless `"shuffle": false`.
 - Any card may have a `diagram`: a top or side view of the table with the ball path, bounces and marks. The format is documented at the top of `js/diagram.js`.
 - Cards in `data/cards/para.json` belong to the optional Para pack, shown only when it is switched on in **More**.

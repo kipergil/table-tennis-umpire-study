@@ -7,7 +7,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const manifest = JSON.parse(readFileSync(join(root, 'data/manifest.json'), 'utf8'));
 const levels = new Set(manifest.levels.map((l) => l.id));
 const topics = new Set(manifest.topics.map((t) => t.id));
-const formats = new Set(['flip', 'mcq', 'number', 'scenario']);
+const formats = new Set(['flip', 'mcq', 'multi', 'number', 'scenario']);
 const errors = [];
 const seen = new Set();
 const counts = {};
@@ -28,9 +28,21 @@ for (const deck of manifest.decks) {
     if (!Array.isArray(c.refs) || !c.refs.length) err('needs at least one source reference');
     for (const r of c.refs || []) if (!/^(Law|HMO) /.test(r)) err(`reference "${r}" must start with "Law " or "HMO "`);
     if (c.format === 'flip' && !c.a) err('flip card needs an answer (a)');
-    if (c.format === 'number' && typeof c.value !== 'number') err('number card needs a numeric value');
+    if (c.format === 'number') {
+      if (typeof c.value !== 'number') err('number card needs a numeric value');
+      for (const k of ['min', 'max', 'step']) if (typeof c[k] !== 'number') err(`number card needs ${k} for the stepper`);
+      if (c.value <= c.min || c.value > c.max) err('value must be inside (min, max] so the stepper does not start on the answer');
+      const n = (c.value - c.min) / c.step;
+      if (Math.abs(n - Math.round(n)) > 1e-9) err('value must be reachable from min in whole steps');
+    }
+    if (c.format === 'multi') {
+      if (!Array.isArray(c.options) || c.options.length < 3 || c.options.length > 6) err('multi card needs 3–6 options');
+      if (!Array.isArray(c.answers) || c.answers.length < 1) err('multi card needs an answers array');
+      else if (c.answers.some((i) => !Number.isInteger(i) || i < 0 || i >= c.options.length)) err('answers index out of range');
+      else if (c.answers.length === c.options.length) err('multi card needs at least one wrong option');
+    }
     if (c.format === 'mcq' || c.format === 'scenario') {
-      if (!Array.isArray(c.options) || c.options.length < 2) err('needs at least 2 options');
+      if (!Array.isArray(c.options) || c.options.length < 2 || c.options.length > 4) err('needs 2–4 options');
       else if (!Number.isInteger(c.answer) || c.answer < 0 || c.answer >= c.options.length) err('answer index out of range');
       else if (new Set(c.options).size !== c.options.length) err('duplicate options');
     }

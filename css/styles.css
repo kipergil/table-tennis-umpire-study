@@ -111,13 +111,26 @@ a { color: var(--table); }
 .opt .k { font: 500 .78rem/1.6 var(--f-mono); color: var(--muted); min-width: 14px; }
 .opt.right { border-color: var(--good); background: var(--good-soft); }
 .opt.wrong { border-color: var(--red); background: var(--red-soft); }
+.opt.multi .box { flex: none; width: 20px; height: 20px; margin-top: 1px; border: 2px solid var(--line); border-radius: 5px; display: grid; place-items: center; font-size: .8rem; line-height: 1; color: var(--table-ink); }
+.opt.picked { border-color: var(--table); }
+.opt.picked .box, .opt.right .box { background: var(--table); border-color: var(--table); }
+.opt.wrong .box { background: var(--red); border-color: var(--red); }
+.opt.missed { border: 2px dashed var(--good); }
+.opt-note { display: block; font-weight: 400; font-size: .8rem; color: var(--good); margin-top: 2px; }
+.multi-hint { margin: -4px 0 0; }
 .fb { border-radius: 12px; padding: 12px 14px; background: var(--good-soft); display: flex; flex-direction: column; gap: 6px; }
 .fb.bad { background: var(--red-soft); }
 .fb .callbox { background: var(--surface); }
 .fb .ref { background: var(--surface); }
 
-.numin { display: flex; gap: 8px; align-items: center; }
-.numin input { flex: 1; min-width: 0; font: 700 1.7rem/1 var(--f-display); padding: 10px 12px; border: 2px solid var(--table); border-radius: 10px; background: var(--surface); }
+.numin { display: flex; gap: 10px; align-items: center; }
+.stepper { flex: 1; min-width: 0; display: flex; align-items: stretch; border: 2px solid var(--table); border-radius: 12px; overflow: hidden; background: var(--surface); }
+.stepper input { flex: 1; min-width: 0; width: 100%; text-align: center; font: 700 1.8rem/1 var(--f-display); padding: 10px 4px; border: 0; background: transparent; -moz-appearance: textfield; appearance: textfield; font-variant-numeric: tabular-nums; }
+.stepper input::-webkit-outer-spin-button, .stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.stepper input:focus-visible { outline: none; background: var(--chip); }
+.step { width: 56px; flex: none; border: 0; background: var(--chip); color: var(--table); font: 700 1.7rem/1 var(--f-body); cursor: pointer; touch-action: manipulation; user-select: none; -webkit-user-select: none; }
+.step:active:not(:disabled) { background: var(--table); color: var(--table-ink); }
+.step:disabled { color: var(--muted); cursor: default; }
 .numin .unit { font: 700 1.3rem/1 var(--f-display); color: var(--muted); }
 
 .grade { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }

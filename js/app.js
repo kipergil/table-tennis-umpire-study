@@ -14,7 +14,7 @@ let lastSummary = null;           // summary of the session just finished
 const lib = { q: '', level: '', topic: '', status: '' };
 let resetArmed = false;
 
-const FORMAT_NAMES = { flip: 'Flip', mcq: 'Multiple choice', number: 'Number', scenario: 'Umpire’s Call' };
+const FORMAT_NAMES = { flip: 'Flip', mcq: 'Multiple choice', multi: 'Select all', number: 'Number', scenario: 'Umpire’s Call' };
 const LEVEL_CLASS = { basic: 'b', intermediate: 'i', advanced: 'a' };
 const LEVEL_ORDER = { basic: 0, intermediate: 1, advanced: 2 };
 const GRADES = ['Again', 'Hard', 'Good', 'Easy'];
@@ -33,6 +33,7 @@ const save = () => saveProgress(P);
 function answerText(c) {
   if (c.format === 'flip') return c.a;
   if (c.format === 'number') return `${c.value} ${c.unit || ''}`.trim();
+  if (c.format === 'multi') return c.answers.map((i) => c.options[i]).join('; ');
   return c.options[c.answer];
 }
 
@@ -206,6 +207,7 @@ function prepCard() {
   session.chosen = null;
   session.typed = '';
   session.guessed = false;
+  session.selected = new Set();
   session.order = c.options ? (c.shuffle === false ? c.options.map((_, i) => i) : shuffle(c.options.map((_, i) => i))) : null;
 }
 
@@ -282,16 +284,22 @@ function flipBody(c) {
 function numberBody(c) {
   const done = session.chosen !== null;
   return `
-  <form class="numin" id="num-form">
-    <label class="sr" for="num-in">Your answer</label>
-    <input id="num-in" inputmode="decimal" autocomplete="off" value="${esc(session.typed)}" ${done ? 'disabled' : ''} placeholder="?">
+  <form class="numin" id="num-form" novalidate>
+    <label class="sr" for="num-in">Your answer${c.unit ? ` in ${esc(c.unit)}` : ''}</label>
+    <div class="stepper">
+      <button type="button" class="step" data-step="-1" aria-label="Decrease" ${done ? 'disabled' : ''}>−</button>
+      <input id="num-in" type="number" inputmode="decimal" autocomplete="off" value="${esc(session.typed)}"
+        min="${c.min ?? ''}" max="${c.max ?? ''}" step="${c.step ?? 'any'}" ${done ? 'disabled' : ''} placeholder="?">
+      <button type="button" class="step" data-step="1" aria-label="Increase" ${done ? 'disabled' : ''}>+</button>
+    </div>
     <span class="unit">${esc(c.unit || '')}</span>
-    ${done ? '' : '<button class="btn slim" type="submit">Check</button>'}
   </form>
+  ${done ? '' : `<p class="small">Type a number or use − and +${c.step ? ` (steps of ${c.step})` : ''}.</p><button class="btn" type="submit" form="num-form">Check answer <span class="small inv">Enter</span></button>`}
   ${done ? feedback(c, session.chosen) : ''}`;
 }
 
 function choiceBody(c) {
+  if (c.format === 'multi') return multiBody(c);
   const done = session.chosen !== null;
   const keys = 'ABCD';
   return `
@@ -305,6 +313,39 @@ function choiceBody(c) {
     }).join('')}
   </div>
   ${done ? feedback(c, session.chosen) : ''}`;
+}
+
+function multiBody(c) {
+  const done = session.chosen !== null;
+  const keys = 'ABCDEF';
+  const sel = session.selected;
+  return `
+  <p class="small multi-hint">Select every correct answer, then check.</p>
+  <div class="opts" role="group" aria-label="Options: select all that apply">
+    ${session.order.map((oi, k) => {
+      const isAns = c.answers.includes(oi), picked = sel.has(oi);
+      let cls = picked ? 'picked' : '';
+      if (done) cls = isAns && picked ? 'right' : isAns ? 'missed' : picked ? 'wrong' : '';
+      const note = done && isAns && !picked ? '<span class="opt-note">you missed this one</span>' : '';
+      return `<button class="opt multi ${cls}" data-toggle="${oi}" aria-pressed="${picked}" ${done ? 'disabled' : ''}><span class="box" aria-hidden="true">${picked ? '✓' : ''}</span><span class="k">${keys[k]}</span><span>${fmt(c.options[oi])}${note}</span></button>`;
+    }).join('')}
+  </div>
+  ${done ? feedback(c, session.chosen) : `<button class="btn" data-act="check" ${sel.size ? '' : 'disabled'}>Check answer <span class="small inv">Enter</span></button>`}`;
+}
+
+function toggleOption(oi) {
+  if (session.chosen !== null) return;
+  if (session.selected.has(oi)) session.selected.delete(oi); else session.selected.add(oi);
+  renderSession();
+  app.querySelector(`[data-toggle="${oi}"]`)?.focus();
+}
+
+function checkMulti(c) {
+  if (session.chosen !== null || !session.selected.size) return;
+  const sel = session.selected;
+  session.chosen = sel.size === c.answers.length && c.answers.every((i) => sel.has(i));
+  renderSession();
+  app.querySelector('[data-act="next"]')?.focus();
 }
 
 function checkNumber(c, raw) {
@@ -354,13 +395,16 @@ function wireSession(c) {
   app.querySelector('[data-act="reveal"]')?.addEventListener('click', reveal);
   app.querySelectorAll('[data-grade]').forEach((b) => b.addEventListener('click', () => commit(c, +b.dataset.grade, +b.dataset.grade > 0)));
   app.querySelectorAll('[data-opt]').forEach((b) => b.addEventListener('click', () => choose(c, +b.dataset.opt)));
+  app.querySelectorAll('[data-toggle]').forEach((b) => b.addEventListener('click', () => toggleOption(+b.dataset.toggle)));
+  app.querySelector('[data-act="check"]')?.addEventListener('click', () => checkMulti(c));
   app.querySelector('[data-act="next"]')?.addEventListener('click', () => next(c));
   app.querySelector('#guessed')?.addEventListener('change', (e) => { session.guessed = e.target.checked; });
   const nf = app.querySelector('#num-form');
   if (nf) {
     const inp = nf.querySelector('input');
-    if (!inp.disabled) inp.focus();
+    if (!inp.disabled && !matchMedia('(pointer: coarse)').matches) inp.focus();
     inp.addEventListener('input', () => { session.typed = inp.value; });
+    nf.querySelectorAll('[data-step]').forEach((b) => holdToRepeat(b, () => { stepNumber(c, inp, +b.dataset.step); }));
     nf.addEventListener('submit', (e) => {
       e.preventDefault();
       if (!inp.value.trim()) return;
@@ -370,6 +414,29 @@ function wireSession(c) {
       app.querySelector('[data-act="next"]')?.focus();
     });
   }
+}
+
+// One step up or down, clamped to the card's range. An empty box starts at the low or high end.
+function stepNumber(c, inp, dir) {
+  const step = c.step || 1;
+  const lo = c.min ?? -Infinity, hi = c.max ?? Infinity;
+  const dec = (String(step).split('.')[1] || '').length;
+  const cur = parseFloat(String(inp.value).replace(',', '.'));
+  let v = Number.isNaN(cur) ? (dir > 0 ? lo : hi) : cur + dir * step;
+  if (!Number.isFinite(v)) v = 0;
+  v = Math.min(hi, Math.max(lo, v));
+  inp.value = v.toFixed(dec);
+  session.typed = inp.value;
+}
+
+// Click steps once; pressing and holding repeats, speeding up.
+function holdToRepeat(btn, fn) {
+  let timer = null;
+  const stop = () => { clearTimeout(timer); timer = null; };
+  const run = (delay) => { fn(); timer = setTimeout(() => run(Math.max(40, delay * 0.8)), delay); };
+  btn.addEventListener('pointerdown', (e) => { if (e.button !== 0) return; e.preventDefault(); btn.setPointerCapture?.(e.pointerId); run(400); });
+  ['pointerup', 'pointercancel', 'lostpointercapture'].forEach((t) => btn.addEventListener(t, stop));
+  btn.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fn(); } });
 }
 
 function reveal() { session.revealed = true; renderSession(); }
@@ -496,7 +563,7 @@ function renderLibrary() {
     const q = lib.q.trim().toLowerCase();
     const rows = pool.filter((c) => (!lib.level || c.level === lib.level) && (!lib.topic || c.topic === lib.topic) &&
       (!lib.status || cardStatus(c).key === lib.status) &&
-      (!q || [c.q, c.detail, answerText(c), (c.refs || []).join(' '), c.id].join(' ').toLowerCase().includes(q)));
+      (!q || [c.q, c.detail, answerText(c), (c.options || []).join(' '), (c.refs || []).join(' '), c.id].join(' ').replace(/\u2011/g, '-').toLowerCase().includes(q)));
     list.innerHTML = rows.length ? rows.map((c) => {
       const st = cardStatus(c);
       return `<details class="libitem">
@@ -607,6 +674,13 @@ document.addEventListener('keydown', (e) => {
   if (c.format === 'flip') {
     if (!session.revealed && (e.key === ' ' || e.key === 'Enter') && !typing) { e.preventDefault(); reveal(); }
     else if (session.revealed && /^[1-4]$/.test(e.key)) { e.preventDefault(); commit(c, +e.key - 1, +e.key > 1); }
+    return;
+  }
+  if (c.format === 'multi' && session.chosen === null && !typing) {
+    const n = /^[1-6]$/.test(e.key) ? +e.key - 1 : 'abcdef'.indexOf(e.key.toLowerCase());
+    if (n >= 0 && n < session.order.length) { e.preventDefault(); toggleOption(session.order[n]); }
+    // Enter checks the answer (also when focus is on an option); Space toggles the focused option.
+    else if (e.key === 'Enter' && !e.target.matches('[data-act]')) { e.preventDefault(); checkMulti(c); }
     return;
   }
   if (session.chosen === null && c.options && !typing) {
