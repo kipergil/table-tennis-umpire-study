@@ -7,6 +7,7 @@
     "q": "What are the length and width of the playing surface of the table?",
     "options": ["2.74 m long × 1.525 m wide", "2.74 m long × 1.37 m wide", "2.70 m long × 1.50 m wide", "3.00 m long × 1.525 m wide"],
     "answer": 0,
+    "answerFigures": ["table-dims"],
     "detail": "The playing surface is rectangular, **2.74 m long** and **1.525 m wide**, lying in a horizontal plane.",
     "refs": ["Law 2.1.1"]
   },
@@ -21,6 +22,7 @@
     "min": 50,
     "max": 100,
     "step": 1,
+    "answerFigures": ["table-dims"],
     "detail": "The playing surface lies in a horizontal plane **76 cm** above the floor.",
     "refs": ["Law 2.1.1"]
   },
@@ -44,6 +46,7 @@
     "options": ["No, the vertical sides are not part of the playing surface", "Yes, the whole tabletop counts", "Only the top 2 cm of the sides", "Only in doubles"],
     "answer": 0,
     "shuffle": false,
+    "answerFigures": ["edge-vs-side"],
     "detail": "The playing surface **does not include the vertical sides** of the tabletop. A ball that touches the side is not a good return, which is why edge and side decisions matter.",
     "refs": ["Law 2.1.2", "HMO 12.2"]
   },
@@ -55,6 +58,7 @@
     "q": "What colour and finish must the playing surface be?",
     "options": ["Uniformly dark and matt, with 2 cm white side and end lines", "Dark and glossy, with 2 cm white side and end lines", "Any colour, matt, with 3 cm white lines", "Uniformly dark and matt, with white side lines only"],
     "answer": 0,
+    "answerFigures": ["table-dims"],
     "detail": "A **white side line 2 cm wide** runs along each 2.74 m edge and a **white end line 2 cm wide** along each 1.525 m edge. For doubles there is also a 3 mm white centre line.",
     "refs": ["Law 2.1.4", "Law 2.1.6"]
   },
@@ -69,6 +73,7 @@
     "min": 0.5,
     "max": 5,
     "step": 0.5,
+    "answerFigures": ["table-dims"],
     "detail": "Side lines and end lines are **2 cm** wide. The doubles centre line is much narrower: **3 mm**.",
     "refs": ["Law 2.1.4"]
   },
@@ -80,6 +85,7 @@
     "q": "In doubles, the 3 mm centre line belongs to which half-court?",
     "options": ["Each right half-court", "Each left half-court", "Neither: a ball on it is a fault", "The server's choice"],
     "answer": 0,
+    "answerFigures": ["doubles-halves"],
     "detail": "The centre line is **regarded as part of each right half-court**, so a doubles service landing on the centre line is good.",
     "refs": ["Law 2.1.6"]
   },
@@ -94,6 +100,7 @@
     "min": 10,
     "max": 20,
     "step": 0.25,
+    "answerFigures": ["net-assembly"],
     "detail": "The top of the net, along its whole length, is **15.25 cm** above the playing surface.",
     "hint": "15.25 cm is also the height of the net posts and their distance outside the side line.",
     "refs": ["Law 2.2.3"]
@@ -106,6 +113,7 @@
     "q": "How high are the net posts, and where are they placed?",
     "options": ["15.25 cm high, their outside limits 15.25 cm outside the side line", "15.25 cm high, fixed directly on the side line", "16 cm high, 10 cm outside the side line", "15.25 cm high, 20 cm outside the side line"],
     "answer": 0,
+    "answerFigures": ["net-assembly"],
     "detail": "The net is suspended by a cord attached at each end to an upright post **15.25 cm high**, with the outside limits of the post **15.25 cm outside the side line**.",
     "refs": ["Law 2.2.2"]
   },
@@ -117,6 +125,7 @@
     "q": "Which of these are part of the “net assembly”? Select all that apply.",
     "options": ["The net", "Its suspension (the cord)", "The supporting posts", "The clamps attaching the posts to the table", "The vertical sides of the tabletop", "The white centre line"],
     "answers": [0, 1, 2, 3],
+    "answerFigures": ["net-assembly"],
     "detail": "The net assembly is the **net, its suspension and the supporting posts, including the clamps** attaching them to the table. This matters because a player touching any part of it loses the point, and a service touching any part of it can be a let.",
     "refs": ["Law 2.2.1", "Law 2.10.1.10"]
   },
@@ -291,6 +300,7 @@
     "q": "For the purposes of the laws, how far does the end line extend?",
     "options": ["Indefinitely in both directions", "Only across the width of the table", "To the net posts", "To the surrounds"],
     "answer": 0,
+    "answerFigures": ["service-zone"],
     "detail": "The end line is **regarded as extending indefinitely in both directions**. This matters for the service rule that the ball must be behind the server's end line.",
     "refs": ["Law 2.5.14", "Law 2.6.4"]
   },
@@ -313,6 +323,7 @@
     "q": "How must the service start?",
     "options": ["With the ball resting freely on the open palm of the stationary free hand", "With the ball held between the thumb and fingers of the free hand", "With the ball resting on the racket", "With the ball on the open palm; the hand may already be moving"],
     "answer": 0,
+    "answerFigures": ["palm"],
     "detail": "Service starts with the ball **resting freely on the open palm** of the server's **stationary free hand**. The open palm is there so the ball cannot be gripped or spun.",
     "refs": ["Law 2.6.1", "HMO 10.2.1"]
   },
@@ -327,6 +338,7 @@
     "min": 5,
     "max": 30,
     "step": 1,
+    "answerFigures": ["toss"],
     "detail": "The ball must rise **at least 16 cm** after leaving the palm, then fall without touching anything before being struck.",
     "hint": "16 cm is just above the net height (15.25 cm), so the net is a handy reference.",
     "refs": ["Law 2.6.2", "HMO 10.3.2"]
@@ -339,6 +351,7 @@
     "q": "How must the server project the ball?",
     "options": ["Near vertically upwards, without imparting spin", "Upwards at any angle up to 45°, without spin", "Near vertically upwards; spin is allowed", "In any direction, as long as it rises 16 cm"],
     "answer": 0,
+    "answerFigures": ["toss"],
     "detail": "The ball must be projected **near vertically upwards, without imparting spin**. “Near vertically” means within a few degrees of vertical. The old 45° limit no longer applies.",
     "refs": ["Law 2.6.2", "HMO 10.3.1"]
   },
@@ -350,6 +363,7 @@
     "q": "In doubles, where must a correct service bounce?",
     "options": ["The server's right half-court, then the receiver's right half-court", "Anywhere on the server's court, then the receiver's right half-court", "The server's left half-court, then the receiver's left half-court", "Directly in the receiver's right half-court, without bouncing on the server's side"],
     "answer": 0,
+    "answerFigures": ["doubles-halves"],
     "detail": "As the ball falls, the server strikes it so it touches **first their own court and then directly the receiver's court**. In doubles it must touch successively the **right half-court of server and receiver**.",
     "refs": ["Law 2.6.3"]
   },
@@ -361,6 +375,7 @@
     "q": "From the start of service until it is struck, where must the ball be?",
     "options": ["Above the level of the playing surface and behind the server's end line", "Above the net height and behind the end line", "Anywhere, as long as it is visible to the receiver", "Behind the end line; height does not matter"],
     "answer": 0,
+    "answerFigures": ["service-zone"],
     "detail": "From the start of service until struck, the ball must be **above the level of the playing surface** and **behind the server's end line**.",
     "refs": ["Law 2.6.4"]
   },
@@ -639,6 +654,7 @@
     "q": "How many time-outs is each player or pair entitled to in an individual match, and how long is each?",
     "options": ["One, of up to 1 minute", "One per game, of up to 1 minute", "Two, of up to 1 minute each", "One, of up to 2 minutes"],
     "answer": 0,
+    "answerFigures": ["signal:timeout"],
     "detail": "Each player or pair (or their captain or adviser) may take **one time-out of up to 1 minute** during an individual match, requested with a **T-sign** between rallies.",
     "refs": ["HMO 13.1.1"]
   },
@@ -716,7 +732,44 @@
     "q": "Which hand signal does the umpire use to declare a let?",
     "options": ["Raise one hand above the head", "Point with an open hand to the server", "Raise the arm nearer the receiver, forearm vertical", "Cross both arms"],
     "answer": 0,
+    "answerFigures": ["signal:let"],
     "detail": "For a let, or to delay the resumption of play, the umpire **raises one hand above the head**. The AU uses the same signal to attract the umpire's attention.",
     "refs": ["HMO 18.2.2", "HMO App C"]
+  },
+  {
+    "id": "SIG-301",
+    "level": "basic",
+    "topic": "signals",
+    "format": "mcq",
+    "q": "What does this umpire signal mean?",
+    "options": ["A point to the player or pair on this side", "A let, or play is stopped", "This player serves next", "A time-out for the player or pair on this side"],
+    "answer": 0,
+    "figure": "signal:point",
+    "detail": "To show a point, the umpire raises **the arm nearer the winner**: upper arm horizontal, forearm vertical, closed hand upward.",
+    "refs": ["HMO 18.2.2", "HMO App C"]
+  },
+  {
+    "id": "SIG-302",
+    "level": "basic",
+    "topic": "signals",
+    "format": "mcq",
+    "q": "What does this umpire signal mean?",
+    "options": ["A let, or play is stopped", "A point to the player or pair on this side", "This player serves next", "A formal warning"],
+    "answer": 0,
+    "figure": "signal:let",
+    "detail": "**One hand raised above the head** means a let, or that play is held up. The assistant umpire uses the same signal to attract the umpire's attention.",
+    "refs": ["HMO 18.2.2", "HMO App C"]
+  },
+  {
+    "id": "SIG-303",
+    "level": "basic",
+    "topic": "signals",
+    "format": "mcq",
+    "q": "What does this umpire signal mean?",
+    "options": ["This player serves next", "A point to the player or pair on this side", "A let, or play is stopped", "A time-out for the player or pair on this side"],
+    "answer": 0,
+    "figure": "signal:next",
+    "detail": "At a change of service the umpire **points with an open hand to the next server**.",
+    "refs": ["HMO 18.1.3", "HMO 18.2.2"]
   }
 ]

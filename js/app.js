@@ -1,7 +1,7 @@
 import { schedule, previewLabel, isLearned, endOfDay, dayKey, formatWait, DAY } from './scheduler.js';
 import { loadProgress, saveProgress, normalise, exportJSON, defaultProgress } from './storage.js';
 import { setManifest, esc, fmt, shuffle, levelTag, topicName, cardTags, refsHTML, explain, diagramSVG,
-  optionOrder, stepperHTML, wireStepper, optsClass, FORMAT_NAMES, LEVEL_ORDER } from './ui.js';
+  optionOrder, stepperHTML, wireStepper, optsClass, questionFigure, FORMAT_NAMES, LEVEL_ORDER } from './ui.js';
 import { answerText, checkNumber, isCorrect, expandCard } from './grading.js';
 import { initExam, renderExam, examKey, examActive } from './exam.js';
 import { initTrainer, renderTrainer } from './trainer.js';
@@ -288,7 +288,7 @@ function renderSession() {
   <article class="card" aria-live="polite">
     ${cardTags(c)}
     <div class="q">${fmt(c.q)}</div>
-    ${diagramSVG(c.diagram)}
+    ${diagramSVG(c.diagram)}${questionFigure(c)}
     ${c.format === 'flip' ? flipBody(c) : c.format === 'number' ? numberBody(c) : choiceBody(c)}
   </article>
   ${footerHTML(c)}`;
@@ -523,7 +523,7 @@ function renderLibrary() {
       return `<details class="libitem">
         <summary><span class="lib-q">${fmt(c.q)}</span>
           <span class="row">${levelTag(c.level)}<span class="tag">${esc(topicName(c.topic))}</span><span class="status s-${st.key}">${esc(st.label)}</span></span></summary>
-        <div class="lib-a">${diagramSVG(c.diagram)}<div class="answer sm">${fmt(answerText(c))}</div>${explain(c)}</div>
+        <div class="lib-a">${diagramSVG(c.diagram)}${questionFigure(c)}<div class="answer sm">${fmt(answerText(c))}</div>${explain(c)}</div>
       </details>`;
     }).join('') : '<p class="note">No cards match. Try a different search or clear a filter.</p>';
   };

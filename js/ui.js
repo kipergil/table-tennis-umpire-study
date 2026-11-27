@@ -1,5 +1,6 @@
 // Shared rendering helpers used by every view.
 import { diagramSVG } from './diagram.js';
+import { figureHTML, signalsFor } from './figures.js';
 
 let manifest = { levels: [], topics: [] };
 export function setManifest(m) { manifest = m; }
@@ -39,6 +40,7 @@ export function explain(c) {
     <div class="detail">${fmt(c.detail)}</div>
     ${c.hint ? `<div class="hint">Memory hook: ${fmt(c.hint)}</div>` : ''}
     ${calls}
+    ${answerVisuals(c)}
     ${refsHTML(c)}
     ${c.basedOn ? `<p class="small based-on">Reworded from the sample exam paper (${esc(c.basedOn.replace('Sample exam ', ''))}).</p>` : ''}`;
 }
@@ -93,3 +95,13 @@ export const fmtTime = (secs) => {
 };
 
 export const fmtDate = (ms) => new Date(ms).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+
+/** Pictures shown with the answer: the umpire's signals, then any reference figures. */
+export function answerVisuals(c) {
+  const sigs = signalsFor(c).map((k) => figureHTML(`signal:${k}`, { compact: true })).join('');
+  const figs = (c.answerFigures || []).map((n) => figureHTML(n)).join('');
+  return `${sigs ? `<div class="sig-row" aria-label="Umpire signals">${sigs}</div>` : ''}${figs}`;
+}
+
+/** A picture that is part of the question itself (e.g. "What does this signal mean?"). */
+export const questionFigure = (c) => (c.figure ? `<div class="q-fig">${figureHTML(c.figure)}</div>` : '');

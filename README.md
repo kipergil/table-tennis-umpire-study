@@ -52,6 +52,7 @@ js/grading.js             answer checking (unit-tested)
 js/scheduler.js           SM-2-style spaced-repetition scheduler (unit-tested)
 js/storage.js             progress in localStorage, export/import
 js/diagram.js             table diagrams for scenario cards
+js/figures.js             umpire signal drawings and reference figures
 js/ui.js                  shared rendering helpers
 data/manifest.json        decks, levels, topics, sources
 data/cards/*.json         cards: basic, intermediate, advanced, exam-style, para
@@ -87,6 +88,7 @@ node --test tests/*.test.mjs       # scheduler, grading, doubles order (3,000 ra
 - `mcq` and `scenario` cards use `options` (2–4) and `answer`, the index of the correct option. Options are shuffled unless `"shuffle": false`.
 - `multi` cards ("select all that apply") use `options` (3–6) and `answers`, the indices of every correct option. An answer counts only if exactly the correct options are picked.
 - `number` cards use `value` and `unit`, plus `min`, `max` and `step` for the stepper. An empty box starts at `min` or `max`, so `min` must not be the answer. `tolerance` and `accept` are optional.
+- `answerFigures` (optional) adds reference figures to the answer, e.g. `["edge-vs-side"]`; `figure` puts one in the question, e.g. `"signal:point"`. Names are listed in `js/figures.js`. Umpire signal pictures are added to answers automatically from the `umpire.signal` text and from decision answers.
 - Any card may have a `diagram`: a top or side view of the table with the ball path, bounces and marks. The format is documented at the top of `js/diagram.js`.
 - Cards in `data/cards/para.json` belong to the optional Para pack.
 - `tf` cards (true or false) use `"answer": true` or `false`, with the statement as `q`.

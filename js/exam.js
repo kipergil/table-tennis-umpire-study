@@ -1,5 +1,5 @@
 // Configurable exam simulation: no feedback until the end, then a full review.
-import { esc, fmt, shuffle, levelTag, topicName, levelName, cardTags, diagramSVG, explain, optionOrder, optsClass,
+import { esc, fmt, shuffle, levelTag, topicName, levelName, cardTags, diagramSVG, explain, optionOrder, optsClass, questionFigure,
   stepperHTML, wireStepper, fmtTime, fmtDate, LEVEL_ORDER } from './ui.js';
 import { isCorrect, answerText, responseText } from './grading.js';
 
@@ -153,7 +153,7 @@ function renderQuestion() {
   <article class="card">
     ${cardTags(c)}
     <div class="q">${fmt(c.q)}</div>
-    ${diagramSVG(c.diagram)}
+    ${diagramSVG(c.diagram)}${questionFigure(c)}
     ${body(c, ans)}
   </article>
   <div class="exam-nav">
@@ -280,7 +280,7 @@ function renderResult() {
       return `<details class="review ${x.correct ? 'ok' : 'bad'}" ${x.correct ? '' : 'open'}>
         <summary><span class="rv-n">${k}</span><span class="rv-q">${fmt(c.q)}</span><span class="rv-mark" aria-label="${x.correct ? 'correct' : 'wrong'}">${x.correct ? '✓' : '✕'}</span></summary>
         <div class="rv-body">
-          ${diagramSVG(c.diagram)}
+          ${diagramSVG(c.diagram)}${questionFigure(c)}
           <dl class="callbox">
             <dt>Your answer</dt><dd>${fmt(responseText(c, x.response))}</dd>
             <dt>Correct answer</dt><dd>${fmt(answerText(c))}</dd>
