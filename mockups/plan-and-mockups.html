@@ -1,0 +1,517 @@
+<title>Love-All Umpire Trainer Plan</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: a long-form plan in a 72ch column, broken by a full-width mockup gallery of phone-sized screens. */
+:root{
+  --bg:#F2F5F9; --surface:#FFFFFF; --ink:#142033; --muted:#56677F; --line:#D4DDE9;
+  --table:#1C4E8F; --table-ink:#FFFFFF; --ball:#E9801F; --ball-soft:#FCEBDB;
+  --good:#2D8455; --good-soft:#DFF1E6; --yellow:#E2B10F; --red:#C3322B; --red-soft:#F8E0DE;
+  --chip:#E7EDF5;
+  --f-display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --f-body:"Source Sans 3","Segoe UI",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0C1420; --surface:#142135; --ink:#E5ECF6; --muted:#9AAAC1; --line:#26374F;
+  --table:#3F7BCB; --table-ink:#FFFFFF; --ball:#F39A44; --ball-soft:#3A2A1A;
+  --good:#4FB37C; --good-soft:#173726; --yellow:#E9BE2D; --red:#E0574F; --red-soft:#3B1E1D;
+  --chip:#1D2D45; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0C1420; --surface:#142135; --ink:#E5ECF6; --muted:#9AAAC1; --line:#26374F;
+  --table:#3F7BCB; --table-ink:#FFFFFF; --ball:#F39A44; --ball-soft:#3A2A1A;
+  --good:#4FB37C; --good-soft:#173726; --yellow:#E9BE2D; --red:#E0574F; --red-soft:#3B1E1D;
+  --chip:#1D2D45; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:400 17px/1.6 var(--f-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+h1,h2,h3{font-family:var(--f-display);font-weight:700;line-height:1.1;text-wrap:balance;margin:0}
+h1{font-size:clamp(2.4rem,6vw,3.6rem);letter-spacing:.01em}
+h2{font-size:2rem;margin-bottom:.4em}
+h3{font-size:1.35rem;margin-bottom:.3em}
+p{margin:0 0 .9em}
+.col{max-width:72ch;margin:0 auto}
+.wide{max-width:1180px;margin:0 auto}
+section{padding-block:40px;border-top:1px solid var(--line)}
+.eyebrow{font:600 .78rem/1 var(--f-body);letter-spacing:.12em;text-transform:uppercase;color:var(--ball)}
+.mono,code{font-family:var(--f-mono);font-size:.86em}
+code{background:var(--chip);padding:1px 5px;border-radius:4px}
+a{color:var(--table)}
+
+/* header */
+header{padding-block:44px 32px}
+.score{display:inline-flex;gap:6px;margin-bottom:18px}
+.score span{font:700 1.1rem/1 var(--f-display);background:var(--table);color:var(--table-ink);padding:8px 12px;border-radius:4px;font-variant-numeric:tabular-nums}
+.lede{font-size:1.15rem;color:var(--muted);max-width:60ch}
+.tldr{margin-top:24px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px 22px}
+.tldr ul{margin:0;padding-left:1.1em}
+.tldr li{margin-bottom:.35em}
+
+/* tables */
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface);margin-block:12px 8px}
+table{border-collapse:collapse;width:100%;font-size:.93rem;min-width:560px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 .75rem/1.2 var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+tfoot td{font-weight:700}
+
+/* levels */
+.levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:14px}
+.lvl{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+.lvl h3{display:flex;align-items:center;gap:8px}
+.pip{display:inline-flex;gap:3px}
+.pip i{width:9px;height:9px;border-radius:50%;background:var(--line);display:block}
+.pip i.on{background:var(--ball)}
+.lvl p{font-size:.94rem;color:var(--muted);margin:0}
+
+.formats{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:12px}
+.fmt{border-left:3px solid var(--table);padding:4px 0 4px 14px}
+.fmt b{font-family:var(--f-display);font-size:1.15rem;letter-spacing:.02em}
+.fmt p{font-size:.94rem;color:var(--muted);margin:2px 0 0}
+
+/* ---------- MOCKUP GALLERY ---------- */
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:28px 22px;margin-top:20px}
+.shot{min-width:0}
+.shot figcaption{font-size:.9rem;color:var(--muted);margin-top:10px}
+.shot figcaption b{color:var(--ink);display:block;font-family:var(--f-display);font-size:1.1rem}
+figure{margin:0}
+.phone{background:var(--bg);border:1px solid var(--line);border-radius:26px;padding:14px 14px 18px;max-width:360px;margin:0 auto;
+  box-shadow:0 10px 30px -18px rgba(10,30,60,.45);display:flex;flex-direction:column;gap:12px;min-height:600px;font-size:15px}
+.bar{display:flex;align-items:center;justify-content:space-between;font-size:.82rem;color:var(--muted)}
+.bar .brand{font:700 1.15rem/1 var(--f-display);color:var(--ink);letter-spacing:.02em}
+.bar .brand em{font-style:normal;color:var(--ball)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px}
+.tag{display:inline-block;font:600 .7rem/1 var(--f-body);letter-spacing:.08em;text-transform:uppercase;padding:5px 8px;border-radius:999px;background:var(--chip);color:var(--muted)}
+.tag.b{background:var(--good-soft);color:var(--good)}
+.tag.i{background:var(--ball-soft);color:var(--ball)}
+.tag.a{background:var(--red-soft);color:var(--red)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.spread{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.big{font:700 2.6rem/1 var(--f-display);font-variant-numeric:tabular-nums}
+.small{font-size:.8rem;color:var(--muted)}
+.btn{font:600 .95rem/1 var(--f-body);border:0;border-radius:10px;padding:12px 14px;cursor:pointer;background:var(--table);color:var(--table-ink);width:100%}
+.btn.ghost{background:var(--chip);color:var(--ink)}
+.btn:focus-visible,.opt:focus-visible,.card3d:focus-visible,.grade button:focus-visible{outline:3px solid var(--ball);outline-offset:2px}
+.meter{height:8px;background:var(--chip);border-radius:99px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--table);border-radius:99px}
+.meter.o i{background:var(--ball)}
+.topic{display:grid;grid-template-columns:1fr 90px 34px;gap:8px;align-items:center;font-size:.85rem}
+.topic .small{text-align:right;font-variant-numeric:tabular-nums}
+
+/* flip card */
+.progress{display:flex;gap:3px}
+.progress i{flex:1;height:4px;border-radius:2px;background:var(--line)}
+.progress i.d{background:var(--table)}
+.card3d{perspective:1200px;cursor:pointer;flex:1;min-height:330px;display:flex}
+.card3d .in{position:relative;flex:1;transition:transform .5s;transform-style:preserve-3d}
+.card3d.flip .in{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.face.back{transform:rotateY(180deg)}
+.face .q{font:600 1.3rem/1.3 var(--f-body)}
+.face .hint{margin-top:auto;font-size:.8rem;color:var(--muted);text-align:center}
+.answer{font:700 2.2rem/1 var(--f-display);color:var(--table)}
+.ref{font-family:var(--f-mono);font-size:.74rem;color:var(--muted);background:var(--chip);padding:4px 7px;border-radius:5px;display:inline-block}
+.grade{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.grade button{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:9px 2px;font:600 .82rem/1.15 var(--f-body);cursor:pointer}
+.grade button span{display:block;font-weight:400;font-size:.7rem;color:var(--muted)}
+.grade .again{border-color:var(--red);color:var(--red)}
+@media (prefers-reduced-motion:reduce){.card3d .in{transition:none}}
+
+/* scenario */
+.court{width:100%;height:auto;border-radius:10px;display:block}
+.opt{display:flex;gap:10px;align-items:center;width:100%;text-align:left;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:11px 12px;font:600 .92rem/1.25 var(--f-body);cursor:pointer}
+.opt .k{font-family:var(--f-mono);font-size:.75rem;color:var(--muted);width:18px}
+.opt.right{border-color:var(--good);background:var(--good-soft)}
+.opt.wrong{border-color:var(--red);background:var(--red-soft)}
+.fb{border-radius:12px;padding:12px;background:var(--good-soft);font-size:.88rem}
+.fb.bad{background:var(--red-soft)}
+.callbox{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:.84rem;margin-top:6px}
+.callbox dt{color:var(--muted)}
+.callbox dd{margin:0;font-weight:600}
+
+/* numeric */
+.numin{display:flex;gap:8px;align-items:stretch}
+.numin input{flex:1;min-width:0;font:700 1.6rem/1 var(--f-display);padding:10px 12px;border:2px solid var(--table);border-radius:10px;background:var(--surface);color:var(--ink)}
+.numin span{align-self:center;font:700 1.3rem var(--f-display);color:var(--muted)}
+
+/* serve order */
+.order{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center}
+.order div{border:1px solid var(--line);border-radius:8px;padding:8px 0;font:700 1.2rem/1 var(--f-display);background:var(--surface)}
+.order div.s{background:var(--table);color:var(--table-ink);border-color:var(--table)}
+.order div.r{outline:2px dashed var(--ball);outline-offset:-2px}
+
+/* summary */
+.ring{width:120px;height:120px;margin:0 auto}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
+.stats div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 4px}
+.stats b{display:block;font:700 1.6rem/1 var(--f-display);font-variant-numeric:tabular-nums}
+.miss{font-size:.85rem;border-top:1px solid var(--line);padding-top:8px;margin-top:8px}
+.miss:first-of-type{border-top:0;margin-top:0;padding-top:0}
+
+/* library */
+.search{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--surface);color:var(--muted);font-size:.9rem}
+.libitem{border-bottom:1px solid var(--line);padding:10px 0;font-size:.88rem}
+.libitem:last-child{border-bottom:0}
+.libitem .row{margin-top:4px}
+.box{font-family:var(--f-mono);font-size:.7rem;color:var(--muted)}
+
+.cards-yr{display:inline-flex;gap:4px;vertical-align:middle}
+.cards-yr i{width:12px;height:16px;border-radius:2px;display:block}
+
+pre.json{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;overflow-x:auto;font:500 .8rem/1.5 var(--f-mono);margin:10px 0}
+ol.phases{padding-left:1.2em}
+ol.phases li{margin-bottom:.6em}
+.q-list{counter-reset:q;list-style:none;padding:0;display:grid;gap:12px}
+.q-list li{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px 14px 52px;position:relative}
+.q-list li::before{counter-increment:q;content:"Q" counter(q);position:absolute;left:14px;top:14px;font:700 1.05rem/1 var(--f-display);color:var(--ball)}
+.q-list li p{margin:4px 0 0;font-size:.93rem;color:var(--muted)}
+.rec{color:var(--good);font-weight:600}
+</style>
+
+<header class="col">
+  <div class="score" aria-hidden="true"><span>0</span><span>0</span></div>
+  <div class="eyebrow">Plan &amp; mockups · for your review</div>
+  <h1>Love-All: a flashcard trainer for table tennis umpires</h1>
+  <p class="lede">A study app built from the two documents you shared: <em>The Laws of Table Tennis</em> (ITTF 2023-24, issue of 22 July 2024) and the ITTF <em>Handbook for Match Officials</em>, 17th edition (July 2023). Working name: “Love-All”, after the umpire’s call that starts every game.</p>
+  <div class="tldr">
+    <strong>In short, I recommend:</strong>
+    <ul>
+      <li><b>Spaced repetition + active recall</b> as the engine, with 4 grade buttons (Again / Hard / Good / Easy).</li>
+      <li><b>About 290 cards</b> across <b>3 levels</b> (Basic 62 · Intermediate 116 · Advanced 112) and 12 topics. Every card cites its Law or HMO clause.</li>
+      <li><b>4 card formats</b>: classic flip, multiple choice, number recall, and <b>“Umpire’s Call”</b> scenarios where you give the decision, the call and the hand signal.</li>
+      <li>A <b>static, offline-capable website</b> (no login). Progress stays in your browser. It can be hosted free on GitHub Pages.</li>
+    </ul>
+  </div>
+</header>
+
+<section class="col">
+  <div class="eyebrow">1 · Research</div>
+  <h2>Which learning methods work for rule knowledge</h2>
+  <p>Umpiring needs two things: exact facts (16&nbsp;cm, 15.25&nbsp;cm, 13 returns) and quick judgment in a live rally (let or point? who signals? what do I call?). The methods below are among the best-supported findings in learning research. The right column shows how each one shapes the app.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Method</th><th>What the research shows</th><th>How Love-All uses it</th></tr></thead>
+    <tbody>
+      <tr><td><b>Active recall</b> (testing effect)</td><td>Retrieving an answer strengthens memory far more than re-reading it.</td><td>Every card asks first and answers second. There is no “read the rules” mode.</td></tr>
+      <tr><td><b>Spaced repetition</b></td><td>Reviews spaced at growing intervals beat cramming for long-term retention.</td><td>An SM-2-style scheduler. Cards you miss come back the same day, and cards you know drift out to weeks.</td></tr>
+      <tr><td><b>Interleaving</b></td><td>Mixing topics forces you to pick the right rule, which is what happens at the table.</td><td>Review sessions mix topics by default. Topic drills are available but optional.</td></tr>
+      <tr><td><b>Elaborative feedback</b></td><td>Explaining <i>why</i> an answer is right helps transfer to new cases.</td><td>Every answer shows the reason, the source clause and, where relevant, the call and signal.</td></tr>
+      <tr><td><b>Scenario-based practice</b></td><td>Practising decisions in realistic situations improves judgment in the real situation.</td><td>“Umpire’s Call” cards describe a rally or incident with a small table diagram.</td></tr>
+      <tr><td><b>Confidence grading</b></td><td>Rating your own certainty exposes lucky guesses.</td><td>Each grade sets the next interval. On quiz cards, an “I guessed” toggle downgrades a correct answer.</td></tr>
+      <tr><td><b>Mastery progression</b></td><td>Learners do better when they build on solid foundations before moving to complex material.</td><td>Basic → Intermediate → Advanced. Each level is recommended once about 80% of the previous level is learned.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="col">
+  <div class="eyebrow">2 · Structure</div>
+  <h2>Three levels, twelve topics</h2>
+  <div class="levels">
+    <div class="lvl"><h3><span class="pip"><i class="on"></i><i></i><i></i></span>Basic</h3><p>Facts every official must know cold: equipment dimensions, definitions, how a game and match are won, what an umpire and assistant umpire are.</p></div>
+    <div class="lvl"><h3><span class="pip"><i class="on"></i><i class="on"></i><i></i></span>Intermediate</h3><p>Applying the laws during play: service faults, lets and points, serving order, time-outs, towelling, intervals, standard calls and signals.</p></div>
+    <div class="lvl"><h3><span class="pip"><i class="on"></i><i class="on"></i><i class="on"></i></span>Advanced</h3><p>Edge cases and procedure: the expedite system, order errors, penalties and team carry-over, jurisdiction and appeals, score indicators, racket control, Para rules.</p></div>
+  </div>
+
+  <h3 style="margin-top:28px">Card formats</h3>
+  <div class="formats">
+    <div class="fmt"><b>Flip</b><p>Question on the front, answer on the back, then you grade yourself. Best for facts and definitions. About 45% of cards.</p></div>
+    <div class="fmt"><b>Multiple choice</b><p>Four options, with distractors built from common mistakes, such as 15.25&nbsp;cm against 16&nbsp;cm. About 20%.</p></div>
+    <div class="fmt"><b>Umpire’s Call</b><p>A match scenario. You pick the decision. Feedback gives the umpire’s call, the AU’s call and the hand signal. About 25%.</p></div>
+    <div class="fmt"><b>Number recall</b><p>Type the number: 2.74, 76, 23, 40, 2.7, 16, 13, 18, 10 minutes. About 10%.</p></div>
+  </div>
+
+  <h3 style="margin-top:28px">Planned card inventory</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Topic</th><th>Sources</th><th class="n">Basic</th><th class="n">Inter.</th><th class="n">Adv.</th><th class="n">Total</th></tr></thead>
+    <tbody>
+      <tr><td>Equipment: table, net, ball, racket</td><td class="mono">L 2.1–2.4 · HMO 5–7</td><td class="n">18</td><td class="n">8</td><td class="n">8</td><td class="n">34</td></tr>
+      <tr><td>Definitions</td><td class="mono">L 2.5 · HMO 9</td><td class="n">8</td><td class="n">6</td><td class="n">4</td><td class="n">18</td></tr>
+      <tr><td>The service</td><td class="mono">L 2.6 · HMO 10 · App C</td><td class="n">6</td><td class="n">16</td><td class="n">10</td><td class="n">32</td></tr>
+      <tr><td>Return, order of play, let, point</td><td class="mono">L 2.7–2.10 · HMO 11–12</td><td class="n">8</td><td class="n">20</td><td class="n">12</td><td class="n">40</td></tr>
+      <tr><td>Game, match, serving order and ends</td><td class="mono">L 2.11–2.14 · HMO 14</td><td class="n">8</td><td class="n">10</td><td class="n">12</td><td class="n">30</td></tr>
+      <tr><td>Expedite system</td><td class="mono">L 2.15 · HMO 15</td><td class="n">0</td><td class="n">4</td><td class="n">10</td><td class="n">14</td></tr>
+      <tr><td>Match officials, jurisdiction, appeals</td><td class="mono">HMO 2–4</td><td class="n">4</td><td class="n">8</td><td class="n">8</td><td class="n">20</td></tr>
+      <tr><td>Continuity: time-out, towelling, intervals, injury</td><td class="mono">HMO 13</td><td class="n">3</td><td class="n">12</td><td class="n">6</td><td class="n">21</td></tr>
+      <tr><td>Advice and behaviour (cards, penalties)</td><td class="mono">HMO 16–17</td><td class="n">0</td><td class="n">8</td><td class="n">14</td><td class="n">22</td></tr>
+      <tr><td>Clothing and playing conditions</td><td class="mono">HMO 5, 8</td><td class="n">3</td><td class="n">8</td><td class="n">6</td><td class="n">17</td></tr>
+      <tr><td>Match conduct: calls, signals, indicators, procedure</td><td class="mono">HMO 18–19 · App A, C, D, E</td><td class="n">4</td><td class="n">12</td><td class="n">10</td><td class="n">26</td></tr>
+      <tr><td>Para table tennis</td><td class="mono">L 2.8.3, 2.9.1.5, 2.10.1.14–15 · App F</td><td class="n">0</td><td class="n">4</td><td class="n">12</td><td class="n">16</td></tr>
+    </tbody>
+    <tfoot><tr><td colspan="2">Total</td><td class="n">62</td><td class="n">116</td><td class="n">112</td><td class="n">290</td></tr></tfoot>
+  </table></div>
+  <p class="small">Counts are targets. The final number may move by ±10% once every card is checked against the source text.</p>
+</section>
+
+<section>
+  <div class="wide">
+    <div class="eyebrow">3 · Mockups</div>
+    <h2>Six key screens</h2>
+    <p style="max-width:72ch">These are phone-width mockups and they reflow to two columns on desktop. The card content is real and drawn from the handbooks. Progress numbers are sample data. <b>Tap the flip card</b> and <b>pick an answer on the scenario card</b> to see the feedback.</p>
+
+    <div class="gallery">
+
+      <!-- 1 HOME -->
+      <figure class="shot">
+        <div class="phone">
+          <div class="bar"><span class="brand">Love<em>-</em>All</span><span>🔥 6-day streak</span></div>
+          <div class="panel">
+            <div class="spread"><div><div class="small">Due today</div><div class="big">24</div></div>
+              <div style="text-align:right"><div class="small">New available</div><div class="big" style="color:var(--ball)">10</div></div></div>
+            <div style="margin-top:12px;display:grid;gap:8px">
+              <button class="btn" type="button">Start review · ~8 min</button>
+              <button class="btn ghost" type="button">Learn 10 new cards</button>
+            </div>
+          </div>
+          <div class="panel" style="display:grid;gap:10px">
+            <div class="spread"><b>Levels</b><span class="small">learned / total</span></div>
+            <div><div class="spread small"><span><span class="tag b">Basic</span></span><span>55 / 62</span></div><div class="meter" style="margin-top:6px"><i style="width:89%"></i></div></div>
+            <div><div class="spread small"><span><span class="tag i">Intermediate</span></span><span>41 / 116</span></div><div class="meter o" style="margin-top:6px"><i style="width:35%"></i></div></div>
+            <div><div class="spread small"><span><span class="tag a">Advanced</span> 🔒 at 80% Inter.</span><span>0 / 112</span></div><div class="meter" style="margin-top:6px"><i style="width:0"></i></div></div>
+          </div>
+          <div class="panel" style="display:grid;gap:8px">
+            <b>Weakest topics</b>
+            <div class="topic"><span>Serving order &amp; ends</span><div class="meter o"><i style="width:38%"></i></div><span class="small">38%</span></div>
+            <div class="topic"><span>Lets</span><div class="meter o"><i style="width:52%"></i></div><span class="small">52%</span></div>
+            <div class="topic"><span>Time-outs &amp; towelling</span><div class="meter"><i style="width:64%"></i></div><span class="small">64%</span></div>
+          </div>
+          <div class="row" style="justify-content:space-around;margin-top:auto;font-size:.78rem;color:var(--muted)"><b style="color:var(--table)">Home</b><span>Study</span><span>Exam</span><span>Library</span><span>Stats</span></div>
+        </div>
+        <figcaption><b>1 · Home</b>One clear next action (due reviews), level progress with gating, and the weakest topics to drill.</figcaption>
+      </figure>
+
+      <!-- 2 FLIP -->
+      <figure class="shot">
+        <div class="phone">
+          <div class="bar"><span>✕</span><span>Review · 7 / 24</span><span>⋯</span></div>
+          <div class="progress"><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="card3d" id="flip" tabindex="0" role="button" aria-label="Flip card">
+            <div class="in">
+              <div class="face">
+                <div class="row"><span class="tag i">Intermediate</span><span class="tag">Service</span></div>
+                <div class="q">In service, how high must the ball rise after leaving the palm of the free hand?</div>
+                <div class="small">Also: in which direction must it be projected?</div>
+                <div class="hint">Tap to reveal · Space</div>
+              </div>
+              <div class="face back">
+                <div class="row"><span class="tag i">Intermediate</span><span class="tag">Service</span></div>
+                <div class="answer">At least 16 cm</div>
+                <div style="font-size:.95rem">Projected <b>near vertically upwards</b>, <b>without spin</b>, and it must fall without touching anything before it is struck.</div>
+                <div class="small" style="background:var(--chip);border-radius:8px;padding:8px 10px">💡 16&nbsp;cm is just above the net height (15.25&nbsp;cm), so the net works as a reference. “Near vertical” means within a few degrees, not the old 45°.</div>
+                <div class="row"><span class="ref">Law 2.6.2</span><span class="ref">HMO 10.3.1–10.3.2</span></div>
+                <div class="small" style="margin-top:auto">Signal if fault: <b>“Not high enough”</b> (App C, Fig 1)</div>
+              </div>
+            </div>
+          </div>
+          <div class="grade" aria-label="Grade your recall">
+            <button class="again" type="button">Again<span>&lt;10 m</span></button>
+            <button type="button">Hard<span>1 d</span></button>
+            <button type="button">Good<span>3 d</span></button>
+            <button type="button">Easy<span>7 d</span></button>
+          </div>
+        </div>
+        <figcaption><b>2 · Flip card</b>Recall first, then reveal. The back shows the reason, a memory hook, the sources and the related signal. Grade buttons show the next interval.</figcaption>
+      </figure>
+
+      <!-- 3 SCENARIO -->
+      <figure class="shot">
+        <div class="phone">
+          <div class="bar"><span>✕</span><span>Review · 8 / 24</span><span>⋯</span></div>
+          <div class="panel" style="display:grid;gap:10px">
+            <div class="row"><span class="tag i">Intermediate</span><span class="tag">Let</span><span class="tag" style="background:var(--table);color:var(--table-ink)">Umpire’s Call</span></div>
+            <svg class="court" viewBox="0 0 300 150" role="img" aria-label="Table seen from above: the service clips the net and lands on the receiver's court">
+              <rect x="10" y="20" width="280" height="110" rx="3" fill="var(--table)"/>
+              <rect x="12" y="22" width="276" height="106" fill="none" stroke="#fff" stroke-width="2"/>
+              <line x1="150" y1="12" x2="150" y2="138" stroke="#fff" stroke-width="4"/>
+              <line x1="150" y1="12" x2="150" y2="138" stroke="var(--ink)" stroke-width="1" stroke-dasharray="2 3"/>
+              <path d="M30 95 Q 70 60 100 80 Q 130 40 150 62 Q 175 52 215 58" fill="none" stroke="var(--ball)" stroke-width="2.5" stroke-dasharray="5 4"/>
+              <circle cx="100" cy="80" r="5" fill="var(--ball)"/>
+              <circle cx="150" cy="62" r="6" fill="none" stroke="var(--yellow)" stroke-width="2.5"/>
+              <circle cx="215" cy="58" r="5" fill="var(--ball)"/>
+              <text x="140" y="10" font-size="9" fill="var(--muted)" font-family="sans-serif">net</text>
+              <text x="20" y="146" font-size="9" fill="var(--muted)" font-family="sans-serif">Server</text>
+              <text x="240" y="146" font-size="9" fill="var(--muted)" font-family="sans-serif">Receiver</text>
+            </svg>
+            <div style="font-weight:600;line-height:1.35">Score 7-5. A correct service clips the top of the net, then lands on the receiver’s court. The receiver misses it.</div>
+            <div class="small">What is your decision?</div>
+            <div id="opts" style="display:grid;gap:7px">
+              <button class="opt" type="button" data-ok="0"><span class="k">A</span>Point to the server: the ball landed in</button>
+              <button class="opt" type="button" data-ok="1"><span class="k">B</span>Let. Repeat the score, 7-5</button>
+              <button class="opt" type="button" data-ok="0"><span class="k">C</span>Fault. Point to the receiver</button>
+              <button class="opt" type="button" data-ok="0"><span class="k">D</span>Let, and warn the server</button>
+            </div>
+            <div id="fb" class="fb" hidden>
+              <b id="fbt">Correct: Let</b>
+              <div style="margin-top:4px">A service that touches the net assembly is a let, provided it is otherwise correct and then touches the receiver’s court (or the receiver obstructs it). Wait until the ball lands before signalling.</div>
+              <dl class="callbox">
+                <dt>Umpire signal</dt><dd>Raise an arm above the head (point to the net if needed)</dd>
+                <dt>Umpire call</dt><dd>“Let”, then repeat the score: “7-5”</dd>
+                <dt>AU</dt><dd>Same signal, no call</dd>
+              </dl>
+              <div class="row" style="margin-top:8px"><span class="ref">Law 2.9.1.1</span><span class="ref">HMO 11.2.1–11.2.2</span><span class="ref">App C row 6</span></div>
+            </div>
+          </div>
+        </div>
+        <figcaption><b>3 · Umpire’s Call</b>A scenario with a diagram. Feedback covers the decision, the call and the signal for both the umpire and the AU. This is the format that trains judgment.</figcaption>
+      </figure>
+
+      <!-- 4 NUMBER RECALL + MCQ -->
+      <figure class="shot">
+        <div class="phone">
+          <div class="bar"><span>✕</span><span>Drill · Expedite</span><span>⋯</span></div>
+          <div class="panel" style="display:grid;gap:10px">
+            <div class="row"><span class="tag a">Advanced</span><span class="tag">Expedite</span><span class="tag">Number</span></div>
+            <div style="font-weight:600;font-size:1.1rem;line-height:1.35">Under the expedite system, the receiver wins the point after how many correct returns in a rally?</div>
+            <div class="numin"><label for="n1" class="small" hidden>Answer</label><input id="n1" value="13" inputmode="numeric" aria-label="Answer"><span>returns</span></div>
+            <div class="fb"><b>✓ 13</b>, counted aloud by the stroke counter from “one” to “thirteen”, including the return of service. On the 13th good return the umpire calls “Stop”. <div class="row" style="margin-top:6px"><span class="ref">Law 2.15.4</span><span class="ref">HMO 15.2.2</span></div></div>
+          </div>
+          <div class="panel" style="display:grid;gap:8px">
+            <div class="row"><span class="tag a">Advanced</span><span class="tag">Expedite</span><span class="tag">Multiple choice</span></div>
+            <div style="font-weight:600;line-height:1.35">10 minutes are up in game 3 at 9-8, with the ball in play. Who serves next?</div>
+            <button class="opt right" type="button"><span class="k">A</span>The player who served in the interrupted rally</button>
+            <button class="opt" type="button"><span class="k">B</span>The player who received in the interrupted rally</button>
+            <button class="opt" type="button"><span class="k">C</span>Whoever was due by the normal 2-serve rotation</button>
+            <button class="opt" type="button"><span class="k">D</span>Expedite can’t start: 17 points have been played</button>
+            <div class="small">Trap in D: the cut-off is <b>at least 18</b> points, and 9 + 8 is only 17. <span class="ref">Law 2.15.2–2.15.3</span></div>
+          </div>
+        </div>
+        <figcaption><b>4 · Number recall &amp; multiple choice</b>Type exact figures. Distractors carry the traps examiners use, and the explanation names the trap.</figcaption>
+      </figure>
+
+      <!-- 5 SERVE-ORDER TRAINER (advanced) -->
+      <figure class="shot">
+        <div class="phone">
+          <div class="bar"><span>✕</span><span>Doubles order trainer</span><span>⋯</span></div>
+          <div class="panel" style="display:grid;gap:10px">
+            <div class="row"><span class="tag a">Advanced</span><span class="tag">Serving order</span><span class="tag" style="background:var(--table);color:var(--table-ink)">Umpire’s Call</span></div>
+            <div style="font-weight:600;line-height:1.35">Doubles, deciding game 5. Game 1 started with <b>A</b> serving to <b>X</b>. Pair A/B chose <b>B</b> to serve first in this game. It is now 5-3 to A/B.</div>
+            <div class="small">Who serves and who receives, now that ends have been changed?</div>
+            <div class="order"><div>A</div><div class="s">B</div><div>X</div><div class="r">Y</div></div>
+            <div class="small" style="text-align:center">Tap a server, then a receiver. You chose B → Y.</div>
+            <div class="fb bad"><b>Not quite.</b> At 5 points in the last possible game, the ends change <i>and</i> the pair due to receive next changes its order of receiving. Work out the order before the change, then swap the receivers.
+              <div class="row" style="margin-top:6px"><span class="ref">Law 2.13.6</span><span class="ref">HMO 14.1.2–14.1.3</span></div></div>
+            <button class="btn ghost" type="button">Show the step-by-step rotation</button>
+          </div>
+        </div>
+        <figcaption><b>5 · Interactive drill (Advanced)</b>Serving order is the topic umpires fail most, so it gets a tap-to-answer trainer with a worked solution.</figcaption>
+      </figure>
+
+      <!-- 6 SUMMARY + LIBRARY -->
+      <figure class="shot">
+        <div class="phone">
+          <div class="bar"><span class="brand">Session done</span><span>8 min 12 s</span></div>
+          <div class="panel" style="display:grid;gap:12px">
+            <svg class="ring" viewBox="0 0 120 120" role="img" aria-label="83 percent correct">
+              <circle cx="60" cy="60" r="50" fill="none" stroke="var(--chip)" stroke-width="12"/>
+              <circle cx="60" cy="60" r="50" fill="none" stroke="var(--good)" stroke-width="12" stroke-linecap="round" stroke-dasharray="261 314" transform="rotate(-90 60 60)"/>
+              <text x="60" y="68" text-anchor="middle" font-size="26" font-weight="700" fill="var(--ink)" font-family="Barlow Condensed, sans-serif">83%</text>
+            </svg>
+            <div class="stats"><div><b>24</b><span class="small">reviewed</span></div><div><b>20</b><span class="small">correct</span></div><div><b>4</b><span class="small">back today</span></div></div>
+          </div>
+          <div class="panel">
+            <b>Missed. Review the rule:</b>
+            <div style="margin-top:8px">
+              <div class="miss"><span class="cards-yr"><i style="background:var(--yellow)"></i><i style="background:var(--red)"></i></span> Penalty after a formal warning: <b>1 point</b>, then <b>2 points</b>, then report to the referee. <span class="ref">HMO 17.3.1</span></div>
+              <div class="miss">Towelling: after every <b>6 points</b> and at the change of ends in the last game. <span class="ref">HMO 13.3.2</span></div>
+              <div class="miss">Edge ball on the AU’s side: the <b>AU alone</b> decides and calls “Side”. <span class="ref">HMO 12.2.3</span></div>
+            </div>
+          </div>
+          <div class="panel" style="display:grid;gap:4px">
+            <div class="spread"><b>Library</b><span class="small">290 cards</span></div>
+            <div class="search">🔍 Search “time-out”…</div>
+            <div class="libitem"><div>How long is a time-out, and how many per match?</div><div class="row"><span class="tag i">Inter.</span><span class="ref">HMO 13.1.1</span><span class="box">due in 4 d</span></div></div>
+            <div class="libitem"><div>Both players request a time-out at once: what happens?</div><div class="row"><span class="tag a">Adv.</span><span class="ref">HMO 13.1.4</span><span class="box">new</span></div></div>
+          </div>
+        </div>
+        <figcaption><b>6 · Summary &amp; library</b>Missed cards come back as rule summaries. The library lets you browse and search all cards by level, topic and source.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section class="col">
+  <div class="eyebrow">4 · How I would build it</div>
+  <h2>Technical plan</h2>
+  <h3>Stack</h3>
+  <ul>
+    <li><b>Static site</b>: HTML, CSS and plain JavaScript (or Preact if you prefer components). No backend and no build server needed.</li>
+    <li><b>Cards in JSON files</b> (<code>data/cards/*.json</code>), kept separate from the app code, so you or other officials can review and edit content without touching code.</li>
+    <li><b>Progress in localStorage</b>, with Export/Import buttons for backup or moving to another device. Accounts and sync can be added later if you want them.</li>
+    <li><b>PWA</b>: installable on a phone and usable offline at a tournament venue.</li>
+    <li><b>Hosting</b>: GitHub Pages from this repository, free with a public URL.</li>
+  </ul>
+
+  <h3 style="margin-top:20px">Card data model</h3>
+<pre class="json">{
+  "id": "LET-004",
+  "level": "intermediate",          // basic | intermediate | advanced
+  "topic": "let",
+  "format": "scenario",             // flip | mcq | number | scenario
+  "prompt": "Score 7-5. A correct service clips the net, then lands on the receiver's court...",
+  "diagram": "net-service",         // optional SVG template
+  "options": ["Point to server", "Let, repeat 7-5", "Fault, point to receiver", "Let and warn"],
+  "answer": 1,
+  "explanation": "A service touching the net assembly is a let provided...",
+  "umpire": { "signal": "Arm raised above head", "call": "\"Let\" + repeat score" },
+  "au":     { "signal": "Arm raised above head", "call": null },
+  "refs": [ {"doc": "Laws", "clause": "2.9.1.1"}, {"doc": "HMO", "clause": "11.2.1"} ]
+}</pre>
+
+  <h3 style="margin-top:20px">Scheduling</h3>
+  <p>SM-2 lite. New card → <i>Again</i> brings it back in 10 minutes, then 1 day, 3 days, 7 days and growing by an ease factor (2.5 default, adjusted by Hard and Easy). A card counts as <b>learned</b> once its interval is 7 days or more. Quiz formats grade automatically: correct = Good, wrong = Again, “I guessed” = Hard. FSRS, a newer and more accurate scheduler, could replace this later without changing any cards.</p>
+
+  <h3 style="margin-top:20px">Modes</h3>
+  <ul>
+    <li><b>Review</b>: due cards, interleaved across topics.</li>
+    <li><b>Learn</b>: introduces up to 10 new cards a day (adjustable), in level order.</li>
+    <li><b>Drill</b>: one topic or level, without affecting the schedule (optional).</li>
+    <li><b>Exam simulation</b>: 30–50 mixed questions, timed, with no feedback until the end and a pass mark. The format is to be confirmed with you.</li>
+  </ul>
+
+  <h3 style="margin-top:20px">Delivery phases</h3>
+  <ol class="phases">
+    <li><b>Content first.</b> I write all ~290 cards as JSON plus a readable review sheet (HTML or CSV) so you can check accuracy before any UI work.</li>
+    <li><b>Core app.</b> Home, flip and multiple-choice cards, scheduler, levels, local progress.</li>
+    <li><b>Judgment features.</b> Umpire’s Call scenarios with diagrams, number recall, session summary, library and search.</li>
+    <li><b>Advanced extras.</b> Doubles serving-order trainer, exam simulation, stats, PWA offline mode, GitHub Pages deploy.</li>
+  </ol>
+
+  <h3 style="margin-top:20px">Notes on the sources</h3>
+  <ul>
+    <li>The uploaded Laws PDF repeats some clause numbers (two 2.1.1, two 2.2.1, two 2.3.1). I plan to cite the <b>official ITTF numbering</b>: for example, net height is 2.2.3 and ball weight is 2.3.2.</li>
+    <li>The HMO notes that <b>WTT events</b> can differ, for example on shirt colours (8.1.4). Cards will follow ITTF rules and flag WTT differences only where the HMO mentions them.</li>
+    <li>The hand-signal figures in Appendix C are images. I would redraw them as simple icons or describe them in words, and I won’t copy the photos.</li>
+  </ul>
+</section>
+
+<section class="col">
+  <div class="eyebrow">5 · Your decisions</div>
+  <h2>Questions for you</h2>
+  <ol class="q-list">
+    <li><b>Level gating:</b> should Intermediate and Advanced be locked until about 80% of the previous level is learned, or open to everyone with a “recommended order” hint?<p><span class="rec">My pick:</span> open but recommended. Experienced umpires shouldn’t be blocked.</p></li>
+    <li><b>Exam mode:</b> do you want an exam simulation? If so, how many questions, what time limit and what pass mark? Is it modelled on a specific exam, such as a national umpire exam or the ITTF Advanced Rules exam?</li>
+    <li><b>Progress storage:</b> is browser-only progress with export/import enough, or do you need accounts and cross-device sync? Sync needs a backend, such as Supabase.</li>
+    <li><b>Tech stack:</b> plain JS static site (simplest to maintain), or React/Preact + Vite?<p><span class="rec">My pick:</span> plain JS. It has no build step and is easy for others to edit.</p></li>
+    <li><b>Para content:</b> include the 16 Para cards in the main deck, or keep them as an optional Para pack?</li>
+    <li><b>Language:</b> English only, or also another language, such as your national federation’s? Calls stay in English as HMO 18.1.7 requires, but explanations could be translated.</li>
+    <li><b>Card count and review:</b> is about 290 cards right, or do you want more depth in some topics, such as service faults and scenarios? Do you want to review the card content (phase 1) before I build the UI?</li>
+    <li><b>Look and name:</b> do you like the “Love-All” name and the table-blue and ball-orange style, or do you have a federation or club brand to match?</li>
+  </ol>
+</section>
+
+<script>
+(function(){
+  var f=document.getElementById('flip');
+  function t(){f.classList.toggle('flip')}
+  f.addEventListener('click',t);
+  f.addEventListener('keydown',function(e){if(e.key===' '||e.key==='Enter'){e.preventDefault();t()}});
+  var opts=document.querySelectorAll('#opts .opt'),fb=document.getElementById('fb'),fbt=document.getElementById('fbt');
+  opts.forEach(function(b){b.addEventListener('click',function(){
+    opts.forEach(function(o){o.classList.remove('right','wrong'); if(o.dataset.ok==='1')o.classList.add('right')});
+    var ok=b.dataset.ok==='1'; if(!ok)b.classList.add('wrong');
+    fb.hidden=false; fb.classList.toggle('bad',!ok);
+    fbt.textContent=ok?'Correct: Let':'Not quite. The answer is Let';
+  })});
+})();
+</script>
