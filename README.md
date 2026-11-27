@@ -12,7 +12,7 @@ Cards come in three levels (Basic, Intermediate, Advanced) and four formats: fli
 | Step | Contents | State |
 |---|---|---|
 | 1 | Core app, scheduler, saved progress, library, backup, **62 Basic cards** | Done |
-| 2 | 116 Intermediate cards, scenario diagrams | Planned |
+| 2 | **116 Intermediate cards** (112 core + 4 in the Para pack), table diagrams on scenario cards | Done |
 | 3 | 112 Advanced cards, Para pack, doubles order trainer, configurable exam, offline mode, GitHub Pages | Planned |
 
 ## Run locally
@@ -31,9 +31,10 @@ index.html              app shell
 css/styles.css          styles (light and dark themes)
 js/app.js               views, study sessions, library, settings
 js/scheduler.js         SM-2-style spaced-repetition scheduler
+js/diagram.js           table diagrams (top and side views) for scenario cards
 js/storage.js           progress in localStorage, export/import
 data/manifest.json      decks, levels, topics, sources
-data/cards/*.json       card content
+data/cards/*.json       card content (basic, intermediate, para pack)
 tools/validate-cards.mjs  card checker
 tests/                  scheduler tests
 ```
@@ -64,5 +65,7 @@ node --test tests/*.test.mjs       # scheduler tests
 - `flip` cards use `a` (the answer).
 - `number` cards use `value`, `unit`, and optionally `tolerance` and `accept`.
 - `mcq` and `scenario` cards use `options` and `answer` (the index of the correct option). Options are shuffled unless `"shuffle": false`.
+- Any card may have a `diagram`: a top or side view of the table with the ball path, bounces and marks. The format is documented at the top of `js/diagram.js`.
+- Cards in `data/cards/para.json` belong to the optional Para pack, shown only when it is switched on in **More**.
 
 Progress is stored only in the browser. Use **More → Back up your progress** to save or move it.

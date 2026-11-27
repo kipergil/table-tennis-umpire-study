@@ -1,5 +1,6 @@
 import { schedule, previewLabel, isLearned, endOfDay, dayKey, formatWait, DAY } from './scheduler.js';
 import { loadProgress, saveProgress, normalise, exportJSON, defaultProgress } from './storage.js';
+import { diagramSVG } from './diagram.js';
 
 const app = document.getElementById('app');
 const nav = document.getElementById('nav');
@@ -106,9 +107,16 @@ function render() {
   VIEWS[r]();
 }
 
+// Navigate and redraw immediately (no stale frame); the hashchange this causes is skipped.
+let skipHashChange = false;
 function go(name) {
-  if (location.hash === `#${name}`) render(); else location.hash = name;
+  if (location.hash !== `#${name}`) { skipHashChange = true; location.hash = name; }
+  render();
   window.scrollTo(0, 0);
+}
+function onHashChange() {
+  if (skipHashChange) { skipHashChange = false; return; }
+  render();
 }
 
 /* ---------- home ---------- */
@@ -259,6 +267,7 @@ function renderSession() {
   <article class="card" aria-live="polite">
     <div class="row">${levelTag(c.level)}<span class="tag">${esc(topicName(c.topic))}</span><span class="tag fmt-${c.format}">${esc(FORMAT_NAMES[c.format])}</span></div>
     <div class="q">${fmt(c.q)}</div>
+    ${diagramSVG(c.diagram)}
     ${c.format === 'flip' ? flipBody(c) : c.format === 'number' ? numberBody(c) : choiceBody(c)}
   </article>
   ${footerHTML(c)}`;
@@ -493,7 +502,7 @@ function renderLibrary() {
       return `<details class="libitem">
         <summary><span class="lib-q">${fmt(c.q)}</span>
           <span class="row">${levelTag(c.level)}<span class="tag">${esc(topicName(c.topic))}</span><span class="status s-${st.key}">${esc(st.label)}</span></span></summary>
-        <div class="lib-a"><div class="answer sm">${fmt(answerText(c))}</div>${explain(c)}</div>
+        <div class="lib-a">${diagramSVG(c.diagram)}<div class="answer sm">${fmt(answerText(c))}</div>${explain(c)}</div>
       </details>`;
     }).join('') : '<p class="note">No cards match. Try a different search or clear a filter.</p>';
   };
@@ -623,7 +632,7 @@ async function boot() {
     app.innerHTML = `<div class="panel"><h2 class="h">The cards didn't load</h2><p class="note">Love-All needs to be opened from a web address (for example GitHub Pages or a local server), not straight from a file on disk. Details: ${esc(e.message)}</p></div>`;
     return;
   }
-  window.addEventListener('hashchange', render);
+  window.addEventListener('hashchange', onHashChange);
   render();
 }
 

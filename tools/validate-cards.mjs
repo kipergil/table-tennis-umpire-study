@@ -34,6 +34,15 @@ for (const deck of manifest.decks) {
       else if (!Number.isInteger(c.answer) || c.answer < 0 || c.answer >= c.options.length) err('answer index out of range');
       else if (new Set(c.options).size !== c.options.length) err('duplicate options');
     }
+    if (c.diagram) {
+      const d = c.diagram;
+      if (!['top', 'side'].includes(d.view)) err('diagram.view must be "top" or "side"');
+      if (!d.alt) err('diagram needs alt text');
+      const pts = [...(d.path || []), ...(d.bounces || []), ...(d.corners || []), ...(d.marks || []).map((m) => m.at)];
+      for (const p of pts) if (!Array.isArray(p) || p.length !== 2 || p.some((n) => typeof n !== 'number')) err('diagram point must be [x, y]');
+      const key = (p) => p.join(',');
+      for (const b of [...(d.bounces || []), ...(d.corners || [])]) if (!(d.path || []).some((p) => key(p) === key(b))) err(`bounce/corner ${key(b)} is not on the path`);
+    }
     const k = `${deck.pack}/${c.level}`;
     counts[k] = (counts[k] || 0) + 1;
   }

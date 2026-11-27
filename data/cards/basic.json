@@ -266,6 +266,12 @@
     "id": "RLY-004", "level": "basic", "topic": "rally", "format": "scenario",
     "q": "An otherwise correct service touches the net, then bounces on the receiver's court. What is your decision?",
     "options": ["Let", "Point to the server", "Point to the receiver", "Play on: a net touch is fine"],
+    "diagram": {
+      "view": "side", "alt": "Side view: the service clips the top of the net, then bounces on the receiver's court",
+      "path": [[-8, 22], [24, 0], [50, 15.25], [76, 0], [96, 10]],
+      "bounces": [[24, 0], [76, 0]],
+      "marks": [{ "at": [50, 15.25], "type": "ring", "text": "net" }]
+    },
     "answer": 0,
     "detail": "If in service the ball touches the net assembly, the rally is a **let**, provided the service is otherwise correct (or the ball is obstructed by the receiver or partner). If it then misses the receiver's court, the receiver scores a point.",
     "umpire": { "signal": "Raise one arm above the head once the ball has touched the correct court", "call": "“Let”, then repeat the score" },

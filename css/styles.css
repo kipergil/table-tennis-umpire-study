@@ -2,7 +2,7 @@
 :root {
   --bg: #F2F5F9; --surface: #FFFFFF; --ink: #142033; --muted: #56677F; --line: #D4DDE9;
   --table: #1C4E8F; --table-ink: #FFFFFF; --ball: #C96A12; --ball-bar: #E9801F; --ball-soft: #FCEBDB;
-  --good: #2D8455; --good-soft: #DFF1E6; --red: #C3322B; --red-soft: #F8E0DE;
+  --good: #2D8455; --good-soft: #DFF1E6; --yellow: #D9A60B; --red: #C3322B; --red-soft: #F8E0DE;
   --chip: #E7EDF5;
   --f-display: "Barlow Condensed", "Arial Narrow", Arial, sans-serif;
   --f-body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
@@ -12,12 +12,12 @@
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
   --bg: #0C1420; --surface: #142135; --ink: #E5ECF6; --muted: #9AAAC1; --line: #26374F;
   --table: #3F7BCB; --table-ink: #FFFFFF; --ball: #F39A44; --ball-bar: #F39A44; --ball-soft: #3A2A1A;
-  --good: #4FB37C; --good-soft: #173726; --red: #E0574F; --red-soft: #3B1E1D;
+  --good: #4FB37C; --good-soft: #173726; --yellow: #E9BE2D; --red: #E0574F; --red-soft: #3B1E1D;
   --chip: #1D2D45; color-scheme: dark; } }
 :root[data-theme="dark"] {
   --bg: #0C1420; --surface: #142135; --ink: #E5ECF6; --muted: #9AAAC1; --line: #26374F;
   --table: #3F7BCB; --table-ink: #FFFFFF; --ball: #F39A44; --ball-bar: #F39A44; --ball-soft: #3A2A1A;
-  --good: #4FB37C; --good-soft: #173726; --red: #E0574F; --red-soft: #3B1E1D;
+  --good: #4FB37C; --good-soft: #173726; --yellow: #E9BE2D; --red: #E0574F; --red-soft: #3B1E1D;
   --chip: #1D2D45; color-scheme: dark; }
 
 * { box-sizing: border-box; }
@@ -85,6 +85,11 @@ a { color: var(--table); }
 .topic { display: grid; grid-template-columns: 1fr 90px 40px; gap: 10px; align-items: center; border: 0; background: none; padding: 4px 0; text-align: left; cursor: pointer; }
 .topic .meter { margin: 0; }
 .topic .num { text-align: right; }
+
+/* table diagrams */
+.diagram { width: 100%; height: auto; display: block; background: var(--chip); border-radius: 10px; }
+.dg-t { font: 600 10px/1 var(--f-body); fill: var(--muted); }
+.dg-t.strong { fill: var(--ink); }
 
 /* study card */
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }

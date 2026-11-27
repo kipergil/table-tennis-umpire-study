@@ -1,0 +1,41 @@
+[
+  {
+    "id": "PAR-101", "level": "intermediate", "topic": "para", "format": "scenario",
+    "q": "Singles. The receiver is in a wheelchair. An otherwise correct service bounces on the receiver's court, then spins back towards the net. The receiver can't reach it. What is your decision?",
+    "options": ["Let", "Point to the server", "Point to the receiver", "Let, and warn the server"],
+    "answer": 0,
+    "detail": "When the receiver is in a wheelchair due to a physical disability, the rally is a **let** if an otherwise correct service, **after touching the receiver's court, returns in the direction of the net**. The same applies if it comes to rest on the receiver's court or, in singles, leaves it by either side line.",
+    "diagram": {
+      "view": "side", "alt": "Side view: after bouncing on the receiver's court the ball spins back towards the net",
+      "path": [[-8, 22], [24, 0], [50, 20], [78, 0], [66, 6]],
+      "bounces": [[24, 0], [78, 0]],
+      "marks": [{ "at": [66, 6], "type": "ring", "text": "comes back" }]
+    },
+    "umpire": { "signal": "Raise arm above head", "call": "“Let”, repeat the score" },
+    "refs": ["Law 2.9.1.5.1", "HMO 11.5.1"]
+  },
+  {
+    "id": "PAR-102", "level": "intermediate", "topic": "para", "format": "mcq",
+    "q": "How are Para table tennis sport classes grouped?",
+    "options": ["Classes 1–5 wheelchair, 6–10 standing, 11 intellectual disability", "Classes 1–5 standing, 6–10 wheelchair, 11 visual impairment", "Classes 1–10 wheelchair, 11–15 standing", "Classes A–E, by age"],
+    "answer": 0,
+    "detail": "Players are classified as **classes 1–5 for wheelchair players**, **6–10 for standing players** and **class 11 for players with an intellectual disability**.",
+    "refs": ["HMO App F"]
+  },
+  {
+    "id": "PAR-103", "level": "intermediate", "topic": "para", "format": "mcq",
+    "q": "Within the Para classes, what does a lower class number mean?",
+    "options": ["A more severe disability", "A less severe disability", "A younger player", "A higher world ranking"],
+    "answer": 0, "shuffle": false,
+    "detail": "**The lower the number of the class, the more severe the disability.** The player's International Classification Card (ICC) records the class and any limitations, for example on making a legal service.",
+    "refs": ["HMO App F"]
+  },
+  {
+    "id": "PAR-104", "level": "intermediate", "topic": "para", "format": "mcq",
+    "q": "A player in a wheelchair wants to wear tracksuit trousers during play. Do they need the referee's permission?",
+    "options": ["No: players with a physical disability may wear tracksuit trousers, but not jeans", "Yes, as for any player", "No, and jeans are also allowed", "Only for class 1 and 2 players"],
+    "answer": 0,
+    "detail": "A player with a physical disability, in a wheelchair or standing, **may wear the trousers portion of a tracksuit during play without the referee's permission**, but **jeans are not permitted**.",
+    "refs": ["HMO 8.5.1", "HMO App F"]
+  }
+]
