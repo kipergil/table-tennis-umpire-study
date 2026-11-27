@@ -9,6 +9,10 @@
       "pack": "core"
     },
     {
+      "file": "data/cards/advanced.json",
+      "pack": "core"
+    },
+    {
       "file": "data/cards/para.json",
       "pack": "para"
     }

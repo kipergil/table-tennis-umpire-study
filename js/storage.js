@@ -6,6 +6,8 @@ export function defaultProgress() {
     version: 1,
     cards: {},                       // id -> scheduler state + { right, wrong }
     days: {},                        // "YYYY-MM-DD" -> { reviews, correct, fresh }
+    exams: [],                       // finished exams (last 50)
+    trainer: { right: 0, wrong: 0, streak: 0, best: 0 },
     settings: { newPerDay: 10, para: false }
   };
 }
@@ -32,6 +34,8 @@ export function normalise(obj) {
     version: 1,
     cards: obj.cards || {},
     days: obj.days || {},
+    exams: Array.isArray(obj.exams) ? obj.exams : [],
+    trainer: { ...base.trainer, ...(obj.trainer || {}) },
     settings: { ...base.settings, ...(obj.settings || {}) }
   };
 }

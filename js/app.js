@@ -1,6 +1,11 @@
 import { schedule, previewLabel, isLearned, endOfDay, dayKey, formatWait, DAY } from './scheduler.js';
 import { loadProgress, saveProgress, normalise, exportJSON, defaultProgress } from './storage.js';
-import { diagramSVG } from './diagram.js';
+import { setManifest, esc, fmt, shuffle, levelTag, topicName, cardTags, refsHTML, explain, diagramSVG,
+  optionOrder, stepperHTML, wireStepper, LEVEL_ORDER } from './ui.js';
+import { answerText, checkNumber, isCorrect } from './grading.js';
+import { initExam, renderExam, examKey, examActive } from './exam.js';
+import { initTrainer, renderTrainer } from './trainer.js';
+import { initStats, renderStats } from './stats.js';
 
 const app = document.getElementById('app');
 const nav = document.getElementById('nav');
@@ -14,28 +19,18 @@ let lastSummary = null;           // summary of the session just finished
 const lib = { q: '', level: '', topic: '', status: '' };
 let resetArmed = false;
 
-const FORMAT_NAMES = { flip: 'Flip', mcq: 'Multiple choice', multi: 'Select all', number: 'Number', scenario: 'Umpire’s Call' };
-const LEVEL_CLASS = { basic: 'b', intermediate: 'i', advanced: 'a' };
-const LEVEL_ORDER = { basic: 0, intermediate: 1, advanced: 2 };
 const GRADES = ['Again', 'Hard', 'Good', 'Easy'];
-
-/* ---------- helpers ---------- */
-const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const fmt = (s) => esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
-const shuffle = (a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
-const levelName = (id) => manifest.levels.find((l) => l.id === id)?.name || id;
-const topicName = (id) => manifest.topics.find((t) => t.id === id)?.name || id;
-const levelTag = (lvl) => `<span class="tag ${LEVEL_CLASS[lvl] || ''}">${esc(levelName(lvl))}</span>`;
-const refsHTML = (c) => `<div class="row refs">${(c.refs || []).map((r) => `<span class="ref">${esc(r)}</span>`).join('')}</div>`;
 const today = () => (P.days[dayKey()] ||= { reviews: 0, correct: 0, fresh: 0 });
 const save = () => saveProgress(P);
 
-function answerText(c) {
-  if (c.format === 'flip') return c.a;
-  if (c.format === 'number') return `${c.value} ${c.unit || ''}`.trim();
-  if (c.format === 'multi') return c.answers.map((i) => c.options[i]).join('; ');
-  return c.options[c.answer];
-}
+// Shared context for the view modules. P is read through a getter because restore/reset replace it.
+const ctx = {
+  app,
+  get P() { return P; },
+  get manifest() { return manifest; },
+  get byId() { return byId; },
+  save, enabledCards, go, route, startSession
+};
 
 function enabledCards() {
   return allCards.filter((c) => c.pack !== 'para' || P.settings.para);
@@ -94,7 +89,8 @@ function weakestTopics() {
 }
 
 /* ---------- routing ---------- */
-const VIEWS = { home: renderHome, study: renderStudy, exam: renderExam, library: renderLibrary, more: renderMore };
+const VIEWS = { home: renderHome, study: renderStudy, exam: renderExam, trainer: renderTrainer, library: renderLibrary, stats: renderStats, more: renderMore };
+const NAV_FOR = { trainer: 'study' };
 
 function route() {
   const name = location.hash.slice(1);
@@ -103,8 +99,10 @@ function route() {
 
 function render() {
   const r = route();
-  nav.querySelectorAll('a').forEach((a) => a.setAttribute('aria-current', a.getAttribute('href') === `#${r}` ? 'page' : 'false'));
-  document.body.classList.toggle('in-session', r === 'study' && !!session);
+  const tab = NAV_FOR[r] || r;
+  nav.querySelectorAll('a').forEach((a) => a.setAttribute('aria-current', a.getAttribute('href') === `#${tab}` ? 'page' : 'false'));
+  // Focus mode: hide the menu during a study session or an exam.
+  document.body.classList.toggle('in-session', (r === 'study' && !!session) || (r === 'exam' && examActive()));
   VIEWS[r]();
 }
 
@@ -131,6 +129,7 @@ function renderHome() {
   const st = streak();
   const work = due + fresh;
   const mins = Math.max(1, Math.round(work * 20 / 60));
+  const lastExam = (P.exams || []).at(-1);
 
   app.innerHTML = `
   <div class="topbar"><span class="brand">Love<em>-</em>All</span><span class="small">${st ? `${st}-day streak` : 'Start a streak today'}</span></div>
@@ -154,12 +153,16 @@ function renderHome() {
       <div>
         <div class="spread small">
           <span class="row">${levelTag(l.id)}${rec && rec.id === l.id ? '<span class="tag rec">Recommended next</span>' : ''}</span>
-          <span class="num">${l.total ? `${l.learned} / ${l.total}` : 'cards coming soon'}</span>
+          <span class="num">${l.learned} / ${l.total}</span>
         </div>
         <div class="meter ${l.id === 'intermediate' ? 'o' : ''}"><i style="width:${l.total ? Math.round(100 * l.learned / l.total) : 0}%"></i></div>
       </div>`).join('')}
     </div>
     <p class="small" style="margin:10px 0 0">A card counts as learned once you remember it a week or more after studying it.</p>
+  </div>
+  <div class="tools">
+    <a class="panel tool" href="#exam"><b>Practice exam</b><span class="small">${lastExam ? `Last: ${lastExam.pct}% ${lastExam.passed ? '· pass' : '· below pass mark'}` : 'Timed, with a full review'}</span></a>
+    <a class="panel tool" href="#trainer"><b>Doubles order trainer</b><span class="small">Who serves, who receives?</span></a>
   </div>
   <div class="panel">
     <h2 class="h">Weakest topics</h2>
@@ -182,8 +185,11 @@ function renderHome() {
 function startSession(mode, filter = {}) {
   let ids;
   if (mode === 'drill') {
-    const pool = enabledCards().filter((c) => (!filter.level || c.level === filter.level) && (!filter.topic || c.topic === filter.topic));
-    ids = shuffle(pool).slice(0, filter.count || 20).map((c) => c.id);
+    if (filter.ids) ids = shuffle(filter.ids.filter((id) => byId[id]));
+    else {
+      const pool = enabledCards().filter((c) => (!filter.level || c.level === filter.level) && (!filter.topic || c.topic === filter.topic));
+      ids = shuffle(pool).slice(0, filter.count || 20).map((c) => c.id);
+    }
   } else {
     const fresh = newCards().slice(0, newLeftToday()).map((c) => c.id);
     if (mode === 'learn') ids = fresh;
@@ -208,7 +214,7 @@ function prepCard() {
   session.typed = '';
   session.guessed = false;
   session.selected = new Set();
-  session.order = c.options ? (c.shuffle === false ? c.options.map((_, i) => i) : shuffle(c.options.map((_, i) => i))) : null;
+  session.order = optionOrder(c);
 }
 
 function renderStudy() {
@@ -237,7 +243,8 @@ function renderStudy() {
       <select id="drill-count"><option value="10">10</option><option value="20" selected>20</option><option value="9999">All matching</option></select></label>
     <p class="small" id="drill-match"></p>
     <button class="btn" type="submit">Start drill</button>
-  </form>`;
+  </form>
+  <a class="panel tool" href="#trainer"><b>Doubles serving-order trainer</b><span class="small">Endless practice: work out who serves and receives in any game, including the deciding-game switch at 5.</span></a>`;
   app.querySelector('[data-act="review"]').addEventListener('click', () => startSession('review'));
   app.querySelector('[data-act="learn"]').addEventListener('click', () => startSession('learn'));
   const form = app.querySelector('#drill-form');
@@ -267,7 +274,7 @@ function renderSession() {
   </div>
   <div class="meter thin" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div>
   <article class="card" aria-live="polite">
-    <div class="row">${levelTag(c.level)}<span class="tag">${esc(topicName(c.topic))}</span><span class="tag fmt-${c.format}">${esc(FORMAT_NAMES[c.format])}</span></div>
+    ${cardTags(c)}
     <div class="q">${fmt(c.q)}</div>
     ${diagramSVG(c.diagram)}
     ${c.format === 'flip' ? flipBody(c) : c.format === 'number' ? numberBody(c) : choiceBody(c)}
@@ -284,16 +291,7 @@ function flipBody(c) {
 function numberBody(c) {
   const done = session.chosen !== null;
   return `
-  <form class="numin" id="num-form" novalidate>
-    <label class="sr" for="num-in">Your answer${c.unit ? ` in ${esc(c.unit)}` : ''}</label>
-    <div class="stepper">
-      <button type="button" class="step" data-step="-1" aria-label="Decrease" ${done ? 'disabled' : ''}>−</button>
-      <input id="num-in" type="number" inputmode="decimal" autocomplete="off" value="${esc(session.typed)}"
-        min="${c.min ?? ''}" max="${c.max ?? ''}" step="${c.step ?? 'any'}" ${done ? 'disabled' : ''} placeholder="?">
-      <button type="button" class="step" data-step="1" aria-label="Increase" ${done ? 'disabled' : ''}>+</button>
-    </div>
-    <span class="unit">${esc(c.unit || '')}</span>
-  </form>
+  <form class="numin" id="num-form" novalidate>${stepperHTML(c, session.typed, done)}</form>
   ${done ? '' : `<p class="small">Type a number or use − and +${c.step ? ` (steps of ${c.step})` : ''}.</p><button class="btn" type="submit" form="num-form">Check answer <span class="small inv">Enter</span></button>`}
   ${done ? feedback(c, session.chosen) : ''}`;
 }
@@ -342,36 +340,14 @@ function toggleOption(oi) {
 
 function checkMulti(c) {
   if (session.chosen !== null || !session.selected.size) return;
-  const sel = session.selected;
-  session.chosen = sel.size === c.answers.length && c.answers.every((i) => sel.has(i));
+  session.chosen = isCorrect(c, session.selected);
   renderSession();
   app.querySelector('[data-act="next"]')?.focus();
-}
-
-function checkNumber(c, raw) {
-  const v = parseFloat(String(raw).replace(',', '.').replace(/[^\d.\-]/g, ''));
-  if (Number.isNaN(v)) return false;
-  const accepted = [c.value, ...(c.accept || [])];
-  return accepted.some((a) => Math.abs(v - a) <= (c.tolerance || 1e-9));
 }
 
 function feedback(c, correct) {
   const head = correct ? `Correct: ${answerText(c)}` : `The answer is: ${answerText(c)}`;
   return `<div class="fb ${correct ? '' : 'bad'}"><b>${fmt(head)}</b>${explain(c)}</div>`;
-}
-
-function explain(c) {
-  const calls = (c.umpire || c.au) ? `
-    <dl class="callbox">
-      ${c.umpire?.signal ? `<dt>Umpire signal</dt><dd>${fmt(c.umpire.signal)}</dd>` : ''}
-      ${c.umpire?.call ? `<dt>Umpire call</dt><dd>${fmt(c.umpire.call)}</dd>` : ''}
-      ${c.au ? `<dt>Assistant umpire</dt><dd>${fmt([c.au.signal, c.au.call].filter(Boolean).join('. ') || 'No signal or call')}</dd>` : ''}
-    </dl>` : '';
-  return `
-    <div class="detail">${fmt(c.detail)}</div>
-    ${c.hint ? `<div class="hint">Memory hook: ${fmt(c.hint)}</div>` : ''}
-    ${calls}
-    ${refsHTML(c)}`;
 }
 
 function footerHTML(c) {
@@ -401,10 +377,8 @@ function wireSession(c) {
   app.querySelector('#guessed')?.addEventListener('change', (e) => { session.guessed = e.target.checked; });
   const nf = app.querySelector('#num-form');
   if (nf) {
-    const inp = nf.querySelector('input');
+    const inp = wireStepper(nf, c, (v) => { session.typed = v; });
     if (!inp.disabled && !matchMedia('(pointer: coarse)').matches) inp.focus();
-    inp.addEventListener('input', () => { session.typed = inp.value; });
-    nf.querySelectorAll('[data-step]').forEach((b) => holdToRepeat(b, () => { stepNumber(c, inp, +b.dataset.step); }));
     nf.addEventListener('submit', (e) => {
       e.preventDefault();
       if (!inp.value.trim()) return;
@@ -416,35 +390,12 @@ function wireSession(c) {
   }
 }
 
-// One step up or down, clamped to the card's range. An empty box starts at the low or high end.
-function stepNumber(c, inp, dir) {
-  const step = c.step || 1;
-  const lo = c.min ?? -Infinity, hi = c.max ?? Infinity;
-  const dec = (String(step).split('.')[1] || '').length;
-  const cur = parseFloat(String(inp.value).replace(',', '.'));
-  let v = Number.isNaN(cur) ? (dir > 0 ? lo : hi) : cur + dir * step;
-  if (!Number.isFinite(v)) v = 0;
-  v = Math.min(hi, Math.max(lo, v));
-  inp.value = v.toFixed(dec);
-  session.typed = inp.value;
-}
-
-// Click steps once; pressing and holding repeats, speeding up.
-function holdToRepeat(btn, fn) {
-  let timer = null;
-  const stop = () => { clearTimeout(timer); timer = null; };
-  const run = (delay) => { fn(); timer = setTimeout(() => run(Math.max(40, delay * 0.8)), delay); };
-  btn.addEventListener('pointerdown', (e) => { if (e.button !== 0) return; e.preventDefault(); btn.setPointerCapture?.(e.pointerId); run(400); });
-  ['pointerup', 'pointercancel', 'lostpointercapture'].forEach((t) => btn.addEventListener(t, stop));
-  btn.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fn(); } });
-}
-
 function reveal() { session.revealed = true; renderSession(); }
 
 function choose(c, oi) {
   if (session.chosen !== null) return;
   session.chosenIndex = oi;
-  session.chosen = oi === c.answer;
+  session.chosen = isCorrect(c, oi);
   renderSession();
   app.querySelector('[data-act="next"]')?.focus();
 }
@@ -523,18 +474,6 @@ function summaryHTML(sm, dismissable) {
   </div>`;
 }
 
-/* ---------- exam (step 3) ---------- */
-function renderExam() {
-  app.innerHTML = `
-  <div class="topbar"><span class="brand">Exam</span></div>
-  <div class="panel stack">
-    <h2 class="h">Exam simulation is coming</h2>
-    <p class="note">You'll choose the number of questions, time limit, levels and pass mark. Questions are mixed and you get no feedback until the end, then a full review of every mistake with its clause reference.</p>
-    <p class="note">This arrives once the Intermediate and Advanced cards are in, so the exam has enough questions to draw from.</p>
-    <a class="btn ghost" href="#study">Drill in the meantime</a>
-  </div>`;
-}
-
 /* ---------- library ---------- */
 function cardStatus(c) {
   const s = P.cards[c.id];
@@ -556,6 +495,7 @@ function renderLibrary() {
       <select id="lib-topic" aria-label="Topic"><option value="">All topics</option>${manifest.topics.filter((t) => pool.some((c) => c.topic === t.id)).map((t) => `<option value="${t.id}" ${lib.topic === t.id ? 'selected' : ''}>${esc(t.name)}</option>`).join('')}</select>
       <select id="lib-status" aria-label="Status">${[['', 'Any status'], ['new', 'New'], ['due', 'Due today'], ['learning', 'Learning'], ['learned', 'Learned']].map(([v, n]) => `<option value="${v}" ${lib.status === v ? 'selected' : ''}>${n}</option>`).join('')}</select>
     </div>
+    <p class="small" id="lib-count" role="status"></p>
   </div>
   <div class="panel" id="lib-list"></div>`;
   const list = app.querySelector('#lib-list');
@@ -563,7 +503,8 @@ function renderLibrary() {
     const q = lib.q.trim().toLowerCase();
     const rows = pool.filter((c) => (!lib.level || c.level === lib.level) && (!lib.topic || c.topic === lib.topic) &&
       (!lib.status || cardStatus(c).key === lib.status) &&
-      (!q || [c.q, c.detail, answerText(c), (c.options || []).join(' '), (c.refs || []).join(' '), c.id].join(' ').replace(/\u2011/g, '-').toLowerCase().includes(q)));
+      (!q || [c.q, c.detail, answerText(c), (c.options || []).join(' '), (c.refs || []).join(' '), c.id].join(' ').replace(/‑/g, '-').toLowerCase().includes(q)));
+    app.querySelector('#lib-count').textContent = `${rows.length} of ${pool.length} cards`;
     list.innerHTML = rows.length ? rows.map((c) => {
       const st = cardStatus(c);
       return `<details class="libitem">
@@ -580,29 +521,18 @@ function renderLibrary() {
 
 /* ---------- more: settings + backup ---------- */
 function renderMore() {
-  const totalReviews = Object.values(P.days).reduce((a, d) => a + (d.reviews || 0), 0);
-  const totalRight = Object.values(P.days).reduce((a, d) => a + (d.correct || 0), 0);
   const paraCount = allCards.filter((c) => c.pack === 'para').length;
   app.innerHTML = `
   <div class="topbar"><span class="brand">More</span></div>
-  <div class="panel">
-    <h2 class="h">Your stats</h2>
-    <div class="stats">
-      <div><b>${totalReviews}</b><span class="small">answers</span></div>
-      <div><b>${totalReviews ? Math.round(100 * totalRight / totalReviews) : 0}%</b><span class="small">correct</span></div>
-      <div><b>${Object.keys(P.cards).length}</b><span class="small">cards seen</span></div>
-    </div>
-  </div>
   <form class="panel stack" id="prefs">
     <h2 class="h">Study options</h2>
     <label class="field"><span>New cards per day</span><input id="pref-new" type="number" min="0" max="100" value="${P.settings.newPerDay}"></label>
-    <label class="check"><input type="checkbox" id="pref-para" ${P.settings.para ? 'checked' : ''}> Include the Para table tennis pack</label>
-    ${paraCount ? '' : '<p class="small">The Para pack is coming with the Advanced cards. Switch it on now and its cards will appear when they are added.</p>'}
+    <label class="check"><input type="checkbox" id="pref-para" ${P.settings.para ? 'checked' : ''}> Include the Para table tennis pack (${paraCount} cards)</label>
     <p class="small" id="prefs-msg" role="status"></p>
   </form>
   <div class="panel stack">
     <h2 class="h">Back up your progress</h2>
-    <p class="note">Progress is saved only in this browser. Export a backup to keep it safe or move it to another device.</p>
+    <p class="note">Progress, exam results and trainer scores are saved only in this browser. Export a backup to keep them safe or move them to another device.</p>
     <button class="btn ghost" data-act="export">Download backup file</button>
     <button class="btn ghost" data-act="copy">Copy backup as text</button>
     <label class="field"><span>Restore from a backup file</span><input type="file" id="imp-file" accept=".json,application/json"></label>
@@ -611,8 +541,13 @@ function renderMore() {
     <p class="small" id="backup-msg" role="status"></p>
   </div>
   <div class="panel stack">
+    <h2 class="h">Use it offline</h2>
+    <p class="note">Once the site has loaded on a phone or computer, it keeps working without a connection, which helps at venues with poor signal. On a phone, use your browser's “Add to Home Screen” to install it like an app.</p>
+    <p class="small" id="offline-status"></p>
+  </div>
+  <div class="panel stack">
     <h2 class="h">Reset</h2>
-    ${resetArmed ? `<p class="note warn">This deletes all your progress in this browser. It can't be undone unless you have a backup.</p>
+    ${resetArmed ? `<p class="note warn">This deletes all your progress, exam results and trainer scores in this browser. It can't be undone unless you have a backup.</p>
       <div class="row"><button class="btn danger" data-act="reset-yes">Yes, delete my progress</button><button class="btn ghost" data-act="reset-no">Cancel</button></div>` :
       '<button class="btn ghost" data-act="reset">Reset all progress…</button>'}
   </div>
@@ -622,6 +557,8 @@ function renderMore() {
   </div>`;
 
   const msg = (id, t) => { app.querySelector(id).textContent = t; };
+  const off = app.querySelector('#offline-status');
+  off.textContent = navigator.serviceWorker?.controller ? 'Offline mode is active on this device.' : 'Offline mode turns on after the site has been opened once from its web address.';
   app.querySelector('#pref-new').addEventListener('change', (e) => {
     const v = Math.max(0, Math.min(100, Math.round(+e.target.value || 0)));
     e.target.value = v; P.settings.newPerDay = v; save(); msg('#prefs-msg', `Saved: ${v} new cards per day.`);
@@ -668,6 +605,7 @@ function renderMore() {
 
 /* ---------- keyboard ---------- */
 document.addEventListener('keydown', (e) => {
+  if (route() === 'exam') return examKey(e);
   if (!session || route() !== 'study' || e.metaKey || e.ctrlKey || e.altKey) return;
   const c = byId[session.queue[session.pos]];
   const typing = e.target.matches('input, textarea, select');
@@ -706,8 +644,19 @@ async function boot() {
     app.innerHTML = `<div class="panel"><h2 class="h">The cards didn't load</h2><p class="note">Love-All needs to be opened from a web address (for example GitHub Pages or a local server), not straight from a file on disk. Details: ${esc(e.message)}</p></div>`;
     return;
   }
+  setManifest(manifest);
+  initExam(ctx); initTrainer(ctx); initStats(ctx);
   window.addEventListener('hashchange', onHashChange);
   render();
+  registerOffline();
+}
+
+// Offline support: only on a real web address (not file:// and not inside a sandboxed preview).
+function registerOffline() {
+  if (!('serviceWorker' in navigator) || !/^https?:$/.test(location.protocol)) return;
+  try {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  } catch (e) { /* not available here */ }
 }
 
 boot();

@@ -1,19 +1,30 @@
-# Love-All: table tennis umpire flashcards
+# Love-All: table tennis umpire trainer
 
-Spaced-repetition flashcards for table tennis umpires, built from:
+A study website for table tennis umpires, built from:
 
 - **Law**: *The Laws of Table Tennis*, ITTF 2023-24 (issue of 22 July 2024)
 - **HMO**: ITTF *Handbook for Match Officials*, 17th edition (July 2023)
 
-Cards come in three levels (Basic, Intermediate, Advanced) and four formats: multiple choice, select all that apply, number (with − / + stepper) and "Umpire's Call" scenarios. Every card cites its source clause.
+Every card cites its source clause, using the official ITTF numbering.
 
-## Status
+## What's in it
 
-| Step | Contents | State |
-|---|---|---|
-| 1 | Core app, scheduler, saved progress, library, backup, **62 Basic cards** | Done |
-| 2 | **116 Intermediate cards** (112 core + 4 in the Para pack), table diagrams on scenario cards | Done |
-| 3 | 112 Advanced cards, Para pack, doubles order trainer, configurable exam, offline mode, GitHub Pages | Planned |
+- **290 cards** in three levels: Basic 62, Intermediate 116, Advanced 112. That includes an optional **Para pack** of 16 cards, switched on in **More**.
+- **Four card formats**: multiple choice, select all that apply, number (with a − / + stepper), and "Umpire's Call" scenarios. Scenarios show the umpire's and assistant umpire's signal and call, and 13 have a table diagram.
+- **Spaced repetition**: review due cards, learn new ones (10 a day by default), or drill any level or topic without changing the schedule.
+- **Practice exam**: choose levels, 10–50 questions, a time limit and a pass mark. You get no feedback until the end, then your score by level and topic, a review of every mistake, and a button to drill what you missed.
+- **Doubles serving-order trainer**: endless random situations, including later games and the receiving-order switch at 5 in the deciding game. Each answer comes with a worked rotation.
+- **Stats**: answers per day, reviews coming up, progress per level, accuracy by topic, exam history and trainer score.
+- **Works offline** once opened, and can be installed on a phone with "Add to Home Screen".
+- Progress stays in the browser. **More → Back up your progress** exports and restores it.
+
+## Publish on GitHub Pages
+
+The workflow in `.github/workflows/pages.yml` checks every card, runs the tests and deploys the site whenever `main` changes. One-time setup:
+
+1. Merge this branch into `main`.
+2. In the repository, open **Settings → Pages** and set **Source** to **GitHub Actions**.
+3. The site appears at `https://<user>.github.io/<repository>/` once the workflow finishes.
 
 ## Run locally
 
@@ -27,26 +38,34 @@ python3 -m http.server 8000
 ## Project layout
 
 ```
-index.html              app shell
-css/styles.css          styles (light and dark themes)
-js/app.js               views, study sessions, library, settings
-js/scheduler.js         SM-2-style spaced-repetition scheduler
-js/diagram.js           table diagrams (top and side views) for scenario cards
-js/storage.js           progress in localStorage, export/import
-data/manifest.json      decks, levels, topics, sources
-data/cards/*.json       card content (basic, intermediate, para pack)
+index.html                app shell and top menu
+css/styles.css            styles (light and dark themes)
+js/app.js                 routing, home, study sessions, library, settings
+js/exam.js                practice exam
+js/trainer.js             doubles serving-order trainer (screen)
+js/doubles.js             doubles serving-order logic (no DOM, unit-tested)
+js/stats.js               stats page and charts
+js/grading.js             answer checking (unit-tested)
+js/scheduler.js           SM-2-style spaced-repetition scheduler (unit-tested)
+js/storage.js             progress in localStorage, export/import
+js/diagram.js             table diagrams for scenario cards
+js/ui.js                  shared rendering helpers
+data/manifest.json        decks, levels, topics, sources
+data/cards/*.json         cards: basic, intermediate, advanced, para
+sw.js                     offline cache (service worker)
+manifest.webmanifest      install-as-app details; icons/ holds the icons
 tools/validate-cards.mjs  card checker
-tests/                  scheduler tests
+tests/                    unit tests
 ```
 
 ## Checks
 
 ```sh
-node tools/validate-cards.mjs      # every card has a valid level, topic, format, answer and source
-node --test tests/*.test.mjs       # scheduler tests
+node tools/validate-cards.mjs      # every card has a valid level, topic, format, answer, range and source
+node --test tests/*.test.mjs       # scheduler, grading, doubles order (3,000 random cases), offline file list
 ```
 
-## Card format
+## Adding or editing cards
 
 ```json
 {
@@ -62,11 +81,11 @@ node --test tests/*.test.mjs       # scheduler tests
 }
 ```
 
-- `number` cards use `value`, `unit`, and `min`, `max`, `step` for the − / + stepper (an empty box starts at `min` or `max`, so `min` must not be the answer). Optional: `tolerance`, `accept`.
-- `multi` cards ("select all that apply") use `options` (3–6) and `answers` (indices of every correct option). The answer only counts if exactly the correct options are selected.
-- `flip` cards (free recall, using `a` for the answer) are still supported by the app but no longer used, because self-graded recall proved less clear on a web page.
-- `mcq` and `scenario` cards use `options` and `answer` (the index of the correct option). Options are shuffled unless `"shuffle": false`.
+- `mcq` and `scenario` cards use `options` (2–4) and `answer`, the index of the correct option. Options are shuffled unless `"shuffle": false`.
+- `multi` cards ("select all that apply") use `options` (3–6) and `answers`, the indices of every correct option. An answer counts only if exactly the correct options are picked.
+- `number` cards use `value` and `unit`, plus `min`, `max` and `step` for the stepper. An empty box starts at `min` or `max`, so `min` must not be the answer. `tolerance` and `accept` are optional.
 - Any card may have a `diagram`: a top or side view of the table with the ball path, bounces and marks. The format is documented at the top of `js/diagram.js`.
-- Cards in `data/cards/para.json` belong to the optional Para pack, shown only when it is switched on in **More**.
+- Cards in `data/cards/para.json` belong to the optional Para pack.
+- `flip` cards (free recall with `a` as the answer) still work but are no longer used.
 
-Progress is stored only in the browser. Use **More → Back up your progress** to save or move it.
+After adding a deck file, list it in `data/manifest.json` and in `FILES` in `sw.js`; the tests check both. Then run the checks.
