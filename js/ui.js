@@ -90,24 +90,40 @@ export function holdToRepeat(btn, fn) {
 }
 
 /**
- * "Support Love-All" donation link (Ko-fi etc.), configured in data/manifest.json → support.url.
+ * "Support Love-All" donation box (Ko-fi etc.), configured in data/manifest.json → support.url.
  * Returns '' while no link is set, so nothing shows until the owner adds one.
- *  variant "panel": a card with a short explanation and a button (More page)
- *  variant "line":  one quiet line (after sessions and exams, help page, Home footer)
+ * `context` picks a short message that fits the page: home, session, exam, help or more.
  */
-export function supportHTML(variant = 'line') {
+const SUPPORT_TEXT = {
+  home: ['Keep Love-All free for every umpire', 'No ads, no paywall: just the rules, made easy to learn. If it’s helping you prepare, a coffee keeps new cards and updates coming.'],
+  session: ['Nice work, that’s another session done!', 'Everything you just studied is free for every umpire. If Love-All is helping you, buy me a coffee and help keep it that way.'],
+  exam: ['Getting ready for the real exam?', 'If these practice exams are helping you, a small coffee helps keep Love-All free and growing.'],
+  help: ['Enjoying Love-All?', 'It’s free for everyone, with no ads. A coffee helps keep it that way and pays for new cards.'],
+  more: ['Support Love-All', 'Love-All is free and has no ads. If it helps you prepare for umpiring, a small donation keeps it running and pays for new cards and updates.']
+};
+
+const CUP_SVG = `<svg class="support-art" viewBox="0 0 72 72" aria-hidden="true">
+  <circle cx="36" cy="36" r="34" fill="#FFFFFF" opacity=".75"/>
+  <path d="M27 14c-3 4 3 6 0 10M36 12c-3 4 3 6 0 10M45 14c-3 4 3 6 0 10" fill="none" stroke="#C9B7B2" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M18 30h34v14a14 14 0 0 1-14 14h-6a14 14 0 0 1-14-14z" fill="#D8403C"/>
+  <path d="M52 34h4a7 7 0 0 1 0 14h-4" fill="none" stroke="#D8403C" stroke-width="4"/>
+  <rect x="14" y="58" width="44" height="5" rx="2.5" fill="#B8322F"/>
+  <circle cx="35" cy="42" r="7" fill="#FFFFFF"/><path d="M30 40a6 6 0 0 1 9-3" fill="none" stroke="#F39A44" stroke-width="2" stroke-linecap="round"/>
+</svg>`;
+
+export function supportHTML(context = 'home') {
   const s = manifest.support;
   if (!s || !/^https:\/\//.test(s.url || '')) return '';
-  const link = (cls, text) => `<a class="${cls}" href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">${text}</a>`;
-  if (variant === 'panel') {
-    return `<div class="panel stack support">
-      <h2 class="h">Support Love-All</h2>
-      <p class="note">Love-All is free and has no ads. If it helps you prepare for umpiring, you can support its upkeep and new cards with a small donation.</p>
-      ${link('btn support-btn', `<span aria-hidden="true">☕</span> Support on ${esc(s.platform)}`)}
-      <p class="small">Opens ${esc(s.platform)} in a new tab. Donating is optional and doesn't unlock anything: every card stays free.</p>
-    </div>`;
-  }
-  return `<p class="support-line">Finding Love-All useful? ${link('', `Support it on ${esc(s.platform)} <span aria-hidden="true">☕</span>`)}</p>`;
+  const [title, text] = SUPPORT_TEXT[context] || SUPPORT_TEXT.home;
+  return `<aside class="support-box" aria-label="Support Love-All">
+    ${CUP_SVG}
+    <div class="support-body">
+      <h2 class="support-title">${esc(title)}</h2>
+      <p>${esc(text)}</p>
+      <a class="support-btn" href="${esc(s.url)}" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">☕</span> Buy me a coffee on ${esc(s.platform)}</a>
+      ${context === 'more' ? `<p class="support-fine">Opens ${esc(s.platform)} in a new tab. Donating is optional and unlocks nothing: every card stays free for everyone.</p>` : ''}
+    </div>
+  </aside>`;
 }
 
 export const fmtTime = (secs) => {
