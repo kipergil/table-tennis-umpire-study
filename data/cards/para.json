@@ -185,5 +185,40 @@
     "answers": [0, 1, 2, 3, 4],
     "detail": "Pre-match checks for wheelchair play: **number of wheels**, **no backpack** on the chair, **cushion height**, **tracksuit trousers and no jeans**, and **name and 3-letter Association code** on the back of the shirt.",
     "refs": ["HMO App F"]
+  },
+  {
+    "id": "TF-032",
+    "level": "intermediate",
+    "topic": "para",
+    "format": "tf",
+    "basedOn": "Sample exam Q32",
+    "q": "In doubles where one player of a pair is in a wheelchair, that pair must still return the ball alternately.",
+    "answer": false,
+    "detail": "After the service and the return of service, **either player** of a pair that includes a wheelchair player may return the ball.",
+    "refs": ["Law 2.8.3", "HMO 14.1.4"]
+  },
+  {
+    "id": "DEC-044",
+    "level": "advanced",
+    "topic": "para",
+    "format": "call",
+    "match": "doubles",
+    "basedOn": "Sample exam Q44",
+    "q": "A is in a wheelchair and B is standing. During a rally, B runs behind A into A's half and plays a good return that X can't reach.",
+    "answer": "XY",
+    "detail": "Where a pair includes a wheelchair player, a point goes to the opponents if **a foot of the standing player crosses the imaginary extension of the centre line**. Each player must stay in their own half.",
+    "refs": ["Law 2.10.1.15", "HMO 14.1.4"]
+  },
+  {
+    "id": "DEC-052",
+    "level": "advanced",
+    "topic": "para",
+    "format": "call",
+    "match": "singles",
+    "basedOn": "Sample exam Q52",
+    "q": "A serves to X, who is in a wheelchair. The ball bounces on X's court and crosses the side line. X still returns it, then A plays the next ball out of X's reach.",
+    "answer": "let",
+    "detail": "In singles against a wheelchair receiver, an otherwise good service that **leaves the receiver's court over a side line** is a let. It would only be good if X had struck it **before** it crossed the line. The umpire should stop play when it crosses.",
+    "refs": ["Law 2.9.1.5.3", "HMO 11.5.1"]
   }
 ]

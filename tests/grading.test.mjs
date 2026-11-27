@@ -38,3 +38,25 @@ test('answer and response text', () => {
   assert.equal(responseText(mcq, null), 'No answer');
   assert.equal(responseText(num, '16'), '16 cm');
 });
+
+import { expandCard } from '../js/grading.js';
+
+test('true/false cards become fixed True/False options', () => {
+  const t = expandCard({ format: 'tf', q: 'x', answer: false });
+  assert.deepEqual(t.options, ['True', 'False']);
+  assert.equal(t.answer, 1);
+  assert.equal(t.shuffle, false);
+  assert.equal(isCorrect(t, 1), true);
+  assert.equal(answerText(t), 'False');
+});
+
+test('decision cards: singles and doubles options and answers', () => {
+  const s = expandCard({ format: 'call', match: 'singles', answer: 'X' });
+  assert.deepEqual(s.options, ['Point to A', 'Point to X', 'Let', 'No action']);
+  assert.equal(answerText(s), 'Point to X');
+  assert.equal(s.matchLabel, 'Singles: A v X');
+  const d = expandCard({ format: 'call', match: 'doubles', answer: 'none' });
+  assert.equal(answerText(d), 'No action');
+  assert.equal(isCorrect(d, 3), true);
+  assert.equal(expandCard({ format: 'call', match: 'doubles', answer: 'AB' }).answer, 0);
+});

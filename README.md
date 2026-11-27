@@ -9,8 +9,9 @@ Every card cites its source clause, using the official ITTF numbering.
 
 ## What's in it
 
-- **290 cards** in three levels: Basic 62, Intermediate 116, Advanced 112. That includes an optional **Para pack** of 16 cards, switched on in **More**.
-- **Four card formats**: multiple choice, select all that apply, number (with a − / + stepper), and "Umpire's Call" scenarios. Scenarios show the umpire's and assistant umpire's signal and call, and 13 have a table diagram.
+- **365 cards** in three levels: Basic 83, Intermediate 147, Advanced 135. That includes an optional **Para pack** of 19 cards, switched on in **More**.
+- **75 exam-style cards** (true/false and "your decision") reworded from a sample umpire exam paper, plus extra cards of the same types. Each one notes which exam question it came from, and its answer was checked against the Laws and the HMO.
+- **Six card formats**: multiple choice, select all that apply, number (with a − / + stepper), "Umpire's Call" scenarios, **true or false**, and **your decision** (point to A or X, A/B or X/Y, let, or no action). Scenarios show the umpire's and assistant umpire's signal and call, and 13 have a table diagram. Drill and the library can filter by question type.
 - **Spaced repetition**: review due cards, learn new ones (10 a day by default), or drill any level or topic without changing the schedule.
 - **Practice exam**: choose levels, 10–50 questions, a time limit and a pass mark. You get no feedback until the end, then your score by level and topic, a review of every mistake, and a button to drill what you missed.
 - **Doubles serving-order trainer**: endless random situations, including later games and the receiving-order switch at 5 in the deciding game. Each answer comes with a worked rotation.
@@ -51,7 +52,7 @@ js/storage.js             progress in localStorage, export/import
 js/diagram.js             table diagrams for scenario cards
 js/ui.js                  shared rendering helpers
 data/manifest.json        decks, levels, topics, sources
-data/cards/*.json         cards: basic, intermediate, advanced, para
+data/cards/*.json         cards: basic, intermediate, advanced, exam-style, para
 sw.js                     offline cache (service worker)
 manifest.webmanifest      install-as-app details; icons/ holds the icons
 tools/validate-cards.mjs  card checker
@@ -86,6 +87,9 @@ node --test tests/*.test.mjs       # scheduler, grading, doubles order (3,000 ra
 - `number` cards use `value` and `unit`, plus `min`, `max` and `step` for the stepper. An empty box starts at `min` or `max`, so `min` must not be the answer. `tolerance` and `accept` are optional.
 - Any card may have a `diagram`: a top or side view of the table with the ball path, bounces and marks. The format is documented at the top of `js/diagram.js`.
 - Cards in `data/cards/para.json` belong to the optional Para pack.
+- `tf` cards (true or false) use `"answer": true` or `false`, with the statement as `q`.
+- `call` cards (your decision) use `"match": "singles"` (players A and X) or `"doubles"` (A/B and X/Y). The `answer` is `A`, `X`, `AB`, `XY`, `let` or `none`. The four options are added automatically.
+- `basedOn` (optional) records the sample exam question a card was reworded from.
 - `flip` cards (free recall with `a` as the answer) still work but are no longer used.
 
 After adding a deck file, list it in `data/manifest.json` and in `FILES` in `sw.js`; the tests check both. Then run the checks.

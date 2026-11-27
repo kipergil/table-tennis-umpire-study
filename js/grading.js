@@ -1,5 +1,27 @@
 // Pure answer-checking helpers, shared by study sessions and exams.
 
+// Umpire's-decision cards ("call"): who wins the point, a let, or no action.
+export const CALLS = {
+  singles: [['A', 'Point to A'], ['X', 'Point to X'], ['let', 'Let'], ['none', 'No action']],
+  doubles: [['AB', 'Point to A/B'], ['XY', 'Point to X/Y'], ['let', 'Let'], ['none', 'No action']]
+};
+
+/**
+ * True/false and decision cards are stored compactly; on load they become ordinary option cards
+ * (fixed option order) so every screen can show and check them. The stored answer is kept as `key`.
+ */
+export function expandCard(c) {
+  if (c.format === 'tf') {
+    return { ...c, key: c.answer, options: ['True', 'False'], answer: c.answer ? 0 : 1, shuffle: false };
+  }
+  if (c.format === 'call') {
+    const opts = CALLS[c.match];
+    return { ...c, key: c.answer, options: opts.map(([, label]) => label), answer: opts.findIndex(([k]) => k === c.answer), shuffle: false,
+      matchLabel: c.match === 'doubles' ? 'Doubles: A/B v X/Y' : 'Singles: A v X' };
+  }
+  return c;
+}
+
 /** The correct answer as text. */
 export function answerText(c) {
   if (c.format === 'flip') return c.a;

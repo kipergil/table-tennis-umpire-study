@@ -13,6 +13,10 @@
       "pack": "core"
     },
     {
+      "file": "data/cards/exam-style.json",
+      "pack": "core"
+    },
+    {
       "file": "data/cards/para.json",
       "pack": "para"
     }

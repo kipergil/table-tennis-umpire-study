@@ -1,5 +1,5 @@
 // Configurable exam simulation: no feedback until the end, then a full review.
-import { esc, fmt, shuffle, levelTag, topicName, levelName, cardTags, diagramSVG, explain, optionOrder,
+import { esc, fmt, shuffle, levelTag, topicName, levelName, cardTags, diagramSVG, explain, optionOrder, optsClass,
   stepperHTML, wireStepper, fmtTime, fmtDate, LEVEL_ORDER } from './ui.js';
 import { isCorrect, answerText, responseText } from './grading.js';
 
@@ -190,7 +190,7 @@ function body(c, ans) {
       ${order.map((oi, k) => { const on = ans.includes(oi); return `<button class="opt multi ${on ? 'picked' : ''}" data-toggle="${oi}" aria-pressed="${on}"><span class="box" aria-hidden="true">${on ? '✓' : ''}</span><span class="k">${keys[k]}</span><span>${fmt(c.options[oi])}</span></button>`; }).join('')}
     </div>`;
   }
-  return `<div class="opts" role="radiogroup" aria-label="Options">
+  return `<div class="opts ${optsClass(c)}" role="radiogroup" aria-label="Options">
     ${order.map((oi, k) => `<button class="opt ${ans === oi ? 'picked sel' : ''}" role="radio" aria-checked="${ans === oi}" data-opt="${oi}"><span class="k">${keys[k]}</span><span>${fmt(c.options[oi])}</span></button>`).join('')}
   </div>`;
 }

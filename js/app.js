@@ -1,8 +1,8 @@
 import { schedule, previewLabel, isLearned, endOfDay, dayKey, formatWait, DAY } from './scheduler.js';
 import { loadProgress, saveProgress, normalise, exportJSON, defaultProgress } from './storage.js';
 import { setManifest, esc, fmt, shuffle, levelTag, topicName, cardTags, refsHTML, explain, diagramSVG,
-  optionOrder, stepperHTML, wireStepper, LEVEL_ORDER } from './ui.js';
-import { answerText, checkNumber, isCorrect } from './grading.js';
+  optionOrder, stepperHTML, wireStepper, optsClass, FORMAT_NAMES, LEVEL_ORDER } from './ui.js';
+import { answerText, checkNumber, isCorrect, expandCard } from './grading.js';
 import { initExam, renderExam, examKey, examActive } from './exam.js';
 import { initTrainer, renderTrainer } from './trainer.js';
 import { initStats, renderStats } from './stats.js';
@@ -16,7 +16,7 @@ let byId = {};
 let P = loadProgress();
 let session = null;               // active study session
 let lastSummary = null;           // summary of the session just finished
-const lib = { q: '', level: '', topic: '', status: '' };
+const lib = { q: '', level: '', topic: '', status: '', format: '' };
 let resetArmed = false;
 
 const GRADES = ['Again', 'Hard', 'Good', 'Easy'];
@@ -187,7 +187,7 @@ function startSession(mode, filter = {}) {
   if (mode === 'drill') {
     if (filter.ids) ids = shuffle(filter.ids.filter((id) => byId[id]));
     else {
-      const pool = enabledCards().filter((c) => (!filter.level || c.level === filter.level) && (!filter.topic || c.topic === filter.topic));
+      const pool = enabledCards().filter((c) => (!filter.level || c.level === filter.level) && (!filter.topic || c.topic === filter.topic) && (!filter.format || c.format === filter.format));
       ids = shuffle(pool).slice(0, filter.count || 20).map((c) => c.id);
     }
   } else {
@@ -224,6 +224,7 @@ function renderStudy() {
   const fresh = Math.min(newLeftToday(), newCards(pool).length);
   const levels = manifest.levels.filter((l) => pool.some((c) => c.level === l.id));
   const topics = manifest.topics.filter((t) => pool.some((c) => c.topic === t.id));
+  const formats = Object.keys(FORMAT_NAMES).filter((f) => pool.some((c) => c.format === f));
   app.innerHTML = `
   <div class="topbar"><span class="brand">Study</span></div>
   <div class="panel stack">
@@ -239,6 +240,8 @@ function renderStudy() {
       <select id="drill-level"><option value="">All levels</option>${levels.map((l) => `<option value="${l.id}">${esc(l.name)}</option>`).join('')}</select></label>
     <label class="field"><span>Topic</span>
       <select id="drill-topic"><option value="">All topics</option>${topics.map((t) => `<option value="${t.id}">${esc(t.name)}</option>`).join('')}</select></label>
+    <label class="field"><span>Question type</span>
+      <select id="drill-format"><option value="">All types</option>${formats.map((f) => `<option value="${f}">${esc(FORMAT_NAMES[f])}</option>`).join('')}</select></label>
     <label class="field"><span>Cards</span>
       <select id="drill-count"><option value="10">10</option><option value="20" selected>20</option><option value="9999">All matching</option></select></label>
     <p class="small" id="drill-match"></p>
@@ -249,15 +252,15 @@ function renderStudy() {
   app.querySelector('[data-act="learn"]').addEventListener('click', () => startSession('learn'));
   const form = app.querySelector('#drill-form');
   const upd = () => {
-    const l = form.querySelector('#drill-level').value, t = form.querySelector('#drill-topic').value;
-    const n = pool.filter((c) => (!l || c.level === l) && (!t || c.topic === t)).length;
+    const l = form.querySelector('#drill-level').value, t = form.querySelector('#drill-topic').value, f = form.querySelector('#drill-format').value;
+    const n = pool.filter((c) => (!l || c.level === l) && (!t || c.topic === t) && (!f || c.format === f)).length;
     form.querySelector('#drill-match').textContent = `${n} card${n === 1 ? '' : 's'} match.`;
     form.querySelector('button[type=submit]').disabled = !n;
   };
   form.addEventListener('change', upd); upd();
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    startSession('drill', { level: form.querySelector('#drill-level').value, topic: form.querySelector('#drill-topic').value, count: +form.querySelector('#drill-count').value });
+    startSession('drill', { level: form.querySelector('#drill-level').value, topic: form.querySelector('#drill-topic').value, format: form.querySelector('#drill-format').value, count: +form.querySelector('#drill-count').value });
   });
 }
 
@@ -302,7 +305,7 @@ function choiceBody(c) {
   const keys = 'ABCD';
   return `
   ${c.situation ? `<p class="situation">${fmt(c.situation)}</p>` : ''}
-  <div class="opts" role="group" aria-label="Options">
+  <div class="opts ${optsClass(c)}" role="group" aria-label="Options">
     ${session.order.map((oi, k) => {
       let cls = '';
       if (done && oi === c.answer) cls = 'right';
@@ -493,6 +496,7 @@ function renderLibrary() {
     <div class="filters">
       <select id="lib-level" aria-label="Level"><option value="">All levels</option>${manifest.levels.map((l) => `<option value="${l.id}" ${lib.level === l.id ? 'selected' : ''}>${esc(l.name)}</option>`).join('')}</select>
       <select id="lib-topic" aria-label="Topic"><option value="">All topics</option>${manifest.topics.filter((t) => pool.some((c) => c.topic === t.id)).map((t) => `<option value="${t.id}" ${lib.topic === t.id ? 'selected' : ''}>${esc(t.name)}</option>`).join('')}</select>
+      <select id="lib-format" aria-label="Question type"><option value="">All types</option>${Object.keys(FORMAT_NAMES).filter((f) => pool.some((c) => c.format === f)).map((f) => `<option value="${f}" ${lib.format === f ? 'selected' : ''}>${esc(FORMAT_NAMES[f])}</option>`).join('')}</select>
       <select id="lib-status" aria-label="Status">${[['', 'Any status'], ['new', 'New'], ['due', 'Due today'], ['learning', 'Learning'], ['learned', 'Learned']].map(([v, n]) => `<option value="${v}" ${lib.status === v ? 'selected' : ''}>${n}</option>`).join('')}</select>
     </div>
     <p class="small" id="lib-count" role="status"></p>
@@ -501,9 +505,9 @@ function renderLibrary() {
   const list = app.querySelector('#lib-list');
   const draw = () => {
     const q = lib.q.trim().toLowerCase();
-    const rows = pool.filter((c) => (!lib.level || c.level === lib.level) && (!lib.topic || c.topic === lib.topic) &&
+    const rows = pool.filter((c) => (!lib.level || c.level === lib.level) && (!lib.topic || c.topic === lib.topic) && (!lib.format || c.format === lib.format) &&
       (!lib.status || cardStatus(c).key === lib.status) &&
-      (!q || [c.q, c.detail, answerText(c), (c.options || []).join(' '), (c.refs || []).join(' '), c.id].join(' ').replace(/‑/g, '-').toLowerCase().includes(q)));
+      (!q || [c.q, c.detail, answerText(c), (c.options || []).join(' '), (c.refs || []).join(' '), c.id, c.basedOn || ''].join(' ').replace(/‑/g, '-').toLowerCase().includes(q)));
     app.querySelector('#lib-count').textContent = `${rows.length} of ${pool.length} cards`;
     list.innerHTML = rows.length ? rows.map((c) => {
       const st = cardStatus(c);
@@ -515,7 +519,7 @@ function renderLibrary() {
     }).join('') : '<p class="note">No cards match. Try a different search or clear a filter.</p>';
   };
   app.querySelector('#lib-q').addEventListener('input', (e) => { lib.q = e.target.value; draw(); });
-  ['level', 'topic', 'status'].forEach((k) => app.querySelector(`#lib-${k}`).addEventListener('change', (e) => { lib[k] = e.target.value; draw(); }));
+  ['level', 'topic', 'format', 'status'].forEach((k) => app.querySelector(`#lib-${k}`).addEventListener('change', (e) => { lib[k] = e.target.value; draw(); }));
   draw();
 }
 
@@ -636,7 +640,7 @@ async function boot() {
     manifest = await (await fetch('data/manifest.json')).json();
     const decks = await Promise.all(manifest.decks.map(async (d) => {
       const cards = await (await fetch(d.file)).json();
-      return cards.map((c) => ({ ...c, pack: d.pack }));
+      return cards.map((c) => expandCard({ ...c, pack: d.pack }));
     }));
     allCards = decks.flat();
     byId = Object.fromEntries(allCards.map((c) => [c.id, c]));

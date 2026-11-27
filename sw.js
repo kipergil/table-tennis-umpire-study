@@ -1,7 +1,7 @@
 // Offline support. Every app file is cached on install; afterwards pages load from the cache
 // and are refreshed from the network in the background (stale-while-revalidate), so updates
 // arrive on the next visit. Bump VERSION when the file list changes.
-const VERSION = 'love-all-v3';
+const VERSION = 'love-all-v4';
 const FILES = [
   './',
   'index.html',
@@ -21,6 +21,7 @@ const FILES = [
   'data/cards/basic.json',
   'data/cards/intermediate.json',
   'data/cards/advanced.json',
+  'data/cards/exam-style.json',
   'data/cards/para.json',
   'icons/icon.svg',
   'icons/icon-192.png',

@@ -4,7 +4,7 @@ import { diagramSVG } from './diagram.js';
 let manifest = { levels: [], topics: [] };
 export function setManifest(m) { manifest = m; }
 
-export const FORMAT_NAMES = { flip: 'Flip', mcq: 'Multiple choice', multi: 'Select all', number: 'Number', scenario: 'Umpire’s Call' };
+export const FORMAT_NAMES = { flip: 'Flip', mcq: 'Multiple choice', multi: 'Select all', number: 'Number', scenario: 'Umpire’s Call', tf: 'True or false', call: 'Your decision' };
 export const LEVEL_CLASS = { basic: 'b', intermediate: 'i', advanced: 'a' };
 export const LEVEL_ORDER = { basic: 0, intermediate: 1, advanced: 2 };
 
@@ -15,7 +15,10 @@ export const levelName = (id) => manifest.levels.find((l) => l.id === id)?.name 
 export const topicName = (id) => manifest.topics.find((t) => t.id === id)?.name || id;
 export const levelTag = (lvl) => `<span class="tag ${LEVEL_CLASS[lvl] || ''}">${esc(levelName(lvl))}</span>`;
 export const refsHTML = (c) => `<div class="row refs">${(c.refs || []).map((r) => `<span class="ref">${esc(r)}</span>`).join('')}</div>`;
-export const cardTags = (c) => `<div class="row">${levelTag(c.level)}<span class="tag">${esc(topicName(c.topic))}</span><span class="tag fmt-${c.format}">${esc(FORMAT_NAMES[c.format])}</span></div>`;
+export const cardTags = (c) => `<div class="row">${levelTag(c.level)}<span class="tag">${esc(topicName(c.topic))}</span><span class="tag fmt-${c.format}">${esc(FORMAT_NAMES[c.format])}</span></div>${c.matchLabel ? `<div class="match-label">${esc(c.matchLabel)}</div>` : ''}`;
+
+/** Extra class for option lists: true/false side by side, decisions in a 2×2 grid. */
+export const optsClass = (c) => (c.format === 'tf' ? 'opts-tf' : c.format === 'call' ? 'opts-call' : '');
 export { diagramSVG };
 
 export function optionOrder(c) {
@@ -36,7 +39,8 @@ export function explain(c) {
     <div class="detail">${fmt(c.detail)}</div>
     ${c.hint ? `<div class="hint">Memory hook: ${fmt(c.hint)}</div>` : ''}
     ${calls}
-    ${refsHTML(c)}`;
+    ${refsHTML(c)}
+    ${c.basedOn ? `<p class="small based-on">Reworded from the sample exam paper (${esc(c.basedOn.replace('Sample exam ', ''))}).</p>` : ''}`;
 }
 
 /** − [input] + stepper for number cards. */

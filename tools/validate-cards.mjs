@@ -7,7 +7,8 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const manifest = JSON.parse(readFileSync(join(root, 'data/manifest.json'), 'utf8'));
 const levels = new Set(manifest.levels.map((l) => l.id));
 const topics = new Set(manifest.topics.map((t) => t.id));
-const formats = new Set(['flip', 'mcq', 'multi', 'number', 'scenario']);
+const formats = new Set(['flip', 'mcq', 'multi', 'number', 'scenario', 'tf', 'call']);
+const CALL_ANSWERS = { singles: ['A', 'X', 'let', 'none'], doubles: ['AB', 'XY', 'let', 'none'] };
 const errors = [];
 const seen = new Set();
 const counts = {};
@@ -34,6 +35,15 @@ for (const deck of manifest.decks) {
       if (c.value <= c.min || c.value > c.max) err('value must be inside (min, max] so the stepper does not start on the answer');
       const n = (c.value - c.min) / c.step;
       if (Math.abs(n - Math.round(n)) > 1e-9) err('value must be reachable from min in whole steps');
+    }
+    if (c.format === 'tf') {
+      if (typeof c.answer !== 'boolean') err('true/false card needs answer true or false');
+      if (c.options) err('true/false cards must not list options');
+    }
+    if (c.format === 'call') {
+      if (!CALL_ANSWERS[c.match]) err('decision card needs match "singles" or "doubles"');
+      else if (!CALL_ANSWERS[c.match].includes(c.answer)) err(`decision answer must be one of ${CALL_ANSWERS[c.match].join(', ')}`);
+      if (c.options) err('decision cards must not list options');
     }
     if (c.format === 'multi') {
       if (!Array.isArray(c.options) || c.options.length < 3 || c.options.length > 6) err('multi card needs 3–6 options');
