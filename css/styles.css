@@ -91,6 +91,21 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .dg-t { font: 600 10px/1 var(--f-body); fill: var(--muted); }
 .dg-t.strong { fill: var(--ink); }
 
+/* illustrations */
+.sig-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.sig { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; width: 112px; }
+.sig.compact { width: 96px; }
+.sig-svg { width: 100%; height: auto; display: block; }
+.sig figcaption { text-align: center; font-size: .78rem; line-height: 1.25; display: flex; flex-direction: column; gap: 2px; }
+.sig figcaption span { color: var(--muted); }
+.fig { margin: 10px 0 0; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
+.fig-svg { width: 100%; height: auto; display: block; }
+.fig figcaption { font-size: .85rem; color: var(--muted); margin-top: 6px; line-height: 1.4; }
+.fig-num { font: 700 40px/1 var(--f-display); fill: #fff; }
+.fig-num-s { font: 700 20px/1 var(--f-display); fill: var(--ink); }
+.q-fig .sig { width: 160px; margin: 0 auto; }
+.q-fig .sig figcaption { display: none; }
+
 /* study card */
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
 .q { font: 600 1.25rem/1.35 var(--f-body); text-wrap: pretty; }

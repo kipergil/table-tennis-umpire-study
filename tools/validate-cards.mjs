@@ -2,6 +2,7 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { FIGURE_NAMES } from '../js/figures.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const manifest = JSON.parse(readFileSync(join(root, 'data/manifest.json'), 'utf8'));
@@ -65,6 +66,7 @@ for (const deck of manifest.decks) {
       const key = (p) => p.join(',');
       for (const b of [...(d.bounces || []), ...(d.corners || [])]) if (!(d.path || []).some((p) => key(p) === key(b))) err(`bounce/corner ${key(b)} is not on the path`);
     }
+    for (const f of [...(c.answerFigures || []), ...(c.figure ? [c.figure] : [])]) if (!FIGURE_NAMES.includes(f)) err(`unknown figure "${f}"`);
     const k = `${deck.pack}/${c.level}`;
     counts[k] = (counts[k] || 0) + 1;
   }

@@ -139,6 +139,7 @@
     "basedOn": "Sample exam Q13",
     "q": "The clamps that attach the net posts to the table are part of the playing surface.",
     "answer": false,
+    "answerFigures": ["net-assembly"],
     "detail": "The clamps are part of the **net assembly** (net, suspension, posts and clamps), not the playing surface. That matters: a return that touches the clamp and then the opponent's court is good.",
     "refs": ["Law 2.2.1", "Law 2.7.1"]
   },
@@ -260,6 +261,7 @@
     "basedOn": "Sample exam Q24",
     "q": "Each player or pair may take one time-out in every game of a match.",
     "answer": false,
+    "answerFigures": ["signal:timeout"],
     "detail": "Each player or pair gets **one time-out per individual match**, not per game.",
     "refs": ["HMO 13.1.1"]
   },
@@ -403,6 +405,7 @@
     "basedOn": "Sample exam Q38",
     "q": "Once the ball has been tossed in service, the racket as well as the ball must be above the level of the playing surface.",
     "answer": false,
+    "answerFigures": ["service-zone"],
     "detail": "Only the **ball** must be above the playing surface and behind the end line. The racket may even start hidden, for example behind the server's back.",
     "refs": ["Law 2.6.4", "HMO 10.5.2"]
   },
@@ -425,6 +428,7 @@
     "basedOn": "Sample exam Q40",
     "q": "If a player's free hand touches the side of the table during play, the opponent scores a point.",
     "answer": false,
+    "answerFigures": ["edge-vs-side"],
     "detail": "The penalty is for the free hand touching the **playing surface**, and the vertical sides of the tabletop are not part of it. (Moving the table would be different.)",
     "refs": ["Law 2.1.2", "Law 2.10.1.11"]
   },
@@ -445,6 +449,7 @@
     "format": "tf",
     "q": "In service, the ball must rise at least 16 cm after leaving the palm.",
     "answer": true,
+    "answerFigures": ["toss"],
     "detail": "The ball must be projected near vertically, without spin, and rise **at least 16 cm**.",
     "refs": ["Law 2.6.2"]
   },
@@ -485,6 +490,7 @@
     "format": "tf",
     "q": "In doubles, a service that lands on the centre line of the receivers' court is good.",
     "answer": true,
+    "answerFigures": ["doubles-halves"],
     "detail": "The centre line is **part of each right half-court**.",
     "refs": ["Law 2.1.6", "Law 2.6.3"]
   },
@@ -590,6 +596,7 @@
     "basedOn": "Sample exam Q48",
     "q": "A makes a good return but drops the racket. It slides across the playing surface and stops against the net-post clamp. Startled, X fails to return the ball.",
     "answer": "X",
+    "answerFigures": ["net-assembly"],
     "detail": "The racket was carried at the start of the rally, so it counts as **anything the player wears or carries**. It touched the net assembly (the clamp) while the ball was in play, so X scores.",
     "refs": ["Law 2.5.13", "Law 2.2.1", "Law 2.10.1.10"]
   },
@@ -662,6 +669,7 @@
     "basedOn": "Sample exam Q55",
     "q": "Y tries to hit the service while the ball is still rising and misses it completely. As it falls, Y hits it with the racket handle. It bounces in Y's right half-court, then on the centre line of the receivers' court.",
     "answer": "none",
+    "answerFigures": ["doubles-halves"],
     "detail": "A complete miss is not a strike. Y then struck the falling ball with the **racket held in the hand** (the handle counts), and it landed in the correct half-courts: the centre line is part of each right half-court. **Good service; play on.**",
     "refs": ["Law 2.5.7", "Law 2.6.3", "Law 2.1.6"]
   },
@@ -717,6 +725,7 @@
     "match": "singles",
     "q": "X, standing close to the table, blocks A's return above X's court before it has bounced.",
     "answer": "A",
+    "answerFigures": ["obstruction-zone"],
     "detail": "Touching the ball while it is above or travelling towards the playing surface, before it has touched your court, is **obstruction**.",
     "refs": ["Law 2.5.8", "Law 2.10.1.6"]
   },
@@ -728,6 +737,7 @@
     "match": "doubles",
     "q": "Y's service bounces in Y's right half-court, then lands on the centre line of the receivers' court.",
     "answer": "none",
+    "answerFigures": ["doubles-halves"],
     "detail": "The centre line is part of each right half-court, so this is a **good service**. Play on.",
     "refs": ["Law 2.1.6", "Law 2.6.3"]
   },
@@ -783,6 +793,7 @@
     "match": "singles",
     "q": "A's shot clips the top edge of X's end line and drops to the floor. X can't play it.",
     "answer": "A",
+    "answerFigures": ["edge-vs-side"],
     "detail": "The white lines are part of the playing surface, and a ball touching the top edge **is a good return**.",
     "refs": ["Law 2.1.4", "HMO 12.2.1"]
   },

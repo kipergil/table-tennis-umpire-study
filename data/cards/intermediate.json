@@ -98,6 +98,7 @@
     "q": "When does a player “obstruct” the ball?",
     "options": ["When they touch it in play while it is above or travelling towards the playing surface, before it has touched their court", "When they touch it after it has bounced on their court", "When they catch it after it has passed their end line", "When they stand in front of the table during the opponent's stroke"],
     "answer": 0,
+    "answerFigures": ["obstruction-zone"],
     "detail": "A player obstructs the ball if they, or anything they wear or carry, touch it in play when it is **above or travelling towards the playing surface**, **not having touched their court** since last being struck by the opponent.",
     "refs": ["Law 2.5.8"]
   },
@@ -121,6 +122,7 @@
     "q": "The server holds the ball still on the open palm, then the ball accidentally rolls off before any attempt to toss it. What is your decision?",
     "options": ["No point: the ball was never in play. The server serves again", "Point to the receiver: service fault", "Let, and warn the server", "Point to the receiver only if it touched the table"],
     "answer": 0,
+    "answerFigures": ["palm"],
     "detail": "The ball is in play only from the last moment it is stationary on the palm **before being intentionally projected**. Until the server starts the toss, that moment is not defined, so an accidental roll-off **does not score a point**. The server may also change their mind and reposition.",
     "refs": ["Law 2.5.2", "HMO 9.4–9.5"]
   },
@@ -178,6 +180,7 @@
     "q": "At the start of service, the server's free arm and part of the hand are over the playing surface, but the ball itself is clearly behind the end line. What is your decision?",
     "options": ["Legal: only the ball must be behind the end line", "Fault: the whole hand must be behind the end line", "Let, and warn the server", "Fault in doubles only"],
     "answer": 0,
+    "answerFigures": ["service-zone"],
     "detail": "The **ball**, but not necessarily the whole free hand, must be behind the server's end line from the start of service until it is projected. Part of the hand over the table is fine if the ball is clearly behind the end line.",
     "refs": ["Law 2.6.4", "HMO 10.2.3"]
   },
@@ -190,6 +193,7 @@
     "options": ["Fault: the ball must rise at least 16 cm", "Legal: it was tossed near vertically", "Let, and warn the server", "Legal if it went above the net"],
     "answer": 0,
     "diagram": {"view": "side", "alt": "Side view: the toss rises about 8 cm, well short of the 16 cm line", "labels": {"left": "Server", "right": "Receiver"}, "guide": {"h": 22, "text": "16 cm above the palm"}, "path": [[-12, 6], [-11.8, 14], [-11.6, 11], [25, 0], [50, 22], [80, 0]], "corners": [[-11.6, 11]], "bounces": [[25, 0], [80, 0]], "marks": [{"at": [-11.8, 14], "type": "x", "text": "8 cm"}]},
+    "answerFigures": ["toss"],
     "detail": "After leaving the palm the ball must rise **at least 16 cm**, near vertically and without spin. A toss that clearly does not reach 16 cm is a fault. Signal and verbal explanation: **“Not high enough”**.",
     "umpire": {"signal": "Point signal to the receiver, then the “not high enough” signal", "call": "“Fault” and the new score"},
     "au": {"signal": "Raise arm above head", "call": "“Fault”"},
@@ -366,6 +370,7 @@
     "q": "A service touches the net, and before it bounces the receiver catches it above the table. What is your decision?",
     "options": ["Let", "Point to the server: obstruction", "Point to the receiver", "Replay only if the receiver was not ready"],
     "answer": 0,
+    "answerFigures": ["obstruction-zone"],
     "detail": "If in service the ball touches the net assembly, the rally is a let provided the service is otherwise correct **or the ball is obstructed by the receiver or their partner**.",
     "refs": ["Law 2.9.1.1", "HMO 11.2.1"]
   },
@@ -437,6 +442,7 @@
     "options": ["Point to the opponent of the striker", "Good return: play on", "Let", "Good return, because it touched the net assembly"],
     "answer": 0,
     "diagram": {"view": "top", "alt": "Top view: the ball passes through the gap between the net and the post", "labels": {"left": "Striker", "right": "Opponent"}, "path": [[22, 30], [50, -6], [74, 14]], "bounces": [[74, 14]], "marks": [{"at": [50, -6], "type": "ring", "text": "gap at net post"}]},
+    "answerFigures": ["net-assembly"],
     "detail": "A player scores if the ball, after being struck by the opponent, **passes through the net, between the net and the net post, or between the net and the playing surface**.",
     "umpire": {"signal": "Point signal towards the opponent of the striker", "call": "New score"},
     "refs": ["Law 2.10.1.5"]
@@ -450,6 +456,7 @@
     "options": ["Point to A: obstruction", "Good return by B: play on", "Let", "Point to B: A's return was going long"],
     "answer": 0,
     "diagram": {"view": "side", "alt": "Side view: B volleys the ball above B's court before it bounces", "labels": {"left": "A", "right": "B"}, "path": [[-6, 18], [50, 30], [72, 12]], "marks": [{"at": [72, 12], "type": "x", "text": "touched before bounce"}]},
+    "answerFigures": ["obstruction-zone"],
     "detail": "B touched the ball while it was **above or travelling towards the playing surface** and **before it touched B's court**. That is obstruction, and A scores. Explanation term: **“obstruction”**.",
     "umpire": {"signal": "Point signal towards A", "call": "New score, “obstruction” if needed"},
     "au": {"signal": "Raise arm above head", "call": "“Stop”, and advise the umpire"},
@@ -464,6 +471,7 @@
     "options": ["Point to B: no obstruction once the ball has passed the end line", "Point to A: B obstructed the ball", "Let", "Point to A: B caught the ball in play"],
     "answer": 0,
     "diagram": {"view": "top", "alt": "Top view: the ball passes beyond B's end line without touching B's court and is caught there", "labels": {"left": "A", "right": "B"}, "path": [[-4, 50], [50, 46], [112, 40]], "marks": [{"at": [112, 40], "type": "dot", "text": "caught"}]},
+    "answerFigures": ["obstruction-zone"],
     "detail": "There is **no obstruction** if the ball has already **passed beyond the end line**, passed outward over the side line, or is moving away from the playing surface. A's return missed B's court, so **B scores**.",
     "umpire": {"signal": "Point signal towards B", "call": "New score"},
     "refs": ["Law 2.10.1.4", "HMO 9.7"]
@@ -756,6 +764,7 @@
     "q": "Who decides whether a ball touched the edge or the side of the table on the side nearest the assistant umpire?",
     "options": ["The assistant umpire, alone", "The umpire, after consulting the AU", "The umpire, alone", "The referee"],
     "answer": 0,
+    "answerFigures": ["edge-vs-side"],
     "detail": "The AU is **solely responsible** for edge and side decisions at the side of the table **nearest to them**. If the AU calls “side”, the umpire must award the point to the opponent(s) of the last striker.",
     "refs": ["HMO 4.3.1", "HMO 12.2.3"]
   },
@@ -778,6 +787,7 @@
     "q": "Who decides edge balls at the two ends of the table?",
     "options": ["The umpire only", "The assistant umpire only", "Whichever official is closer", "The players"],
     "answer": 0,
+    "answerFigures": ["edge-vs-side"],
     "detail": "**Only the umpire** decides edge balls at the ends of the table and at the side nearest to them. The AU decides only the side nearest the AU.",
     "refs": ["HMO 12.2.3"]
   },
@@ -844,6 +854,7 @@
     "q": "How is a time-out requested, and when?",
     "options": ["With a T-sign of the hands, between rallies once the game has started", "Verbally, at any time including during rallies", "With a T-sign, only between games", "By asking the referee"],
     "answer": 0,
+    "answerFigures": ["signal:timeout"],
     "detail": "A time-out is requested by **making a T-sign with the hands**, and only **between rallies after the start of the game**. The player, pair, or their captain or adviser can request it.",
     "refs": ["HMO 13.1.1"]
   },
@@ -1166,6 +1177,7 @@
     "q": "What is the umpire's hand signal for the award of a point?",
     "options": ["Raise the arm nearer the winner: upper arm horizontal, forearm vertical, closed hand upward", "Point with an open hand at the winner", "Raise one hand straight above the head", "Raise both arms"],
     "answer": 0,
+    "answerFigures": ["signal:point"],
     "detail": "To indicate a point, raise **the arm nearer the player or pair who won it**, with the **upper arm horizontal and the forearm vertical, closed hand upward**.",
     "refs": ["HMO 18.2.2", "HMO App C"]
   },
@@ -1177,6 +1189,7 @@
     "q": "At a change of service, what must the umpire do?",
     "options": ["Point with an open hand to the next server", "Call the next server's name", "Raise the arm nearer the server", "Nothing: the players know"],
     "answer": 0,
+    "answerFigures": ["signal:next"],
     "detail": "At a change of service the umpire **must point with the hand to the next server**. Naming the server is optional and should follow the referee's briefing; if it isn't covered, it is recommended not to name the server at each change.",
     "refs": ["HMO 18.1.3", "HMO 18.2.2"]
   },
@@ -1254,6 +1267,7 @@
     "q": "The AU sees the ball hit the side of the tabletop on the AU's side, ending the rally. What does the AU do?",
     "options": ["Raise an arm above the head and call “Side”", "Point to the edge and call “Edge”", "Signal the point to the umpire", "Nothing: the umpire decides"],
     "answer": 0,
+    "answerFigures": ["edge-vs-side"],
     "detail": "For a ball hitting the side nearest the AU, the AU **raises an arm above the head and calls “Side”**, and the umpire awards the point to the opponent of the last striker. For a good **edge** ball on their side, the AU calls **“Edge”** and points to the place if necessary.",
     "refs": ["HMO 12.2.3", "HMO App C rows 18, 20"]
   },
@@ -1276,6 +1290,7 @@
     "q": "Can the umpire signal a point with one arm while pointing to the next server with the other?",
     "options": ["No: signals must be clearly separated", "Yes: it saves time", "Yes, at a change of service only", "Only at the end of a game"],
     "answer": 0,
+    "answerFigures": ["signal:point", "signal:next"],
     "detail": "Hand signals must be **clearly separated**. Do not indicate a point with one arm and the next server with the other at the same time. Signals should be clear and positive, but not flamboyant or aggressive.",
     "refs": ["HMO App C", "HMO 18.2.2"]
   },
@@ -1287,7 +1302,56 @@
     "q": "When may the score indicator operator change the score?",
     "options": ["Only after the umpire's call or signal", "As soon as the rally obviously ends", "When the players look at the board", "At each change of service"],
     "answer": 0,
+    "answerFigures": ["score-indicator"],
     "detail": "Operators **must await the umpire's call or signal** before changing the score and must never anticipate decisions they have no authority to make.",
     "refs": ["HMO 19.1", "HMO App A item 15"]
+  },
+  {
+    "id": "SIG-304",
+    "level": "intermediate",
+    "topic": "signals",
+    "format": "mcq",
+    "q": "What does this umpire signal mean?",
+    "options": ["A time-out for the player or pair on this side", "A formal warning", "A let, or play is stopped", "A point to the player or pair on this side"],
+    "answer": 0,
+    "figure": "signal:timeout",
+    "detail": "The umpire holds up a **white card**, raising the arm on the side of the player or pair who asked for the time-out. The AU then places a marker on that player's court.",
+    "refs": ["HMO 13.1.2", "HMO App C row 24"]
+  },
+  {
+    "id": "SIG-305",
+    "level": "intermediate",
+    "topic": "signals",
+    "format": "mcq",
+    "q": "What does this umpire signal mean?",
+    "options": ["A formal warning", "One or two penalty points against the offender", "An adviser is sent away from the playing area", "A time-out for the player or pair on this side"],
+    "answer": 0,
+    "figure": "signal:yellow",
+    "detail": "A **yellow card** is a formal warning for misbehaviour or for illegal advice. It is never used for a service warning.",
+    "refs": ["HMO 16.3", "HMO 17.2.2", "HMO 10.6.1"]
+  },
+  {
+    "id": "SIG-306",
+    "level": "intermediate",
+    "topic": "signals",
+    "format": "mcq",
+    "q": "What does this umpire signal mean?",
+    "options": ["One or two penalty points against the offender", "A formal warning", "An adviser is sent away from the playing area", "A point to the player or pair on this side"],
+    "answer": 0,
+    "figure": "signal:yellow-red",
+    "detail": "**Yellow and red cards together** mean penalty points: 1 for the second offence, 2 for the third.",
+    "refs": ["HMO 17.3.1", "HMO App C row 29"]
+  },
+  {
+    "id": "SIG-307",
+    "level": "intermediate",
+    "topic": "signals",
+    "format": "mcq",
+    "q": "What does this umpire signal mean?",
+    "options": ["An adviser is sent away from the playing area", "A formal warning", "One or two penalty points against the offender", "A time-out for the player or pair on this side"],
+    "answer": 0,
+    "figure": "signal:red",
+    "detail": "The umpire shows a **red card** to send an adviser away after a previous warning. (The referee also shows a red card when disqualifying a player.)",
+    "refs": ["HMO 16.3", "HMO 17.3.5", "HMO 17.4.1"]
   }
 ]

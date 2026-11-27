@@ -106,6 +106,7 @@
     "q": "After playing a stroke, a player's racket slips out of their hand and hits the net post. The ball is still in play. What is your decision?",
     "options": ["Point to the opponent", "Let: it was an accident", "Play on: the racket was no longer held", "Point to the opponent only if the net moved"],
     "answer": 0,
+    "answerFigures": ["net-assembly"],
     "detail": "The racket was being carried at the start of the rally, so it counts as **anything the player wears or carries**. If it **touches the net assembly** while the ball is in play, the opponent scores. The net post is part of the net assembly.",
     "refs": ["Law 2.5.13", "Law 2.2.1", "Law 2.10.1.10"]
   },
@@ -117,6 +118,7 @@
     "q": "A's return crosses the net, then flies outwards over B's side line without touching B's court. B catches it beside the table. What is your decision?",
     "options": ["Point to B: there is no obstruction when the ball has passed outward over the side line", "Point to A: obstruction", "Let", "Point to A: B touched the ball in play"],
     "answer": 0,
+    "answerFigures": ["obstruction-zone"],
     "detail": "There is no obstruction if the interception happens when the ball **has passed outward over the side line**, beyond the end line, or is otherwise moving away from the playing surface. A's return missed, so **B scores**.",
     "refs": ["Law 2.5.8", "HMO 9.7"]
   },
@@ -140,6 +142,7 @@
     "options": ["Fault: the ball must be behind the end line until struck", "Legal: the toss started behind the end line", "Let, and warn the server", "Legal, as the ball was above the playing surface"],
     "answer": 0,
     "diagram": {"view": "side", "alt": "Side view: the ball is struck above the table, inside the server's end line", "path": [[-6, 8], [-5.5, 30], [6, 18], [28, 0], [50, 22], [80, 0]], "corners": [[6, 18]], "bounces": [[28, 0], [80, 0]], "marks": [{"at": [6, 18], "type": "x", "text": "struck inside the end line", "pos": "right"}]},
+    "answerFigures": ["service-zone"],
     "detail": "From the start of service **until it is struck**, the ball must be above the level of the playing surface **and behind the server's end line**. Signal and verbal explanation: **“inside the end line”**.",
     "umpire": {"signal": "Point signal to the receiver, then the “inside the end line” signal", "call": "“Fault” and the new score"},
     "refs": ["Law 2.6.4", "HMO 10.4.1", "HMO App C fig 5"]
@@ -152,6 +155,7 @@
     "q": "Two services are thrown from and struck at the same place. One toss is low, the other high. Why might only the low one be a fault?",
     "options": ["The lower the toss, the more a sideways movement shows it was not near vertical", "Low tosses are always faults", "High tosses are always legal", "Only the height matters, never the angle"],
     "answer": 0,
+    "answerFigures": ["toss"],
     "detail": "The **height of the toss is a factor** in deciding whether it is near vertical. If the ball travels the same sideways distance, a **low toss** rises at a clearly diagonal angle, while a **high toss** stays within a few degrees of vertical.",
     "refs": ["HMO 10.3.1"]
   },
@@ -223,6 +227,7 @@
     "q": "The server starts with the ball resting on the fingertips rather than the palm. If asked, what is the standard verbal explanation?",
     "options": ["“Ball resting on the fingers”", "“Palm not open”", "“Not vertically”", "“Hidden”"],
     "answer": 0,
+    "answerFigures": ["palm"],
     "detail": "The illegal-service signals have matching short explanations: **“Not high enough”**, **“Palm not open”**, **“Ball resting on the fingers”**, **“Below the playing surface”**, **“Inside the end line”**, **“Not vertically”** and **“Hidden by …”**.",
     "refs": ["Law 2.6.1", "HMO App C fig 3"]
   },
@@ -234,6 +239,7 @@
     "q": "A player cannot straighten the fingers of the free hand because of a disability recorded on their classification card. How may they serve?",
     "options": ["From a curved palm: the umpire relaxes the requirement", "They must still use an open, flat palm", "They must serve with the racket hand", "Only after the referee approves each service"],
     "answer": 0,
+    "answerFigures": ["palm"],
     "detail": "The umpire may relax service requirements where a physical disability prevents compliance. The International Classification Card lists such limitations, so a player may, for example, **serve from a curved palm** or **toss from a stump**.",
     "refs": ["Law 2.6.7", "HMO 10.7.1"]
   },
@@ -245,6 +251,7 @@
     "q": "The server flicks the ball off the fingers so it spins visibly as it rises 20 cm. What is your decision?",
     "options": ["Fault: the ball must be projected without spin", "Legal: it rose more than 16 cm", "Let, and warn the server", "Legal: spin only matters after the strike"],
     "answer": 0,
+    "answerFigures": ["toss"],
     "detail": "The ball must be projected **near vertically upwards, without imparting spin**. The open-palm rule exists so the server cannot grip and spin the ball.",
     "umpire": {"signal": "Point signal to the receiver", "call": "“Fault” and the new score"},
     "refs": ["Law 2.6.2", "HMO 10.2.1"]
@@ -257,6 +264,7 @@
     "q": "A ball arrives from outside and above the level of the playing surface and clips the edge. What best indicates it touched the playing surface rather than the side?",
     "options": ["It travels upwards after contact", "It continues downwards after contact", "It makes a loud sound", "The receiver could not return it"],
     "answer": 0,
+    "answerFigures": ["edge-vs-side"],
     "detail": "There is no infallible guide, but if after touching the edge **the ball travels upwards**, it probably touched the playing surface. If it **continues downwards**, it more likely touched the side.",
     "refs": ["HMO 12.2.2"]
   },
@@ -268,6 +276,7 @@
     "q": "The ball hits the edge of the table while still rising from below the level of the playing surface. What is the most likely decision?",
     "options": ["Side: it almost certainly touched the side, so the return is not good", "Edge: the return is good", "Let", "Edge, if it bounced upwards"],
     "answer": 0,
+    "answerFigures": ["edge-vs-side"],
     "detail": "If the ball first passed over the playing surface, the return is good. If it touched the table **while still rising from below the level of the playing surface**, it **almost certainly touched the side**.",
     "refs": ["HMO 12.2.1"]
   },
@@ -279,6 +288,7 @@
     "q": "You (the umpire) clearly see a player move the playing surface. A moment later the ball clips the table on the AU's side and the AU calls “Side”. What is the decision?",
     "options": ["Your earlier decision stands: point to the opponent of the player who moved the table", "The AU's “Side” call decides the point", "Let, because the calls conflict", "Ask the referee"],
     "answer": 0,
+    "answerFigures": ["edge-vs-side"],
     "detail": "One official's decision may be **pre-empted** by an earlier decision of the other. Whether the ball touched the edge on the AU's side is **irrelevant if the umpire has already seen a player move the playing surface**.",
     "refs": ["HMO 4.3.3"]
   },
@@ -370,6 +380,7 @@
     "options": ["Point to the receivers", "Let: the ball touched the net", "Let, and warn the server", "Replay the service"],
     "answer": 0,
     "diagram": {"view": "top", "doubles": true, "alt": "Top view, doubles: the service clips the net and lands in the receiver's left half-court", "zones": [[0, 50, 50, 100], [50, 0, 100, 50]], "path": [[-6, 82], [22, 76], [50, 72], [76, 68]], "bounces": [[22, 76], [76, 68]], "marks": [{"at": [50, 72], "type": "ring", "text": "net"}, {"at": [76, 68], "type": "x"}]},
+    "answerFigures": ["doubles-halves"],
     "detail": "A net service is only a let **if the service is otherwise correct**. In doubles it must land in the receiver's **right** half-court. Here it lands on the wrong half-court, so it is a fault and **the receivers score**.",
     "umpire": {"signal": "Point signal to the receivers", "call": "New score, “wrong side” if needed"},
     "refs": ["Law 2.6.3", "Law 2.9.1.1"]
@@ -382,6 +393,7 @@
     "q": "A low return squeezes under the net (between the net and the playing surface) and lands on the opponent's court. What is your decision?",
     "options": ["Point to the opponent of the striker", "Good return", "Let: the net must be adjusted", "Good return if the net was too high"],
     "answer": 0,
+    "answerFigures": ["net-assembly"],
     "detail": "A player scores if the ball, struck by the opponent, passes **through the net, between the net and the net post, or between the net and the playing surface**. This is why the bottom of the net must be as close as possible to the surface.",
     "refs": ["Law 2.10.1.5", "Law 2.2.4"]
   },
@@ -860,6 +872,7 @@
     "q": "In a team match, what carries forward from one individual match to the next?",
     "options": ["Cards (warnings and penalty status), but not the penalty points themselves", "Penalty points, but not cards", "Both cards and penalty points", "Nothing"],
     "answer": 0,
+    "answerFigures": ["signal:yellow", "signal:yellow-red"],
     "detail": "**Cards carry forward between individual matches** (singles and doubles), **but penalty points do not**. A player's next match does not start with points awarded against them, but their disciplinary status continues.",
     "refs": ["HMO 17.3.3"]
   },
@@ -882,6 +895,7 @@
     "q": "A player keeps misbehaving after receiving 2 penalty points. What follows?",
     "options": ["The umpire suspends play and reports to the referee, who would normally disqualify the player", "A third penalty of 3 points", "The umpire disqualifies the player", "Another yellow card"],
     "answer": 0,
+    "answerFigures": ["signal:red"],
     "detail": "After the warning, 1 point and 2 points, the umpire **suspends play and reports to the referee**. The referee would **normally disqualify** the player, showing a **red card**.",
     "refs": ["HMO 17.3.1", "HMO 17.4.1"]
   },
@@ -1025,6 +1039,7 @@
     "q": "What should the score indicators show before the players arrive, and when they arrive?",
     "options": ["All blank before they arrive; game scores set to 0 when both players or pairs are in the playing area", "0‑0 everywhere from the start", "The previous match's final score until play begins", "Blank until the first point is played"],
     "answer": 0,
+    "answerFigures": ["score-indicator"],
     "detail": "Indicators are left **blank** before players arrive, as a guide to whoever controls the programme. **When both players or pairs arrive, set the game scores to 0.** Points show 0-0 only when the umpire calls it to start the game.",
     "refs": ["HMO 19.2", "HMO 19.3", "HMO App A item 5"]
   },
@@ -1036,6 +1051,7 @@
     "q": "Game 3 has just ended 11-7 to A, who now leads 2 games to 1. What should the indicators show until shortly before game 4?",
     "options": ["Games 1‑1, points 11‑7", "Games 2‑1, points 11‑7", "Games 2‑1, points blank", "Games 2‑1, points 0‑0"],
     "answer": 0,
+    "answerFigures": ["score-indicator"],
     "detail": "**Never show the result of a game on both the points and games indicators at the same time.** Leave the final points score up for spectators and change the games score only when the points are reset, just before the next game.",
     "refs": ["HMO 19.3", "HMO 19.4"]
   },
@@ -1047,6 +1063,7 @@
     "q": "A manual score indicator only goes up to 20, and the game reaches 21-20 with no electronic scoreboard. What should the indicator show?",
     "options": ["11‑10: revert to 10‑10 when the flip cards run out", "1‑0", "20‑20", "Leave it at 20‑20 and call the score aloud"],
     "answer": 0,
+    "answerFigures": ["score-indicator"],
     "detail": "If a manual indicator only reaches about 20, **revert to 10-10**, where service alternation is expected, so 21-20 shows as 11-10. If electronic scoreboards are also used, revert to 0-0 instead (21-20 shows as 1-0) to avoid confusion.",
     "refs": ["HMO 19.6"]
   },
@@ -1061,6 +1078,7 @@
     "min": 15,
     "max": 90,
     "step": 15,
+    "answerFigures": ["score-indicator"],
     "detail": "The operator may rotate the indicator **up to 45°** to the left and/or right at suitable moments (towelling, retrieving the ball, change of service), and may raise it if it is light enough.",
     "refs": ["HMO 19.5"]
   },
@@ -1072,6 +1090,7 @@
     "q": "The match ends 12-10 in the fifth game, after the games were 2-2. What should the indicators show?",
     "options": ["Points 12‑10 and games 2‑2", "Points 12‑10 and games 3‑2", "Points blank and games 3‑2", "Everything blank"],
     "answer": 0,
+    "answerFigures": ["score-indicator"],
     "detail": "At the end of a match, leave the indicators showing **the final points score and the previous games score**. Reset everything to blank before leaving the playing area.",
     "refs": ["HMO App A item 23", "HMO App A item 24"]
   },
