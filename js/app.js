@@ -30,6 +30,7 @@ const ctx = {
   get P() { return P; },
   get manifest() { return manifest; },
   get byId() { return byId; },
+  get prevRoute() { return prevRoute; },
   save, enabledCards, go, route, startSession
 };
 
@@ -98,8 +99,15 @@ function route() {
   return VIEWS[name] ? name : 'home';
 }
 
+// Where the user was before the current page (for "Back" buttons).
+let lastRoute = 'home', prevRoute = 'home';
+const PLACE = { home: 'Home', study: 'Study', exam: 'Exam', library: 'Library', stats: 'Stats', more: 'More', trainer: 'Trainer', help: 'How to use' };
+
 function render() {
   const r = route();
+  if (r !== lastRoute) { prevRoute = lastRoute; lastRoute = r; }
+  // A finished session's summary belongs to the Study page; leaving Study clears it.
+  if (r !== 'study') lastSummary = null;
   const tab = NAV_FOR[r] || r;
   nav.querySelectorAll('a').forEach((a) => a.setAttribute('aria-current', a.getAttribute('href') === `#${tab}` ? 'page' : 'false'));
   // Focus mode: hide the menu during a study session or an exam.
@@ -134,7 +142,6 @@ function renderHome() {
 
   app.innerHTML = `
   <div class="topbar"><span class="brand">Love<em>-</em>All</span><span class="small">${st ? `${st}-day streak` : 'Start a streak today'}</span></div>
-  ${lastSummary ? summaryHTML(lastSummary, true) : ''}
   ${P.settings.welcomed ? '' : `<div class="panel welcome">
     <h2 class="h">Welcome to Love-All</h2>
     <p class="note">Learn the table tennis rules an umpire needs with short daily reviews, practice exams and a doubles serving-order trainer. Take two minutes to see how it works.</p>
@@ -184,14 +191,14 @@ function renderHome() {
   app.querySelector('[data-act="review"]')?.addEventListener('click', () => startSession('review'));
   app.querySelector('[data-act="learn"]')?.addEventListener('click', () => startSession('learn'));
   app.querySelectorAll('[data-drill-topic]').forEach((b) => b.addEventListener('click', () => startSession('drill', { topic: b.dataset.drillTopic })));
-  app.querySelector('[data-act="dismiss"]')?.addEventListener('click', () => { lastSummary = null; renderHome(); });
   const welcomed = () => { P.settings.welcomed = true; save(); };
   app.querySelector('[data-act="welcome-help"]')?.addEventListener('click', welcomed);
   app.querySelector('[data-act="welcome-close"]')?.addEventListener('click', () => { welcomed(); renderHome(); });
 }
 
 /* ---------- study: chooser + session ---------- */
-function startSession(mode, filter = {}) {
+function startSession(mode, filter = {}, from = null) {
+  const origin = from || (route() === 'study' && lastSummary ? lastSummary.from : route());
   let ids;
   if (mode === 'drill') {
     if (filter.ids) ids = shuffle(filter.ids.filter((id) => byId[id]));
@@ -210,7 +217,7 @@ function startSession(mode, filter = {}) {
     }
   }
   if (!ids.length) { go('study'); return; }
-  session = { mode, filter, queue: ids, pos: 0, results: [], startedAt: Date.now() };
+  session = { mode, filter, queue: ids, pos: 0, results: [], startedAt: Date.now(), from: origin === 'study' ? 'study' : origin };
   prepCard();
   lastSummary = null;
   go('study');
@@ -228,6 +235,7 @@ function prepCard() {
 
 function renderStudy() {
   if (session) return renderSession();
+  if (lastSummary) return renderFinished();
   const pool = enabledCards();
   const due = dueCards(pool).length;
   const fresh = Math.min(newLeftToday(), newCards(pool).length);
@@ -450,22 +458,58 @@ function endSession() {
     const ids = Object.keys(first);
     lastSummary = {
       mode: s.mode,
+      filter: s.filter,
+      from: s.from,
       reviewed: ids.length,
       correct: ids.filter((id) => first[id]).length,
       missed: ids.filter((id) => !first[id]),
       secs: Math.round((Date.now() - s.startedAt) / 1000)
     };
+    go('study');
+    return;
   }
-  go('home');
+  go(s?.from && VIEWS[s.from] ? s.from : 'home');
 }
 
-function summaryHTML(sm, dismissable) {
+/* ---------- session finished ---------- */
+function renderFinished() {
+  const sm = lastSummary;
+  const pool = enabledCards();
+  const moreDue = dueCards(pool).length + Math.min(newLeftToday(), newCards(pool).length);
+  const from = sm.from && sm.from !== 'study' && VIEWS[sm.from] ? sm.from : null;
+  const backLabel = from === 'exam' ? 'Back to exam results' : from ? `Back to ${PLACE[from]}` : null;
+  app.innerHTML = `
+  <div class="topbar"><span class="brand">${sm.mode === 'drill' ? 'Drill' : 'Session'} complete</span>
+    <button class="icon" data-act="close" aria-label="Close and go ${from ? `back to ${esc(PLACE[from])}` : 'home'}">✕</button></div>
+  ${summaryHTML(sm)}
+  <div class="panel stack next-steps">
+    <h2 class="h">What next?</h2>
+    ${sm.missed.length ? `<button class="btn" data-act="missed">Practise the ${sm.missed.length} I missed</button>` : ''}
+    ${sm.mode !== 'drill' && moreDue ? `<button class="btn ${sm.missed.length ? 'ghost' : ''}" data-act="more">Keep going: ${moreDue} more card${moreDue === 1 ? '' : 's'}</button>` : ''}
+    ${sm.mode === 'drill' && !sm.filter?.ids ? `<button class="btn ${sm.missed.length ? 'ghost' : ''}" data-act="again">Drill this again</button>` : ''}
+    <div class="row exits">
+      ${backLabel ? `<button class="btn ghost" data-act="back">← ${esc(backLabel)}</button>` : ''}
+      ${from !== null || sm.from === 'study' ? '<button class="btn ghost" data-act="study">Study page</button>' : ''}
+      ${from !== 'home' ? '<button class="btn ghost" data-act="home">Home</button>' : ''}
+    </div>
+  </div>`;
+  const leave = (to) => { lastSummary = null; go(to); };
+  app.querySelector('[data-act="close"]').addEventListener('click', () => leave(from || 'home'));
+  app.querySelector('[data-act="missed"]')?.addEventListener('click', () => startSession('drill', { ids: sm.missed }, sm.from));
+  app.querySelector('[data-act="more"]')?.addEventListener('click', () => startSession('review', {}, sm.from));
+  app.querySelector('[data-act="again"]')?.addEventListener('click', () => startSession('drill', sm.filter, sm.from));
+  app.querySelector('[data-act="back"]')?.addEventListener('click', () => leave(from));
+  app.querySelector('[data-act="study"]')?.addEventListener('click', () => { lastSummary = null; renderStudy(); window.scrollTo(0, 0); });
+  app.querySelector('[data-act="home"]')?.addEventListener('click', () => leave('home'));
+}
+
+function summaryHTML(sm) {
   const pct = sm.reviewed ? Math.round(100 * sm.correct / sm.reviewed) : 0;
   const C = 2 * Math.PI * 50;
   const m = Math.floor(sm.secs / 60), sec = sm.secs % 60;
   return `
   <div class="panel summary">
-    <div class="spread"><h2 class="h">${sm.mode === 'drill' ? 'Drill' : 'Session'} complete</h2><span class="small">${m} min ${sec} s</span></div>
+    <div class="spread"><h2 class="h">Your results</h2><span class="small">${m} min ${sec} s</span></div>
     <div class="sum-row">
       <svg class="ring" viewBox="0 0 120 120" role="img" aria-label="${pct}% correct first time">
         <circle cx="60" cy="60" r="50" fill="none" stroke="var(--chip)" stroke-width="12"/>
@@ -482,7 +526,6 @@ function summaryHTML(sm, dismissable) {
       const c = byId[id];
       return `<div class="miss"><div>${fmt(c.q)}</div><div class="miss-a">${fmt(answerText(c))}</div>${refsHTML(c)}</div>`;
     }).join('')}` : '<p class="note">Clean sheet. Every card right first time.</p>'}
-    ${dismissable ? '<button class="btn ghost" data-act="dismiss">Close summary</button>' : ''}
   </div>`;
 }
 

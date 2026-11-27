@@ -55,7 +55,7 @@ export function renderHelp() {
 
   <section class="panel help" id="h-menu">
     <h2 class="h">The menu</h2>
-    <p class="small">The menu sits at the top of every page. It hides while you are in a study session or an exam, so you can concentrate. Press ✕ to leave a session.</p>
+    <p class="small">The menu sits at the top of every page. It hides while you are in a study session or an exam, so you can concentrate. Press ✕ at the top left to leave a session or an exam. When a session ends you get a results page with what to do next, including a button back to where you started.</p>
     <div class="menu-guide">
       ${menuItem('home', 'Home', 'Your daily starting point: cards due today, new cards available, your streak, progress per level, shortcuts to the exam and the doubles trainer, and your three weakest topics (tap one to drill it).')}
       ${menuItem('study', 'Study', '<b>Start review</b> (due cards plus new ones), <b>Learn new cards only</b>, or a <b>Drill</b>: pick a level, topic and question type and practise as much as you like. The <b>doubles serving-order trainer</b> is here too.')}
