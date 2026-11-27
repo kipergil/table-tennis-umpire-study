@@ -1,7 +1,7 @@
 import { schedule, previewLabel, isLearned, endOfDay, dayKey, formatWait, DAY } from './scheduler.js';
 import { loadProgress, saveProgress, normalise, exportJSON, defaultProgress } from './storage.js';
 import { setManifest, esc, fmt, shuffle, levelTag, topicName, cardTags, refsHTML, explain, diagramSVG,
-  optionOrder, stepperHTML, wireStepper, optsClass, questionFigure, FORMAT_NAMES, LEVEL_ORDER } from './ui.js';
+  optionOrder, stepperHTML, wireStepper, optsClass, questionFigure, supportHTML, FORMAT_NAMES, LEVEL_ORDER } from './ui.js';
 import { answerText, checkNumber, isCorrect, expandCard } from './grading.js';
 import { initExam, renderExam, examKey, examActive } from './exam.js';
 import { initTrainer, renderTrainer } from './trainer.js';
@@ -186,7 +186,8 @@ function renderHome() {
         <span class="small num">${Math.round(t.acc * 100)}%</span>
       </button>`).join('')}</div>` :
       `<p class="note">Answer a few cards and your three weakest topics will appear here, ready to drill.</p>`}
-  </div>`;
+  </div>
+  ${supportHTML('line')}`;
 
   app.querySelector('[data-act="review"]')?.addEventListener('click', () => startSession('review'));
   app.querySelector('[data-act="learn"]')?.addEventListener('click', () => startSession('learn'));
@@ -492,7 +493,8 @@ function renderFinished() {
       ${from !== null || sm.from === 'study' ? '<button class="btn ghost" data-act="study">Study page</button>' : ''}
       ${from !== 'home' ? '<button class="btn ghost" data-act="home">Home</button>' : ''}
     </div>
-  </div>`;
+  </div>
+  ${supportHTML('line')}`;
   const leave = (to) => { lastSummary = null; go(to); };
   app.querySelector('[data-act="close"]').addEventListener('click', () => leave(from || 'home'));
   app.querySelector('[data-act="missed"]')?.addEventListener('click', () => startSession('drill', { ids: sm.missed }, sm.from));
@@ -607,6 +609,7 @@ function renderMore() {
       <div class="row"><button class="btn danger" data-act="reset-yes">Yes, delete my progress</button><button class="btn ghost" data-act="reset-no">Cancel</button></div>` :
       '<button class="btn ghost" data-act="reset">Reset all progress…</button>'}
   </div>
+  ${supportHTML('panel')}
   <a class="panel tool" href="#help"><b>How to use Love-All</b><span class="small">How studying works, the menu, question types and keyboard shortcuts.</span></a>
   <div class="panel">
     <h2 class="h">Sources</h2>
@@ -698,7 +701,7 @@ async function boot() {
     allCards = decks.flat();
     byId = Object.fromEntries(allCards.map((c) => [c.id, c]));
   } catch (e) {
-    app.innerHTML = `<div class="panel"><h2 class="h">The cards didn't load</h2><p class="note">Love-All needs to be opened from a web address (for example GitHub Pages or a local server), not straight from a file on disk. Details: ${esc(e.message)}</p></div>`;
+    app.innerHTML = `<div class="panel"><h2 class="h">The cards didn't load</h2><p class="note">Love-All needs to be opened from a web address (for example its website or a local server), not straight from a file on disk. Details: ${esc(e.message)}</p></div>`;
     return;
   }
   setManifest(manifest);

@@ -27,3 +27,8 @@ test('every deck in the manifest is cached', () => {
   const m = JSON.parse(readFileSync(join(root, 'data/manifest.json'), 'utf8'));
   for (const d of m.decks) assert.ok(files.includes(d.file), `${d.file} is not cached`);
 });
+
+test('donation link, if set, is an https link', () => {
+  const m = JSON.parse(readFileSync(join(root, 'data/manifest.json'), 'utf8'));
+  if (m.support?.url) assert.match(m.support.url, /^https:\/\/\S+$/, 'support.url must start with https://');
+});

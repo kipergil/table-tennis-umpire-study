@@ -89,6 +89,27 @@ export function holdToRepeat(btn, fn) {
   btn.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fn(); } });
 }
 
+/**
+ * "Support Love-All" donation link (Ko-fi etc.), configured in data/manifest.json → support.url.
+ * Returns '' while no link is set, so nothing shows until the owner adds one.
+ *  variant "panel": a card with a short explanation and a button (More page)
+ *  variant "line":  one quiet line (after sessions and exams, help page, Home footer)
+ */
+export function supportHTML(variant = 'line') {
+  const s = manifest.support;
+  if (!s || !/^https:\/\//.test(s.url || '')) return '';
+  const link = (cls, text) => `<a class="${cls}" href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+  if (variant === 'panel') {
+    return `<div class="panel stack support">
+      <h2 class="h">Support Love-All</h2>
+      <p class="note">Love-All is free and has no ads. If it helps you prepare for umpiring, you can support its upkeep and new cards with a small donation.</p>
+      ${link('btn support-btn', `<span aria-hidden="true">☕</span> Support on ${esc(s.platform)}`)}
+      <p class="small">Opens ${esc(s.platform)} in a new tab. Donating is optional and doesn't unlock anything: every card stays free.</p>
+    </div>`;
+  }
+  return `<p class="support-line">Finding Love-All useful? ${link('', `Support it on ${esc(s.platform)} <span aria-hidden="true">☕</span>`)}</p>`;
+}
+
 export const fmtTime = (secs) => {
   const s = Math.max(0, Math.round(secs));
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
