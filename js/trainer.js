@@ -42,7 +42,7 @@ export function renderTrainer() {
       <span class="pname">${p}</span><span class="prole">${role || '&nbsp;'}</span></button>`;
   };
   ctx.app.innerHTML = `
-  <div class="topbar"><a class="icon" href="#study" aria-label="Back to Study">←</a><span class="brand">Doubles order</span><span class="small">${s.streak ? `${s.streak} in a row` : ''}</span></div>
+  <div class="topbar"><button class="icon" data-act="back" aria-label="Leave the trainer">←</button><span class="brand">Doubles order</span><span class="small">${s.streak ? `${s.streak} in a row` : ''}</span></div>
   <div class="card">
     <div class="row"><span class="tag a">Advanced</span><span class="tag">Serving order</span><span class="tag fmt-scenario">Trainer</span></div>
     <div class="situation-box">
@@ -59,7 +59,7 @@ export function renderTrainer() {
     </div>
     ${checked === null ? `<div class="row"><button class="btn" data-act="check" ${pick.server && pick.receiver ? '' : 'disabled'}>Check answer</button><button class="btn ghost" data-act="clear">Clear</button></div>` : feedback()}
   </div>
-  ${checked !== null ? '<button class="btn" data-act="next">Next situation</button>' : ''}
+  ${checked !== null ? '<div class="row exits"><button class="btn" data-act="next">Next situation</button><button class="btn ghost" data-act="done">Done</button></div>' : ''}
   <div class="panel">
     <h2 class="h">How to work it out</h2>
     <ol class="howto">
@@ -74,6 +74,9 @@ export function renderTrainer() {
   root.querySelectorAll('[data-p]').forEach((b) => b.addEventListener('click', () => choose(b.dataset.p)));
   root.querySelector('[data-act="check"]')?.addEventListener('click', check);
   root.querySelector('[data-act="clear"]')?.addEventListener('click', () => { pick = { server: null, receiver: null }; renderTrainer(); });
+  const leave = () => { const to = ctx.prevRoute && ctx.prevRoute !== 'trainer' ? ctx.prevRoute : 'study'; q = null; ctx.go(to); };
+  root.querySelector('[data-act="back"]').addEventListener('click', leave);
+  root.querySelector('[data-act="done"]')?.addEventListener('click', leave);
   root.querySelector('[data-act="next"]')?.addEventListener('click', () => { newQuestion(); renderTrainer(); window.scrollTo(0, 0); });
   root.querySelector('[data-act="steps"]')?.addEventListener('click', () => { showSteps = !showSteps; renderTrainer(); });
 }

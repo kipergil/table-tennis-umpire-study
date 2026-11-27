@@ -13,6 +13,7 @@ let exam = null;       // active exam
 let result = null;     // last finished exam
 let confirmFinish = false;
 let showAll = false;
+let confirmQuit = false;
 let ticker = null;
 
 export function initExam(c) { ctx = c; }
@@ -98,6 +99,7 @@ export function historyTable(rows) {
 function start(cfg) {
   const cards = shuffle(pool(cfg.levels)).slice(0, cfg.count);
   if (!cards.length) return;
+  confirmQuit = false;
   exam = {
     cfg,
     ids: cards.map((c) => c.id),
@@ -144,12 +146,17 @@ function renderQuestion() {
   const unanswered = exam.answers.filter((a) => !answered(a)).length;
   ctx.app.innerHTML = `
   <div class="topbar">
+    <button class="icon" data-act="quit" aria-label="Leave the exam">✕</button>
     <span class="small">Question ${i + 1} of ${n}</span>
     <span class="timer" aria-label="${exam.endsAt ? 'Time left' : 'Time taken'}"><span id="ex-timer"></span></span>
   </div>
   <nav class="qgrid" aria-label="Questions">
     ${exam.ids.map((_, k) => `<button class="qcell ${k === i ? 'cur' : ''} ${answered(exam.answers[k]) ? 'done' : ''} ${exam.flags[k] ? 'flag' : ''}" data-goto="${k}" aria-label="Question ${k + 1}${answered(exam.answers[k]) ? ', answered' : ''}${exam.flags[k] ? ', flagged' : ''}" ${k === i ? 'aria-current="true"' : ''}>${k + 1}</button>`).join('')}
   </nav>
+  ${confirmQuit ? `<div class="panel stack confirm" role="alertdialog" aria-label="Leave the exam?">
+    <p class="note warn">Leave this exam? Your answers will be lost and the exam won't be saved.</p>
+    <div class="row"><button class="btn danger" data-act="quit-yes">Leave the exam</button><button class="btn ghost" data-act="quit-no">Keep going</button></div>
+  </div>` : ''}
   <article class="card">
     ${cardTags(c)}
     <div class="q">${fmt(c.q)}</div>
@@ -168,6 +175,9 @@ function renderQuestion() {
 
   updateTimer(ctx.app.querySelector('#ex-timer'));
   const root = ctx.app;
+  root.querySelector('[data-act="quit"]').addEventListener('click', () => { confirmQuit = true; renderQuestion(); window.scrollTo(0, 0); root.querySelector('[data-act="quit-no"]')?.focus(); });
+  root.querySelector('[data-act="quit-no"]')?.addEventListener('click', () => { confirmQuit = false; renderQuestion(); });
+  root.querySelector('[data-act="quit-yes"]')?.addEventListener('click', () => { clearInterval(ticker); exam = null; confirmQuit = false; ctx.go('exam'); });
   root.querySelectorAll('[data-goto]').forEach((b) => b.addEventListener('click', () => goTo(+b.dataset.goto)));
   root.querySelector('[data-act="prev"]').addEventListener('click', () => goTo(i - 1));
   root.querySelector('[data-act="next"]')?.addEventListener('click', () => goTo(i + 1));
@@ -252,7 +262,8 @@ function renderResult() {
   const byLevel = breakdown(r.items, 'level').sort((a, b) => LEVEL_ORDER[a.k] - LEVEL_ORDER[b.k]);
   const byTopic = breakdown(r.items, 'topic').sort((a, b) => a.pct - b.pct);
   ctx.app.innerHTML = `
-  <div class="topbar"><span class="brand">Exam results</span><span class="small">${esc(fmtDate(r.date))}</span></div>
+  <div class="topbar"><span class="brand">Exam results</span><button class="icon" data-act="close" aria-label="Close results and go home">✕</button></div>
+  <p class="small result-date">${esc(fmtDate(r.date))}</p>
   <div class="panel result-head">
     <div class="spread">
       <div><div class="small">Your score</div><div class="big">${r.pct}%</div><div class="small">${r.correct} of ${r.total} correct · pass mark ${r.cfg.pass}%</div></div>
@@ -289,11 +300,16 @@ function renderResult() {
         </div>
       </details>`;
     }).join('') : '<p class="note">Every answer was right. Try a harder level or a shorter time limit.</p>'}
-  </div>`;
+  </div>
+  <div class="row exits"><button class="btn ghost" data-act="new2">New exam</button><button class="btn" data-act="done">Done: back to Home</button></div>`;
   const root = ctx.app;
   root.querySelector('[data-act="again"]').addEventListener('click', () => start(r.cfg));
+  const done = () => { result = null; ctx.go('home'); };
+  root.querySelector('[data-act="close"]').addEventListener('click', done);
+  root.querySelector('[data-act="done"]').addEventListener('click', done);
   root.querySelector('[data-act="new"]').addEventListener('click', () => { result = null; renderExam(); });
   root.querySelector('[data-act="drill"]')?.addEventListener('click', () => ctx.startSession('drill', { ids: wrong.map((x) => x.id) }));
+  root.querySelector('[data-act="new2"]').addEventListener('click', () => { result = null; renderExam(); window.scrollTo(0, 0); });
   root.querySelector('[data-act="toggle-all"]').addEventListener('click', () => { showAll = !showAll; renderResult(); });
 }
 
