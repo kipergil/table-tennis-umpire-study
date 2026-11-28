@@ -1,9 +1,9 @@
 import { schedule, previewLabel, isLearned, endOfDay, dayKey, formatWait, DAY } from './scheduler.js';
 import { loadProgress, saveProgress, normalise, exportJSON, defaultProgress } from './storage.js';
-import { setManifest, esc, fmt, shuffle, levelTag, topicName, cardTags, refsHTML, explain, diagramSVG,
+import { setManifest, esc, fmt, shuffle, levelTag, levelName, topicName, cardTags, refsHTML, explain, diagramSVG,
   optionOrder, stepperHTML, wireStepper, optsClass, questionFigure, supportHTML, FORMAT_NAMES, LEVEL_ORDER } from './ui.js';
 import { answerText, checkNumber, isCorrect, expandCard } from './grading.js';
-import { initExam, renderExam, examKey, examActive } from './exam.js';
+import { initExam, renderExam, examKey, examActive, startTest, historyTable, MINUTES, PASS_MARKS } from './exam.js';
 import { initTrainer, renderTrainer } from './trainer.js';
 import { initStats, renderStats } from './stats.js';
 import { initHelp, renderHelp } from './help.js';
@@ -31,7 +31,7 @@ const ctx = {
   get manifest() { return manifest; },
   get byId() { return byId; },
   get prevRoute() { return prevRoute; },
-  save, enabledCards, go, route, startSession
+  save, enabledCards, go, route, startSession, recordAnswer
 };
 
 function enabledCards() {
@@ -91,8 +91,9 @@ function weakestTopics() {
 }
 
 /* ---------- routing ---------- */
-const VIEWS = { home: renderHome, study: renderStudy, exam: renderExam, trainer: renderTrainer, library: renderLibrary, stats: renderStats, more: renderMore, help: renderHelp };
-const NAV_FOR = { trainer: 'study' };
+const VIEWS = { home: renderHome, study: renderStudy, test: renderTestSetup, exam: renderExam, trainer: renderTrainer, library: renderLibrary, stats: renderStats, more: renderMore, help: renderHelp };
+// Pages that light up another menu item: the trainer, test setup and running tests live under Practice.
+const NAV_FOR = { trainer: 'study', test: 'study', exam: 'study' };
 
 function route() {
   const name = location.hash.slice(1);
@@ -101,7 +102,7 @@ function route() {
 
 // Where the user was before the current page (for "Back" buttons).
 let lastRoute = 'home', prevRoute = 'home';
-const PLACE = { home: 'Home', study: 'Study', exam: 'Exam', library: 'Library', stats: 'Stats', more: 'More', trainer: 'Trainer', help: 'How to use' };
+const PLACE = { home: 'Today', study: 'Practice', test: 'Practice', exam: 'test results', library: 'Library', stats: 'Stats', more: 'More', trainer: 'Trainer', help: 'How to use' };
 
 function render() {
   const r = route();
@@ -126,6 +127,16 @@ function onHashChange() {
   if (skipHashChange) { skipHashChange = false; return; }
   render();
 }
+// Tapping the menu item of the page you're already on opens that page fresh
+// (e.g. Practice right after a session shows the Practice form, not the results).
+nav.addEventListener('click', (e) => {
+  const a = e.target.closest('a[href^="#"]');
+  if (!a || a.getAttribute('href') !== (location.hash || '#home')) return;
+  e.preventDefault();
+  lastSummary = null;
+  render();
+  window.scrollTo(0, 0);
+});
 
 /* ---------- home ---------- */
 function renderHome() {
@@ -144,20 +155,18 @@ function renderHome() {
   <div class="topbar"><span class="brand">Love<em>-</em>All</span><span class="small">${st ? `${st}-day streak` : 'Start a streak today'}</span></div>
   ${P.settings.welcomed ? '' : `<div class="panel welcome">
     <h2 class="h">Welcome to Love-All</h2>
-    <p class="note">Learn the table tennis rules an umpire needs with short daily reviews, practice exams and a doubles serving-order trainer. Take two minutes to see how it works.</p>
+    <p class="note">Learn the table tennis rules an umpire needs: a few minutes of practice a day, tests when you're ready, and a doubles serving-order trainer. Take two minutes to see how it works.</p>
     <div class="row"><a class="btn" href="#help" data-act="welcome-help">How to use</a><button class="btn ghost" data-act="welcome-close">Got it, start studying</button></div>
   </div>`}
-  <div class="panel">
-    <div class="spread">
-      <div><div class="small">Due today</div><div class="big">${due}</div></div>
-      <div class="right"><div class="small">New available</div><div class="big accent">${fresh}</div></div>
-    </div>
-    <div class="stack" style="margin-top:14px">
-      ${work ? `<button class="btn" data-act="review">Start review · about ${mins} min</button>` :
-      `<p class="note">You're all caught up for today. Come back tomorrow, or drill any topic without affecting your schedule.</p>`}
-      ${fresh && due ? `<button class="btn ghost" data-act="learn">Learn ${fresh} new cards only</button>` : ''}
-      <a class="btn ghost" href="#study">Drill a level or topic</a>
-    </div>
+  <div class="panel today">
+    ${work ? `
+      <div class="small">Today's practice</div>
+      <div class="today-row"><span class="big">${work}</span><span class="note">card${work === 1 ? '' : 's'}: ${due} to review, ${fresh} new · about ${mins} min</span></div>
+      <button class="btn big-btn" data-act="review">Start today's practice</button>` : `
+      <div class="small">Today's practice</div>
+      <p class="done-today"><b>All done for today ✓</b><br><span class="note">New cards arrive tomorrow. You can keep practising anything you like.</span></p>
+      <a class="btn" href="#study">Practise something else</a>`}
+    ${work ? '<a class="linkish" href="#study">Or practise something specific →</a>' : ''}
   </div>
   <div class="panel">
     <div class="spread"><h2 class="h">Levels</h2><span class="small">learned / total</span></div>
@@ -174,39 +183,167 @@ function renderHome() {
     <p class="small" style="margin:10px 0 0">A card counts as learned once you remember it a week or more after studying it.</p>
   </div>
   <div class="tools">
-    <a class="panel tool" href="#exam"><b>Practice exam</b><span class="small">${lastExam ? `Last: ${lastExam.pct}% ${lastExam.passed ? '· pass' : '· below pass mark'}` : 'Timed, with a full review'}</span></a>
+    <a class="panel tool" href="#test"><b>Test yourself</b><span class="small">${lastExam ? `Last test: ${lastExam.pct}% ${lastExam.passed ? '· pass' : '· not yet'}` : 'Timed, score at the end'}</span></a>
     <a class="panel tool" href="#trainer"><b>Doubles order trainer</b><span class="small">Who serves, who receives?</span></a>
   </div>
   <div class="panel">
     <h2 class="h">Weakest topics</h2>
     ${weak.length ? `<div class="stack">${weak.map((t) => `
-      <button class="topic" data-drill-topic="${esc(t.id)}" title="Drill this topic">
+      <button class="topic" data-drill-topic="${esc(t.id)}" title="Practise this topic">
         <span>${esc(topicName(t.id))}</span>
         <span class="meter o"><i style="width:${Math.round(t.acc * 100)}%"></i></span>
         <span class="small num">${Math.round(t.acc * 100)}%</span>
       </button>`).join('')}</div>` :
-      `<p class="note">Answer a few cards and your three weakest topics will appear here, ready to drill.</p>`}
+      `<p class="note">Answer a few cards and your three weakest topics will appear here. Tap one to practise it.</p>`}
   </div>
   ${supportHTML('home')}`;
 
   app.querySelector('[data-act="review"]')?.addEventListener('click', () => startSession('review'));
-  app.querySelector('[data-act="learn"]')?.addEventListener('click', () => startSession('learn'));
-  app.querySelectorAll('[data-drill-topic]').forEach((b) => b.addEventListener('click', () => startSession('drill', { topic: b.dataset.drillTopic })));
+  app.querySelectorAll('[data-drill-topic]').forEach((b) => b.addEventListener('click', () => startSession('drill', { what: 'topic', topic: b.dataset.drillTopic, count: 20 })));
   const welcomed = () => { P.settings.welcomed = true; save(); };
   app.querySelector('[data-act="welcome-help"]')?.addEventListener('click', welcomed);
   app.querySelector('[data-act="welcome-close"]')?.addEventListener('click', () => { welcomed(); renderHome(); });
 }
 
-/* ---------- study: chooser + session ---------- */
+/* ---------- practice ---------- */
+// A "mistake" is a card whose most recent answer was wrong.
+// (Older progress has no lastCorrect: then a card answered wrongly that isn't learned yet counts.)
+function isMistake(c) {
+  const s = P.cards[c.id];
+  if (!s) return false;
+  return s.lastCorrect === false || (s.lastCorrect === undefined && (s.wrong || 0) > 0 && !isLearned(s));
+}
+
+const PRACTICE_DEFAULTS = { what: 'all', level: 'basic', topic: '', format: '', count: 20, test: false, minutes: 30, pass: 80 };
+const COUNTS = [10, 20, 30, 50, 9999];
+
+function practiceSettings() {
+  const st = { ...PRACTICE_DEFAULTS, ...(P.settings.practice || {}) };
+  if (!st.topic) st.topic = manifest.topics[0].id;
+  return st;
+}
+
+/** The cards a practice choice covers. */
+function practicePool(f) {
+  return enabledCards().filter((c) =>
+    (f.what === 'mistakes' ? isMistake(c) : true) &&
+    (f.what === 'level' ? c.level === f.level : true) &&
+    (f.what === 'topic' ? c.topic === f.topic : true) &&
+    // older filters (from before the Practice page) used level/topic without "what"
+    (!f.what && f.level ? c.level === f.level : true) &&
+    (!f.what && f.topic ? c.topic === f.topic : true) &&
+    (!f.format || c.format === f.format));
+}
+
+function practiceLabel(f) {
+  if (f.what === 'mistakes') return 'My mistakes';
+  if (f.what === 'level') return `${levelName(f.level)} level`;
+  if (f.what === 'topic') return topicName(f.topic);
+  return 'Everything';
+}
+
+function renderTestSetup() {
+  // "Test yourself" links here: the Practice page with Test mode switched on.
+  P.settings.practice = { ...practiceSettings(), test: true };
+  save();
+  renderPractice();
+}
+
+function renderPractice() {
+  const st = practiceSettings();
+  const pool = enabledCards();
+  const mistakes = pool.filter(isMistake).length;
+  if (st.what === 'mistakes' && !mistakes) st.what = 'all';
+  const levels = manifest.levels.filter((l) => pool.some((c) => c.level === l.id));
+  const topics = manifest.topics.filter((t) => pool.some((c) => c.topic === t.id));
+  const formats = Object.keys(FORMAT_NAMES).filter((f) => pool.some((c) => c.format === f));
+  const history = P.exams || [];
+  const choice = (val, title, desc, extra = '', disabled = false) => `
+    <label class="choice ${disabled ? 'off' : ''}">
+      <input type="radio" name="what" value="${val}" ${st.what === val ? 'checked' : ''} ${disabled ? 'disabled' : ''}>
+      <span class="choice-body"><b>${title}</b><span class="small">${desc}</span>${extra}</span>
+    </label>`;
+  app.innerHTML = `
+  <div class="topbar"><span class="brand">Practice</span></div>
+  <form class="panel stack" id="practice-form">
+    <h2 class="h">What do you want to practise?</h2>
+    <div class="choices" role="radiogroup" aria-label="What to practise">
+      ${choice('mistakes', 'My mistakes', mistakes ? `${mistakes} card${mistakes === 1 ? '' : 's'} you got wrong last time` : 'Nothing yet: cards you get wrong will collect here', '', !mistakes)}
+      ${choice('level', 'A level', 'Basic, Intermediate or Advanced',
+        `<select id="pr-level" aria-label="Level">${levels.map((l) => `<option value="${l.id}" ${st.level === l.id ? 'selected' : ''}>${esc(l.name)}</option>`).join('')}</select>`)}
+      ${choice('topic', 'A topic', 'For example service, lets or time-outs',
+        `<select id="pr-topic" aria-label="Topic">${topics.map((t) => `<option value="${t.id}" ${st.topic === t.id ? 'selected' : ''}>${esc(t.name)}</option>`).join('')}</select>`)}
+      ${choice('all', 'Everything', `All ${pool.length} cards, mixed`)}
+    </div>
+    <label class="field"><span>How many questions?</span>
+      <select id="pr-count">${COUNTS.map((n) => `<option value="${n}" ${st.count === n ? 'selected' : ''}>${n === 9999 ? 'All of them' : n}</option>`).join('')}</select></label>
+    <label class="switch-row">
+      <input type="checkbox" id="pr-test" ${st.test ? 'checked' : ''}>
+      <span class="switch" aria-hidden="true"></span>
+      <span><b>Test mode</b><span class="small">Timed, with no answers until the end. Then you get your score and a review of every mistake.</span></span>
+    </label>
+    <div class="grid2 test-opts" ${st.test ? '' : 'hidden'}>
+      <label class="field"><span>Time limit</span>
+        <select id="pr-min">${MINUTES.map((m) => `<option value="${m}" ${st.minutes === m ? 'selected' : ''}>${m ? `${m} minutes` : 'No limit'}</option>`).join('')}</select></label>
+      <label class="field"><span>Pass mark</span>
+        <select id="pr-pass">${PASS_MARKS.map((x) => `<option value="${x}" ${st.pass === x ? 'selected' : ''}>${x}%</option>`).join('')}</select></label>
+    </div>
+    <details class="more-opts" ${st.format ? 'open' : ''}><summary>More options</summary>
+      <label class="field"><span>Question type</span>
+        <select id="pr-format"><option value="">All types</option>${formats.map((f) => `<option value="${f}" ${st.format === f ? 'selected' : ''}>${esc(FORMAT_NAMES[f])}</option>`).join('')}</select></label>
+    </details>
+    <p class="small" id="pr-match" role="status"></p>
+    <button class="btn big-btn" type="submit" id="pr-go">Start</button>
+    <p class="small">Every answer counts towards your learning schedule.</p>
+  </form>
+  <a class="panel tool" href="#trainer"><b>Doubles serving-order trainer</b><span class="small">Work out who serves and receives in any game, including the deciding-game switch at 5.</span></a>
+  ${history.length ? `<div class="panel">
+    <div class="spread"><h2 class="h">Recent tests</h2><a class="small" href="#stats">All stats</a></div>
+    ${historyTable(history.slice(-5).reverse())}
+  </div>` : ''}`;
+
+  const form = app.querySelector('#practice-form');
+  const read = () => ({
+    what: form.querySelector('input[name=what]:checked')?.value || 'all',
+    level: form.querySelector('#pr-level').value,
+    topic: form.querySelector('#pr-topic').value,
+    format: form.querySelector('#pr-format').value,
+    count: +form.querySelector('#pr-count').value,
+    test: form.querySelector('#pr-test').checked,
+    minutes: +form.querySelector('#pr-min').value,
+    pass: +form.querySelector('#pr-pass').value
+  });
+  const upd = () => {
+    const f = read();
+    P.settings.practice = f; save();
+    const n = practicePool(f).length;
+    const k = Math.min(n, f.count);
+    form.querySelector('.test-opts').hidden = !f.test;
+    form.querySelector('#pr-match').textContent = n ? `${k} question${k === 1 ? '' : 's'} from ${practiceLabel(f)}${n > k ? ` (${n} available)` : ''}.` : 'No cards match. Choose something else or clear the question type.';
+    const go = form.querySelector('#pr-go');
+    go.disabled = !n;
+    go.textContent = f.test ? `Start test · ${k} question${k === 1 ? '' : 's'}${f.minutes ? `, ${f.minutes} min` : ''}` : `Start practice · ${k} question${k === 1 ? '' : 's'}`;
+  };
+  // Picking a level or topic from its list also selects that choice.
+  [['#pr-level', 'level'], ['#pr-topic', 'topic']].forEach(([sel, val]) => form.querySelector(sel).addEventListener('change', () => { form.querySelector(`input[value=${val}]`).checked = true; upd(); }));
+  form.addEventListener('change', upd); upd();
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const f = read();
+    const ids = shuffle(practicePool(f)).map((c) => c.id);
+    if (!ids.length) return;
+    if (f.test) startTest({ ids, count: f.count, minutes: f.minutes, pass: f.pass, label: practiceLabel(f), filter: f });
+    else startSession('drill', { ...f });
+  });
+}
+
+/* ---------- study sessions ---------- */
 function startSession(mode, filter = {}, from = null) {
   const origin = from || (route() === 'study' && lastSummary ? lastSummary.from : route());
   let ids;
   if (mode === 'drill') {
     if (filter.ids) ids = shuffle(filter.ids.filter((id) => byId[id]));
-    else {
-      const pool = enabledCards().filter((c) => (!filter.level || c.level === filter.level) && (!filter.topic || c.topic === filter.topic) && (!filter.format || c.format === filter.format));
-      ids = shuffle(pool).slice(0, filter.count || 20).map((c) => c.id);
-    }
+    else ids = shuffle(practicePool(filter)).slice(0, filter.count || 20).map((c) => c.id);
   } else {
     const fresh = newCards().slice(0, newLeftToday()).map((c) => c.id);
     if (mode === 'learn') ids = fresh;
@@ -237,55 +374,13 @@ function prepCard() {
 function renderStudy() {
   if (session) return renderSession();
   if (lastSummary) return renderFinished();
-  const pool = enabledCards();
-  const due = dueCards(pool).length;
-  const fresh = Math.min(newLeftToday(), newCards(pool).length);
-  const levels = manifest.levels.filter((l) => pool.some((c) => c.level === l.id));
-  const topics = manifest.topics.filter((t) => pool.some((c) => c.topic === t.id));
-  const formats = Object.keys(FORMAT_NAMES).filter((f) => pool.some((c) => c.format === f));
-  app.innerHTML = `
-  <div class="topbar"><span class="brand">Study</span></div>
-  <div class="panel stack">
-    <h2 class="h">Scheduled study</h2>
-    <p class="note">${due} due today, ${fresh} new available. Topics are mixed, which trains you to recall the right rule the way you would at the table.</p>
-    <button class="btn" data-act="review" ${due + fresh ? '' : 'disabled'}>Start review</button>
-    <button class="btn ghost" data-act="learn" ${fresh ? '' : 'disabled'}>Learn new cards only</button>
-  </div>
-  <form class="panel stack" id="drill-form">
-    <h2 class="h">Drill</h2>
-    <p class="note">Practise one level or topic as often as you like. Drills don't change your review schedule.</p>
-    <label class="field"><span>Level</span>
-      <select id="drill-level"><option value="">All levels</option>${levels.map((l) => `<option value="${l.id}">${esc(l.name)}</option>`).join('')}</select></label>
-    <label class="field"><span>Topic</span>
-      <select id="drill-topic"><option value="">All topics</option>${topics.map((t) => `<option value="${t.id}">${esc(t.name)}</option>`).join('')}</select></label>
-    <label class="field"><span>Question type</span>
-      <select id="drill-format"><option value="">All types</option>${formats.map((f) => `<option value="${f}">${esc(FORMAT_NAMES[f])}</option>`).join('')}</select></label>
-    <label class="field"><span>Cards</span>
-      <select id="drill-count"><option value="10">10</option><option value="20" selected>20</option><option value="9999">All matching</option></select></label>
-    <p class="small" id="drill-match"></p>
-    <button class="btn" type="submit">Start drill</button>
-  </form>
-  <a class="panel tool" href="#trainer"><b>Doubles serving-order trainer</b><span class="small">Endless practice: work out who serves and receives in any game, including the deciding-game switch at 5.</span></a>`;
-  app.querySelector('[data-act="review"]').addEventListener('click', () => startSession('review'));
-  app.querySelector('[data-act="learn"]').addEventListener('click', () => startSession('learn'));
-  const form = app.querySelector('#drill-form');
-  const upd = () => {
-    const l = form.querySelector('#drill-level').value, t = form.querySelector('#drill-topic').value, f = form.querySelector('#drill-format').value;
-    const n = pool.filter((c) => (!l || c.level === l) && (!t || c.topic === t) && (!f || c.format === f)).length;
-    form.querySelector('#drill-match').textContent = `${n} card${n === 1 ? '' : 's'} match.`;
-    form.querySelector('button[type=submit]').disabled = !n;
-  };
-  form.addEventListener('change', upd); upd();
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    startSession('drill', { level: form.querySelector('#drill-level').value, topic: form.querySelector('#drill-topic').value, format: form.querySelector('#drill-format').value, count: +form.querySelector('#drill-count').value });
-  });
+  return renderPractice();
 }
 
 function renderSession() {
   const s = session;
   const c = byId[s.queue[s.pos]];
-  const title = s.mode === 'drill' ? 'Drill' : s.mode === 'learn' ? 'Learn' : 'Review';
+  const title = s.mode === 'drill' ? 'Practice' : 'Today';
   const pct = Math.round(100 * s.pos / s.queue.length);
   app.innerHTML = `
   <div class="topbar">
@@ -377,12 +472,12 @@ function footerHTML(c) {
     if (!s.revealed) return '';
     const prev = P.cards[c.id];
     return `<div class="grade" role="group" aria-label="How well did you remember it?">
-      ${GRADES.map((g, i) => `<button data-grade="${i}" class="${i === 0 ? 'again' : ''}">${g}<span>${s.mode === 'drill' ? `key ${i + 1}` : previewLabel(prev, i)}</span></button>`).join('')}
+      ${GRADES.map((g, i) => `<button data-grade="${i}" class="${i === 0 ? 'again' : ''}">${g}<span>${previewLabel(prev, i)}</span></button>`).join('')}
     </div>`;
   }
   if (s.chosen === null) return '';
   return `<div class="stack">
-    ${s.chosen && s.mode !== 'drill' ? `<label class="check"><input type="checkbox" id="guessed" ${s.guessed ? 'checked' : ''}> I guessed. Show it to me again sooner</label>` : ''}
+    ${s.chosen ? `<label class="check"><input type="checkbox" id="guessed" ${s.guessed ? 'checked' : ''}> I guessed. Show it to me again sooner</label>` : ''}
     <button class="btn" data-act="next">Continue <span class="small inv">Enter</span></button>
   </div>`;
 }
@@ -426,22 +521,29 @@ function next(c) {
   commit(c, correct ? (session.guessed ? 1 : 2) : 0, correct);
 }
 
+/**
+ * Record one answer: reschedule the card and update today's stats. Used by Today, Practice and tests,
+ * so every answer counts. New cards met outside Today don't use up Today's new-card allowance.
+ */
+function recordAnswer(c, grade, correct, { countsAsNew = false } = {}) {
+  const prev = P.cards[c.id];
+  const ns = schedule(prev, grade);
+  ns.right = (prev?.right || 0) + (correct ? 1 : 0);
+  ns.wrong = (prev?.wrong || 0) + (correct ? 0 : 1);
+  ns.lastCorrect = !!correct;
+  P.cards[c.id] = ns;
+  const d = today();
+  d.reviews++;
+  if (correct) d.correct++;
+  if (!prev && countsAsNew) d.fresh++;
+  save();
+}
+
 function commit(c, grade, correct) {
   const s = session;
-  if (s.mode !== 'drill') {
-    const prev = P.cards[c.id];
-    const ns = schedule(prev, grade);
-    ns.right = (prev?.right || 0) + (correct ? 1 : 0);
-    ns.wrong = (prev?.wrong || 0) + (correct ? 0 : 1);
-    P.cards[c.id] = ns;
-    const d = today();
-    d.reviews++;
-    if (correct) d.correct++;
-    if (!prev) d.fresh++;
-    save();
-    // "Again" brings the card back later in this session.
-    if (grade === 0) s.queue.splice(Math.min(s.pos + 5, s.queue.length), 0, c.id);
-  }
+  recordAnswer(c, grade, correct, { countsAsNew: s.mode !== 'drill' });
+  // "Again" brings the card back later in this session.
+  if (grade === 0) s.queue.splice(Math.min(s.pos + 5, s.queue.length), 0, c.id);
   s.results.push({ id: c.id, correct, grade });
   s.pos++;
   if (s.pos >= s.queue.length) return endSession();
@@ -478,20 +580,20 @@ function renderFinished() {
   const pool = enabledCards();
   const moreDue = dueCards(pool).length + Math.min(newLeftToday(), newCards(pool).length);
   const from = sm.from && sm.from !== 'study' && VIEWS[sm.from] ? sm.from : null;
-  const backLabel = from === 'exam' ? 'Back to exam results' : from ? `Back to ${PLACE[from]}` : null;
+  const backLabel = from === 'exam' ? 'Back to test results' : from ? `Back to ${PLACE[from]}` : null;
   app.innerHTML = `
-  <div class="topbar"><span class="brand">${sm.mode === 'drill' ? 'Drill' : 'Session'} complete</span>
+  <div class="topbar"><span class="brand">${sm.mode === 'drill' ? 'Practice' : 'Today’s practice'} complete</span>
     <button class="icon" data-act="close" aria-label="Close and go ${from ? `back to ${esc(PLACE[from])}` : 'home'}">✕</button></div>
   ${summaryHTML(sm)}
   <div class="panel stack next-steps">
     <h2 class="h">What next?</h2>
     ${sm.missed.length ? `<button class="btn" data-act="missed">Practise the ${sm.missed.length} I missed</button>` : ''}
     ${sm.mode !== 'drill' && moreDue ? `<button class="btn ${sm.missed.length ? 'ghost' : ''}" data-act="more">Keep going: ${moreDue} more card${moreDue === 1 ? '' : 's'}</button>` : ''}
-    ${sm.mode === 'drill' && !sm.filter?.ids ? `<button class="btn ${sm.missed.length ? 'ghost' : ''}" data-act="again">Drill this again</button>` : ''}
+    ${sm.mode === 'drill' && !sm.filter?.ids ? `<button class="btn ${sm.missed.length ? 'ghost' : ''}" data-act="again">Practise this again</button>` : ''}
     <div class="row exits">
       ${backLabel ? `<button class="btn ghost" data-act="back">← ${esc(backLabel)}</button>` : ''}
-      ${from !== null || sm.from === 'study' ? '<button class="btn ghost" data-act="study">Study page</button>' : ''}
-      ${from !== 'home' ? '<button class="btn ghost" data-act="home">Home</button>' : ''}
+      ${from !== null || sm.from === 'study' ? '<button class="btn ghost" data-act="study">Practice page</button>' : ''}
+      ${from !== 'home' ? '<button class="btn ghost" data-act="home">Today</button>' : ''}
     </div>
   </div>
   ${supportHTML('session')}`;
@@ -590,7 +692,7 @@ function renderMore() {
   </form>
   <div class="panel stack">
     <h2 class="h">Back up your progress</h2>
-    <p class="note">Progress, exam results and trainer scores are saved only in this browser. Export a backup to keep them safe or move them to another device.</p>
+    <p class="note">Progress, test results and trainer scores are saved only in this browser. Export a backup to keep them safe or move them to another device.</p>
     <button class="btn ghost" data-act="export">Download backup file</button>
     <button class="btn ghost" data-act="copy">Copy backup as text</button>
     <label class="field"><span>Restore from a backup file</span><input type="file" id="imp-file" accept=".json,application/json"></label>
@@ -605,7 +707,7 @@ function renderMore() {
   </div>
   <div class="panel stack">
     <h2 class="h">Reset</h2>
-    ${resetArmed ? `<p class="note warn">This deletes all your progress, exam results and trainer scores in this browser. It can't be undone unless you have a backup.</p>
+    ${resetArmed ? `<p class="note warn">This deletes all your progress, test results and trainer scores in this browser. It can't be undone unless you have a backup.</p>
       <div class="row"><button class="btn danger" data-act="reset-yes">Yes, delete my progress</button><button class="btn ghost" data-act="reset-no">Cancel</button></div>` :
       '<button class="btn ghost" data-act="reset">Reset all progress…</button>'}
   </div>

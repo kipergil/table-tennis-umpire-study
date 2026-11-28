@@ -1,12 +1,11 @@
-// Configurable exam simulation: no feedback until the end, then a full review.
+// Test mode (started from the Practice page): timed, no feedback until the end, then a full review.
+// Every answered question also counts towards the learning schedule.
 import { esc, fmt, shuffle, levelTag, topicName, levelName, cardTags, diagramSVG, explain, optionOrder, optsClass, questionFigure, supportHTML,
   stepperHTML, wireStepper, fmtTime, fmtDate, LEVEL_ORDER } from './ui.js';
 import { isCorrect, answerText, responseText } from './grading.js';
 
-const COUNTS = [10, 20, 30, 40, 50];
-const MINUTES = [0, 10, 15, 20, 30, 45, 60];
-const PASS_MARKS = [60, 70, 75, 80, 85, 90];
-const DEFAULTS = { count: 30, minutes: 30, pass: 80, levels: ['basic', 'intermediate', 'advanced'] };
+export const MINUTES = [0, 10, 15, 20, 30, 45, 60];
+export const PASS_MARKS = [60, 70, 75, 80, 85, 90];
 
 let ctx = null;
 let exam = null;       // active exam
@@ -19,71 +18,11 @@ let ticker = null;
 export function initExam(c) { ctx = c; }
 export function examActive() { return !!exam; }
 
-function settings() {
-  const s = { ...DEFAULTS, ...(ctx.P.settings.exam || {}) };
-  if (!Array.isArray(s.levels) || !s.levels.length) s.levels = DEFAULTS.levels.slice();
-  return s;
-}
-
-function pool(levels) {
-  return ctx.enabledCards().filter((c) => levels.includes(c.level));
-}
-
 export function renderExam() {
   if (exam && exam.endsAt && Date.now() >= exam.endsAt) finish(true);
   if (exam) return renderQuestion();
   if (result) return renderResult();
-  return renderSetup();
-}
-
-/* ---------- setup ---------- */
-function renderSetup() {
-  const s = settings();
-  const history = ctx.P.exams || [];
-  ctx.app.innerHTML = `
-  <div class="topbar"><span class="brand">Exam</span></div>
-  <form class="panel stack" id="exam-form">
-    <h2 class="h">Practice exam</h2>
-    <p class="note">Questions are drawn at random from the levels you choose. You see no feedback until you finish; then you get your score and a review of every mistake with its source. Exams don't change your study schedule.</p>
-    <fieldset class="field fs"><legend>Levels</legend>
-      <div class="row">${ctx.manifest.levels.map((l) => `
-        <label class="chip-check"><input type="checkbox" name="lvl" value="${l.id}" ${s.levels.includes(l.id) ? 'checked' : ''}> ${esc(l.name)}</label>`).join('')}
-      </div>
-    </fieldset>
-    <div class="grid2">
-      <label class="field"><span>Questions</span>
-        <select id="ex-count">${COUNTS.map((n) => `<option value="${n}" ${s.count === n ? 'selected' : ''}>${n}</option>`).join('')}</select></label>
-      <label class="field"><span>Time limit</span>
-        <select id="ex-min">${MINUTES.map((m) => `<option value="${m}" ${s.minutes === m ? 'selected' : ''}>${m ? `${m} minutes` : 'No limit'}</option>`).join('')}</select></label>
-      <label class="field"><span>Pass mark</span>
-        <select id="ex-pass">${PASS_MARKS.map((p) => `<option value="${p}" ${s.pass === p ? 'selected' : ''}>${p}%</option>`).join('')}</select></label>
-    </div>
-    <p class="small" id="ex-avail" role="status"></p>
-    <button class="btn" type="submit">Start exam</button>
-  </form>
-  ${history.length ? `<div class="panel">
-    <div class="spread"><h2 class="h">Recent exams</h2><a class="small" href="#stats">All stats</a></div>
-    ${historyTable(history.slice(-5).reverse())}
-  </div>` : ''}`;
-
-  const form = ctx.app.querySelector('#exam-form');
-  const read = () => ({
-    levels: [...form.querySelectorAll('input[name=lvl]:checked')].map((i) => i.value),
-    count: +form.querySelector('#ex-count').value,
-    minutes: +form.querySelector('#ex-min').value,
-    pass: +form.querySelector('#ex-pass').value
-  });
-  const upd = () => {
-    const cfg = read();
-    const n = pool(cfg.levels).length;
-    const avail = form.querySelector('#ex-avail');
-    avail.textContent = !cfg.levels.length ? 'Choose at least one level.' :
-      n < cfg.count ? `Only ${n} questions are available for these levels, so the exam will have ${n}.` : `${n} questions available; ${cfg.count} will be drawn at random.`;
-    form.querySelector('button[type=submit]').disabled = !n;
-  };
-  form.addEventListener('change', () => { ctx.P.settings.exam = read(); ctx.save(); upd(); });
-  upd();
-  form.addEventListener('submit', (e) => { e.preventDefault(); start(read()); });
+  return ctx.go('study');          // nothing running: the test is set up on the Practice page
 }
 
 export function historyTable(rows) {
@@ -96,8 +35,14 @@ export function historyTable(rows) {
   </table></div>`;
 }
 
+/**
+ * Start a test. cfg: { ids (the cards to draw from), count, minutes, pass, label, filter }.
+ * "Retake" draws again from the same ids.
+ */
+export function startTest(cfg) { start(cfg); }
+
 function start(cfg) {
-  const cards = shuffle(pool(cfg.levels)).slice(0, cfg.count);
+  const cards = shuffle(cfg.ids.map((id) => ctx.byId[id]).filter(Boolean)).slice(0, cfg.count);
   if (!cards.length) return;
   confirmQuit = false;
   exam = {
@@ -146,7 +91,7 @@ function renderQuestion() {
   const unanswered = exam.answers.filter((a) => !answered(a)).length;
   ctx.app.innerHTML = `
   <div class="topbar">
-    <button class="icon" data-act="quit" aria-label="Leave the exam">✕</button>
+    <button class="icon" data-act="quit" aria-label="Leave the test">✕</button>
     <span class="small">Question ${i + 1} of ${n}</span>
     <span class="timer" aria-label="${exam.endsAt ? 'Time left' : 'Time taken'}"><span id="ex-timer"></span></span>
   </div>
@@ -154,8 +99,8 @@ function renderQuestion() {
     ${exam.ids.map((_, k) => `<button class="qcell ${k === i ? 'cur' : ''} ${answered(exam.answers[k]) ? 'done' : ''} ${exam.flags[k] ? 'flag' : ''}" data-goto="${k}" aria-label="Question ${k + 1}${answered(exam.answers[k]) ? ', answered' : ''}${exam.flags[k] ? ', flagged' : ''}" ${k === i ? 'aria-current="true"' : ''}>${k + 1}</button>`).join('')}
   </nav>
   ${confirmQuit ? `<div class="panel stack confirm" role="alertdialog" aria-label="Leave the exam?">
-    <p class="note warn">Leave this exam? Your answers will be lost and the exam won't be saved.</p>
-    <div class="row"><button class="btn danger" data-act="quit-yes">Leave the exam</button><button class="btn ghost" data-act="quit-no">Keep going</button></div>
+    <p class="note warn">Leave this test? Your answers will be lost and the test won't be saved.</p>
+    <div class="row"><button class="btn danger" data-act="quit-yes">Leave the test</button><button class="btn ghost" data-act="quit-no">Keep going</button></div>
   </div>` : ''}
   <article class="card">
     ${cardTags(c)}
@@ -169,15 +114,15 @@ function renderQuestion() {
     ${i < n - 1 ? '<button class="btn" data-act="next">Next →</button>' : '<button class="btn" data-act="finish">Finish</button>'}
   </div>
   ${confirmFinish ? `<div class="panel stack confirm">
-    <p class="note warn">${unanswered ? `${unanswered} question${unanswered === 1 ? ' is' : 's are'} unanswered and will count as wrong.` : 'All questions answered.'} Finish the exam now?</p>
+    <p class="note warn">${unanswered ? `${unanswered} question${unanswered === 1 ? ' is' : 's are'} unanswered and will count as wrong.` : 'All questions answered.'} Finish the test now?</p>
     <div class="row"><button class="btn" data-act="finish-yes">Finish and see my score</button><button class="btn ghost" data-act="finish-no">Keep going</button></div>
-  </div>` : `<button class="btn ghost small-btn" data-act="finish">Finish exam${unanswered ? ` (${unanswered} unanswered)` : ''}</button>`}`;
+  </div>` : `<button class="btn ghost small-btn" data-act="finish">Finish test${unanswered ? ` (${unanswered} unanswered)` : ''}</button>`}`;
 
   updateTimer(ctx.app.querySelector('#ex-timer'));
   const root = ctx.app;
   root.querySelector('[data-act="quit"]').addEventListener('click', () => { confirmQuit = true; renderQuestion(); window.scrollTo(0, 0); root.querySelector('[data-act="quit-no"]')?.focus(); });
   root.querySelector('[data-act="quit-no"]')?.addEventListener('click', () => { confirmQuit = false; renderQuestion(); });
-  root.querySelector('[data-act="quit-yes"]')?.addEventListener('click', () => { clearInterval(ticker); exam = null; confirmQuit = false; ctx.go('exam'); });
+  root.querySelector('[data-act="quit-yes"]')?.addEventListener('click', () => { clearInterval(ticker); exam = null; confirmQuit = false; ctx.go('study'); });
   root.querySelectorAll('[data-goto]').forEach((b) => b.addEventListener('click', () => goTo(+b.dataset.goto)));
   root.querySelector('[data-act="prev"]').addEventListener('click', () => goTo(i - 1));
   root.querySelector('[data-act="next"]')?.addEventListener('click', () => goTo(i + 1));
@@ -233,13 +178,15 @@ function finish(timedOut) {
     const c = ctx.byId[id];
     return { id, response: exam.answers[k], correct: isCorrect(c, exam.answers[k]) };
   });
+  // Every answered question counts towards the schedule (unanswered ones are skipped).
+  items.forEach((x, k) => { if (answered(exam.answers[k])) ctx.recordAnswer(ctx.byId[x.id], x.correct ? 2 : 0, x.correct); });
   const correct = items.filter((x) => x.correct).length;
   const total = items.length;
   const pct = Math.round(100 * correct / total);
   const secs = Math.round(((timedOut && exam.endsAt ? exam.endsAt : Date.now()) - exam.startedAt) / 1000);
   result = { cfg: exam.cfg, items, correct, total, pct, passed: pct >= exam.cfg.pass, secs, timedOut, date: Date.now() };
   const P = ctx.P;
-  P.exams = [...(P.exams || []), { date: result.date, pct, correct, total, passed: result.passed, pass: exam.cfg.pass, secs, levels: exam.cfg.levels, minutes: exam.cfg.minutes }].slice(-50);
+  P.exams = [...(P.exams || []), { date: result.date, pct, correct, total, passed: result.passed, pass: exam.cfg.pass, secs, label: exam.cfg.label, minutes: exam.cfg.minutes }].slice(-50);
   ctx.save();
   exam = null; confirmFinish = false;
 }
@@ -262,7 +209,7 @@ function renderResult() {
   const byLevel = breakdown(r.items, 'level').sort((a, b) => LEVEL_ORDER[a.k] - LEVEL_ORDER[b.k]);
   const byTopic = breakdown(r.items, 'topic').sort((a, b) => a.pct - b.pct);
   ctx.app.innerHTML = `
-  <div class="topbar"><span class="brand">Exam results</span><button class="icon" data-act="close" aria-label="Close results and go home">✕</button></div>
+  <div class="topbar"><span class="brand">Test results</span><button class="icon" data-act="close" aria-label="Close results and go back to Practice">✕</button></div>
   <p class="small result-date">${esc(fmtDate(r.date))}</p>
   <div class="panel result-head">
     <div class="spread">
@@ -278,7 +225,7 @@ function renderResult() {
     <div class="stack">${byTopic.map((x) => barRow(esc(topicName(x.k)), x)).join('')}</div>
   </div>
   <div class="row">
-    <button class="btn" data-act="again">Retake with the same settings</button>
+    <button class="btn" data-act="again">Retake: new questions, same settings</button>
     <button class="btn ghost" data-act="new">Change settings</button>
     ${wrong.length ? `<button class="btn ghost" data-act="drill">Drill the ${wrong.length} I missed</button>` : ''}
   </div>
@@ -301,16 +248,16 @@ function renderResult() {
       </details>`;
     }).join('') : '<p class="note">Every answer was right. Try a harder level or a shorter time limit.</p>'}
   </div>
-  <div class="row exits"><button class="btn ghost" data-act="new2">New exam</button><button class="btn" data-act="done">Done: back to Home</button></div>
+  <div class="row exits"><button class="btn ghost" data-act="new2">Back to Practice</button><button class="btn" data-act="done">Done: back to Today</button></div>
   ${supportHTML('exam')}`;
   const root = ctx.app;
   root.querySelector('[data-act="again"]').addEventListener('click', () => start(r.cfg));
   const done = () => { result = null; ctx.go('home'); };
-  root.querySelector('[data-act="close"]').addEventListener('click', done);
+  root.querySelector('[data-act="close"]').addEventListener('click', () => { result = null; ctx.go('study'); });
   root.querySelector('[data-act="done"]').addEventListener('click', done);
-  root.querySelector('[data-act="new"]').addEventListener('click', () => { result = null; renderExam(); });
+  root.querySelector('[data-act="new"]').addEventListener('click', () => { result = null; ctx.go('study'); });
   root.querySelector('[data-act="drill"]')?.addEventListener('click', () => ctx.startSession('drill', { ids: wrong.map((x) => x.id) }));
-  root.querySelector('[data-act="new2"]').addEventListener('click', () => { result = null; renderExam(); window.scrollTo(0, 0); });
+  root.querySelector('[data-act="new2"]').addEventListener('click', () => { result = null; ctx.go('study'); });
   root.querySelector('[data-act="toggle-all"]').addEventListener('click', () => { showAll = !showAll; renderResult(); });
 }
 

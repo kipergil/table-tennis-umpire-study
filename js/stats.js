@@ -155,7 +155,7 @@ export function renderStats() {
     </div>
   </div>
   <div class="panel">
-    <h2 class="h">Topics</h2><p class="small chart-sub">Accuracy across all your answers, weakest first. Tap a topic to drill it.</p>
+    <h2 class="h">Topics</h2><p class="small chart-sub">Accuracy across all your answers, weakest first. Tap a topic to practise it.</p>
     <div class="tbl"><table>
       <thead><tr><th>Topic</th><th>Accuracy</th><th class="n">Answers</th><th class="n">Learned</th></tr></thead>
       <tbody>${topics.map((t) => `<tr class="clickrow" data-topic="${t.id}" tabindex="0">
@@ -165,8 +165,8 @@ export function renderStats() {
     </table></div>
   </div>
   <div class="panel">
-    <div class="spread"><h2 class="h">Exams</h2><a class="small" href="#exam">Take an exam</a></div>
-    ${exams.length ? historyTable(exams.slice(-10).reverse()) : '<p class="note">No exams yet. Your results will appear here.</p>'}
+    <div class="spread"><h2 class="h">Tests</h2><a class="small" href="#test">Take a test</a></div>
+    ${exams.length ? historyTable(exams.slice(-10).reverse()) : '<p class="note">No tests yet. Switch on Test mode on the Practice page and your results will appear here.</p>'}
   </div>
   <div class="panel">
     <div class="spread"><h2 class="h">Doubles order trainer</h2><a class="small" href="#trainer">Practise</a></div>
@@ -175,7 +175,7 @@ export function renderStats() {
 
   wireTips(ctx.app);
   ctx.app.querySelectorAll('[data-topic]').forEach((row) => {
-    const go = () => ctx.startSession('drill', { topic: row.dataset.topic });
+    const go = () => ctx.startSession('drill', { what: 'topic', topic: row.dataset.topic, count: 20 });
     row.addEventListener('click', go);
     row.addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
   });

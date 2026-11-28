@@ -1,7 +1,7 @@
 // Offline support. Every app file is cached on install; afterwards pages load from the cache
 // and are refreshed from the network in the background (stale-while-revalidate), so updates
 // arrive on the next visit. Bump VERSION when the file list changes.
-const VERSION = 'love-all-v6';
+const VERSION = 'love-all-v7';
 const FILES = [
   './',
   'index.html',

@@ -12,8 +12,9 @@ Every card cites its source clause, using the official ITTF numbering.
 - **365 cards** in three levels: Basic 83, Intermediate 147, Advanced 135. That includes an optional **Para pack** of 19 cards, switched on in **More**.
 - **75 exam-style cards** (true/false and "your decision") reworded from a sample umpire exam paper, plus extra cards of the same types. Each one notes which exam question it came from, and its answer was checked against the Laws and the HMO.
 - **Six card formats**: multiple choice, select all that apply, number (with a − / + stepper), "Umpire's Call" scenarios, **true or false**, and **your decision** (point to A or X, A/B or X/Y, let, or no action). Scenarios show the umpire's and assistant umpire's signal and call, and 13 have a table diagram. Drill and the library can filter by question type.
-- **Spaced repetition**: review due cards, learn new ones (10 a day by default), or drill any level or topic without changing the schedule.
-- **Practice exam**: choose levels, 10–50 questions, a time limit and a pass mark. You get no feedback until the end, then your score by level and topic, a review of every mistake, and a button to drill what you missed.
+- **Today**: one button, "Start today's practice", gives the cards due today plus up to 10 new ones (spaced repetition).
+- **Practice**: practise **My mistakes**, **a level**, **a topic** or **everything**, and choose how many questions. Switch on **Test mode** for a timed test with no answers until the end, then the score by level and topic, a review of every mistake, and a button to practise the missed questions.
+- **Every answer counts**: answers in Today, Practice and tests all update when each card comes back.
 - **Doubles serving-order trainer**: endless random situations, including later games and the receiving-order switch at 5 in the deciding game. Each answer comes with a worked rotation.
 - **Stats**: answers per day, reviews coming up, progress per level, accuracy by topic, exam history and trainer score.
 - **Works offline** once opened, and can be installed on a phone with "Add to Home Screen".
