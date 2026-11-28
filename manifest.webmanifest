@@ -1,7 +1,7 @@
 {
   "name": "TT Umpire Study",
   "short_name": "TT Umpire",
-  "description": "Flashcards, practice exams and a doubles serving-order trainer for table tennis umpires.",
+  "description": "Learn the rules of table tennis: flashcards, practice tests and a doubles serving-order trainer for umpires and players.",
   "start_url": "./#home",
   "scope": "./",
   "display": "standalone",

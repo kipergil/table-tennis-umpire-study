@@ -1,6 +1,6 @@
 # TT Umpire Study
 
-A study website for table tennis umpires, built from:
+A study website for the rules of table tennis, for **umpires** preparing for a qualification and for **club, league and casual players** who want to know the rules properly. It is built from:
 
 - **Law**: *The Laws of Table Tennis*, ITTF 2023-24 (issue of 22 July 2024)
 - **HMO**: ITTF *Handbook for Match Officials*, 17th edition (July 2023)
@@ -20,7 +20,7 @@ Every card cites its source clause, using the official ITTF numbering.
 - **Works offline** once opened, and can be installed like an app. An **Install on your phone** card on Today (dismissable, hidden once installed) and a full guide on How to use show the steps for iPhone/iPad, Android and computers, with a one-tap Install button where the browser supports it.
 - **Become an umpire** page: the five umpire levels used by Table Tennis England and the ITTF (Level 1 Basic, Level 2 National, Level 3 International/White Badge, Level 4 Blue Badge, Level 5 Gold Badge), which of them this app covers (strongest for Levels 1 and 2), a step-by-step guide to qualifying, and links to Table Tennis England and ITTF resources. Facts checked November 2026.
 - Progress stays in the browser. **More → Back up your progress** exports and restores it.
-- **How to use** page (the **?** in the menu) explains how studying works, every menu option, the question types and keyboard shortcuts. First-time visitors see a welcome panel on Home that links to it.
+- **How to use** page (in the **☰** menu) opens with who the app is for (club and league players, beginners, umpires, coaches and captains) and why players use it (faults that cost points, settling arguments, match confidence), with a one-tap **Start with the basics** button that sets up 10 Basic questions. It then explains how studying works, every menu option, the question types and keyboard shortcuts. First-time visitors see a welcome panel on Home that links to it.
 
 ## Deployment
 
