@@ -1,4 +1,4 @@
-# Love-All: table tennis umpire trainer
+# TT Umpire Study
 
 A study website for table tennis umpires, built from:
 
@@ -30,7 +30,7 @@ The site is hosted on **Vercel**: https://table-tennis-umpire-study.vercel.app
 
 ## Donation link
 
-A "Support Love-All" link (Ko-fi) appears on Home, More, How to use, and after sessions and exams. It stays hidden until a link is set in `data/manifest.json`:
+A "Support TT Umpire Study" link (Ko-fi) appears on Home, More, How to use, and after sessions and exams. It stays hidden until a link is set in `data/manifest.json`:
 
 ```json
 "support": { "platform": "Ko-fi", "url": "https://ko-fi.com/yourname" }

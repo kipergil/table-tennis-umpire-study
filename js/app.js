@@ -153,9 +153,9 @@ function renderHome() {
   const lastExam = (P.exams || []).at(-1);
 
   app.innerHTML = `
-  <div class="topbar"><span class="brand">Love<em>-</em>All</span><span class="small">${st ? `${st}-day streak` : 'Start a streak today'}</span></div>
+  <div class="topbar"><span class="brand">TT Umpire <em>Study</em></span><span class="small">${st ? `${st}-day streak` : 'Start a streak today'}</span></div>
   ${P.settings.welcomed ? '' : `<div class="panel welcome">
-    <h2 class="h">Welcome to Love-All</h2>
+    <h2 class="h">Welcome to TT Umpire Study</h2>
     <p class="note">Learn the table tennis rules an umpire needs: a few minutes of practice a day, tests when you're ready, and a doubles serving-order trainer. Take two minutes to see how it works.</p>
     <div class="row"><a class="btn" href="#help" data-act="welcome-help">How to use</a><button class="btn ghost" data-act="welcome-close">Got it, start studying</button></div>
   </div>`}
@@ -715,7 +715,7 @@ function renderMore() {
     <button class="btn ghost" data-act="export">Download backup file</button>
     <button class="btn ghost" data-act="copy">Copy backup as text</button>
     <label class="field"><span>Restore from a backup file</span><input type="file" id="imp-file" accept=".json,application/json"></label>
-    <label class="field"><span>…or paste backup text</span><textarea id="imp-text" rows="3" placeholder='{"app":"love-all", …}'></textarea></label>
+    <label class="field"><span>…or paste backup text</span><textarea id="imp-text" rows="3" placeholder='{"app":"tt-umpire-study", …}'></textarea></label>
     <button class="btn ghost" data-act="import">Restore pasted backup</button>
     <p class="small" id="backup-msg" role="status"></p>
   </div>
@@ -731,7 +731,7 @@ function renderMore() {
       '<button class="btn ghost" data-act="reset">Reset all progress…</button>'}
   </div>
   ${supportHTML('more')}
-  <a class="panel tool" href="#help"><b>How to use Love-All</b><span class="small">How studying works, the menu, question types and keyboard shortcuts.</span></a>
+  <a class="panel tool" href="#help"><b>How to use TT Umpire Study</b><span class="small">How studying works, the menu, question types and keyboard shortcuts.</span></a>
   <div class="panel">
     <h2 class="h">Sources</h2>
     <p class="note">Every card cites its source: <b>Law</b> = ${esc(manifest.sources.Law)}; <b>HMO</b> = ${esc(manifest.sources.HMO)}. Clause numbers follow the official ITTF numbering. Always check the current ITTF Handbook and your referee's briefing before officiating.</p>
@@ -751,7 +751,7 @@ function renderMore() {
     const blob = new Blob([exportJSON(P)], { type: 'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = `love-all-backup-${dayKey()}.json`;
+    a.download = `tt-umpire-study-backup-${dayKey()}.json`;
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
     msg('#backup-msg', 'Backup file created. If no download started, use “Copy backup as text” instead.');
@@ -765,7 +765,7 @@ function renderMore() {
     try {
       const data = normalise(JSON.parse(text));
       P = data; save(); msg('#backup-msg', `Restored ${Object.keys(P.cards).length} cards of progress.`);
-    } catch (e) { msg('#backup-msg', `Couldn't restore: ${e.message.includes('Love-All') ? e.message : 'the text is not a valid backup.'}`); }
+    } catch (e) { msg('#backup-msg', `Couldn't restore: ${e.message.includes('TT Umpire Study') ? e.message : 'the text is not a valid backup.'}`); }
   };
   app.querySelector('#imp-file').addEventListener('change', (e) => {
     const f = e.target.files[0]; if (!f) return;
@@ -822,7 +822,7 @@ async function boot() {
     allCards = decks.flat();
     byId = Object.fromEntries(allCards.map((c) => [c.id, c]));
   } catch (e) {
-    app.innerHTML = `<div class="panel"><h2 class="h">The cards didn't load</h2><p class="note">Love-All needs to be opened from a web address (for example its website or a local server), not straight from a file on disk. Details: ${esc(e.message)}</p></div>`;
+    app.innerHTML = `<div class="panel"><h2 class="h">The cards didn't load</h2><p class="note">TT Umpire Study needs to be opened from a web address (for example its website or a local server), not straight from a file on disk. Details: ${esc(e.message)}</p></div>`;
     return;
   }
   setManifest(manifest);

@@ -1,4 +1,5 @@
 // Progress is stored only in this browser (localStorage), with export/import for backup.
+// The storage key keeps its original name so existing progress is not lost after the rename.
 const KEY = 'loveall.progress.v1';
 
 export function defaultProgress() {
@@ -28,7 +29,7 @@ export function saveProgress(p) {
 export function normalise(obj) {
   const base = defaultProgress();
   if (!obj || typeof obj !== 'object' || typeof obj.cards !== 'object') {
-    throw new Error('This file is not a Love-All progress backup.');
+    throw new Error('This file is not a TT Umpire Study progress backup.');
   }
   return {
     version: 1,
@@ -41,5 +42,5 @@ export function normalise(obj) {
 }
 
 export function exportJSON(p) {
-  return JSON.stringify({ app: 'love-all', exported: new Date().toISOString(), ...p }, null, 1);
+  return JSON.stringify({ app: 'tt-umpire-study', exported: new Date().toISOString(), ...p }, null, 1);
 }

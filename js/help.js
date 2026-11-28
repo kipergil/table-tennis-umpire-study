@@ -1,4 +1,4 @@
-// "How to use" page: what Love-All is, how studying works, the menu, question types, shortcuts.
+// "How to use" page: what TT Umpire Study is, how studying works, the menu, question types, shortcuts.
 
 import { supportHTML } from './ui.js';
 
@@ -20,7 +20,7 @@ export function renderHelp() {
   <div class="topbar"><span class="brand">How to use</span></div>
 
   <div class="panel help-intro">
-    <p><b>Love-All</b> helps you learn the rules an umpire needs, from the basics to tricky match situations. Every question comes from the ITTF <i>Laws of Table Tennis</i> or the <i>Handbook for Match Officials</i>, and every answer tells you why and cites its clause.</p>
+    <p><b>TT Umpire Study</b> helps you learn the rules an umpire needs, from the basics to tricky match situations. Every question comes from the ITTF <i>Laws of Table Tennis</i> or the <i>Handbook for Match Officials</i>, and every answer tells you why and cites its clause.</p>
     <p class="small">${total} cards are switched on now, in three levels: <span class="tag b">Basic</span> <span class="tag i">Intermediate</span> <span class="tag a">Advanced</span></p>
     <nav class="help-toc" aria-label="On this page">
       ${SECTIONS.map(([id, t]) => `<button class="chip-link" data-jump="${id}">${t}</button>`).join('')}
@@ -105,11 +105,11 @@ export function renderHelp() {
       <dt>Back up or move</dt>
       <dd>In <a href="#more">More</a>, download a backup file (or copy it as text) and restore it on another device or browser. Do this now and then, so clearing your browser data doesn't wipe your progress.</dd>
       <dt>Offline and on your phone</dt>
-      <dd>After the first visit, Love-All works without a connection, which helps at venues with poor signal. On a phone, use your browser's <b>Add to Home Screen</b> to open it like an app.</dd>
+      <dd>After the first visit, TT Umpire Study works without a connection, which helps at venues with poor signal. On a phone, use your browser's <b>Add to Home Screen</b> to open it like an app.</dd>
       <dt>Para table tennis</dt>
       <dd>Rules for wheelchair and standing Para players are in an optional pack. Switch it on in <a href="#more">More</a>.</dd>
     </dl>
-    <p class="small">Love-All is a study aid. Before officiating, always check the current ITTF Handbook and follow your referee's briefing.</p>
+    <p class="small">TT Umpire Study is a study aid. Before officiating, always check the current ITTF Handbook and follow your referee's briefing.</p>
   </section>
 
   <a class="btn" href="#home">Start studying</a>
