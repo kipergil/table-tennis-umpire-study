@@ -147,8 +147,9 @@ function renderHome() {
   const rec = levels.find((l) => l.total > 0 && l.learned / l.total < 0.8);
   const weak = weakestTopics();
   const st = streak();
-  const work = due + fresh;
-  const mins = Math.max(1, Math.round(work * 20 / 60));
+  const round = todayRound();
+  const answeredToday = P.days[dayKey()]?.reviews || 0;
+  const mins = Math.max(1, Math.round(round.ids.length * 20 / 60));
   const lastExam = (P.exams || []).at(-1);
 
   app.innerHTML = `
@@ -159,14 +160,13 @@ function renderHome() {
     <div class="row"><a class="btn" href="#help" data-act="welcome-help">How to use</a><button class="btn ghost" data-act="welcome-close">Got it, start studying</button></div>
   </div>`}
   <div class="panel today">
-    ${work ? `
-      <div class="small">Today's practice</div>
-      <div class="today-row"><span class="big">${work}</span><span class="note">card${work === 1 ? '' : 's'}: ${due} to review, ${fresh} new · about ${mins} min</span></div>
+    <div class="small">Today's practice</div>
+    ${round.kind === 'plan' ? `
+      <div class="today-row"><span class="big">${round.ids.length}</span><span class="note">card${round.ids.length === 1 ? '' : 's'}: ${round.due} to review, ${round.fresh} new · about ${mins} min</span></div>
       <button class="btn big-btn" data-act="review">Start today's practice</button>` : `
-      <div class="small">Today's practice</div>
-      <p class="done-today"><b>All done for today ✓</b><br><span class="note">New cards arrive tomorrow. You can keep practising anything you like.</span></p>
-      <a class="btn" href="#study">Practise something else</a>`}
-    ${work ? '<a class="linkish" href="#study">Or practise something specific →</a>' : ''}
+      <p class="done-today"><b>Today's plan is done ✓</b><br><span class="note">${answeredToday} answer${answeredToday === 1 ? '' : 's'} today. Keep going as long as you like${round.kind === 'extra-new' ? ` with the next ${round.ids.length} new cards` : `: a quick refresher of ${round.ids.length} cards you've learned`}.</span></p>
+      <button class="btn big-btn" data-act="review">Keep going · ${round.ids.length} more card${round.ids.length === 1 ? '' : 's'}</button>`}
+    <a class="linkish" href="#study">Or practise something specific →</a>
   </div>
   <div class="panel">
     <div class="spread"><h2 class="h">Levels</h2><span class="small">learned / total</span></div>
@@ -337,6 +337,30 @@ function renderPractice() {
   });
 }
 
+/* ---------- today's rounds ---------- */
+// Today's practice never runs dry: the planned round is the cards due plus today's new cards.
+// After that, each extra round brings the next new cards (beyond the daily number), and once
+// every card has been seen it becomes a refresher of the cards closest to being due.
+const roundSize = () => Math.max(5, P.settings.newPerDay || 10);
+
+function todayRound() {
+  const due = shuffle(dueCards()).map((c) => c.id);
+  let fresh = newCards().slice(0, newLeftToday()).map((c) => c.id);
+  let kind = 'plan';
+  if (!due.length && !fresh.length) {
+    fresh = newCards().slice(0, roundSize()).map((c) => c.id);
+    kind = fresh.length ? 'extra-new' : 'refresh';
+  }
+  const ids = due.slice();
+  fresh.forEach((id, i) => ids.splice(Math.round(((i + 1) * (ids.length + 1)) / (fresh.length + 1)), 0, id));
+  if (kind === 'refresh') {
+    // Everything seen: the cards whose next review is soonest.
+    enabledCards().filter((c) => P.cards[c.id]).sort((a, b) => P.cards[a.id].due - P.cards[b.id].due)
+      .slice(0, roundSize()).forEach((c) => ids.push(c.id));
+  }
+  return { ids: kind === 'refresh' ? shuffle(ids) : ids, kind, due: due.length, fresh: fresh.length };
+}
+
 /* ---------- study sessions ---------- */
 function startSession(mode, filter = {}, from = null) {
   const origin = from || (route() === 'study' && lastSummary ? lastSummary.from : route());
@@ -345,14 +369,7 @@ function startSession(mode, filter = {}, from = null) {
     if (filter.ids) ids = shuffle(filter.ids.filter((id) => byId[id]));
     else ids = shuffle(practicePool(filter)).slice(0, filter.count || 20).map((c) => c.id);
   } else {
-    const fresh = newCards().slice(0, newLeftToday()).map((c) => c.id);
-    if (mode === 'learn') ids = fresh;
-    else {
-      // Interleave new cards evenly into the shuffled due cards.
-      const due = shuffle(dueCards()).map((c) => c.id);
-      ids = due.slice();
-      fresh.forEach((id, i) => ids.splice(Math.round(((i + 1) * (ids.length + 1)) / (fresh.length + 1)), 0, id));
-    }
+    ids = todayRound().ids;
   }
   if (!ids.length) { go('study'); return; }
   session = { mode, filter, queue: ids, pos: 0, results: [], startedAt: Date.now(), from: origin === 'study' ? 'study' : origin };
@@ -578,22 +595,24 @@ function endSession() {
 function renderFinished() {
   const sm = lastSummary;
   const pool = enabledCards();
-  const moreDue = dueCards(pool).length + Math.min(newLeftToday(), newCards(pool).length);
+  const next = todayRound();
   const from = sm.from && sm.from !== 'study' && VIEWS[sm.from] ? sm.from : null;
-  const backLabel = from === 'exam' ? 'Back to test results' : from ? `Back to ${PLACE[from]}` : null;
+  // After a Today round, "Finish for today" already goes home, so no separate "Back to Today".
+  const backLabel = from === 'exam' ? 'Back to test results' : from && !(sm.mode !== 'drill' && from === 'home') ? `Back to ${PLACE[from]}` : null;
   app.innerHTML = `
   <div class="topbar"><span class="brand">${sm.mode === 'drill' ? 'Practice' : 'Today’s practice'} complete</span>
     <button class="icon" data-act="close" aria-label="Close and go ${from ? `back to ${esc(PLACE[from])}` : 'home'}">✕</button></div>
   ${summaryHTML(sm)}
   <div class="panel stack next-steps">
     <h2 class="h">What next?</h2>
-    ${sm.missed.length ? `<button class="btn" data-act="missed">Practise the ${sm.missed.length} I missed</button>` : ''}
-    ${sm.mode !== 'drill' && moreDue ? `<button class="btn ${sm.missed.length ? 'ghost' : ''}" data-act="more">Keep going: ${moreDue} more card${moreDue === 1 ? '' : 's'}</button>` : ''}
+    ${sm.mode !== 'drill' && next.ids.length ? `<button class="btn" data-act="more">Keep going · next ${next.ids.length} card${next.ids.length === 1 ? '' : 's'}</button>
+      <p class="small next-hint">${next.kind === 'plan' ? 'More cards from today’s plan.' : next.kind === 'extra-new' ? 'Today’s plan is done. These are the next new cards.' : 'You’ve seen every card. This is a refresher of the ones you’re closest to forgetting.'}</p>` : ''}
+    ${sm.missed.length ? `<button class="btn ${sm.mode !== 'drill' ? 'ghost' : ''}" data-act="missed">Practise the ${sm.missed.length} I missed</button>` : ''}
     ${sm.mode === 'drill' && !sm.filter?.ids ? `<button class="btn ${sm.missed.length ? 'ghost' : ''}" data-act="again">Practise this again</button>` : ''}
     <div class="row exits">
       ${backLabel ? `<button class="btn ghost" data-act="back">← ${esc(backLabel)}</button>` : ''}
       ${from !== null || sm.from === 'study' ? '<button class="btn ghost" data-act="study">Practice page</button>' : ''}
-      ${from !== 'home' ? '<button class="btn ghost" data-act="home">Today</button>' : ''}
+      ${sm.mode !== 'drill' ? '<button class="btn ghost" data-act="home">Finish for today</button>' : from !== 'home' ? '<button class="btn ghost" data-act="home">Today</button>' : ''}
     </div>
   </div>
   ${supportHTML('session')}`;

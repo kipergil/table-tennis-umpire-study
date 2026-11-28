@@ -30,7 +30,7 @@ export function renderHelp() {
   <section class="panel help" id="h-start">
     <h2 class="h">Quick start</h2>
     <ol class="help-steps">
-      <li><b>Practise a little every day.</b> On <a href="#home">Today</a>, press <b>Start today's practice</b>. You get the cards due today plus up to 10 new ones. It usually takes 5–10 minutes.</li>
+      <li><b>Practise a little every day.</b> On <a href="#home">Today</a>, press <b>Start today's practice</b>. You get the cards due today plus up to 10 new ones. It usually takes 5–10 minutes. When you finish, choose <b>Keep going</b> for more cards or <b>Finish for today</b>. You can always start another round from Today.</li>
       <li><b>Answer, then read why.</b> After each answer you see whether you were right, the explanation, the umpire's signal and call where relevant, and the source clause.</li>
       <li><b>Come back tomorrow.</b> The app decides when you see each card again. Cards you know come back less often; cards you miss come back soon.</li>
       <li><b>Practise anything, any time.</b> On <a href="#study">Practice</a>, choose your mistakes, a level, a topic or everything. Switch on <b>Test mode</b> for a timed test with your score at the end.</li>

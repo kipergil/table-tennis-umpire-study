@@ -282,6 +282,7 @@ a.icon { display: grid; place-items: center; text-decoration: none; color: var(-
 .big-btn { font-size: 1.05rem; padding: 15px 14px; }
 .linkish { display: block; text-align: center; margin-top: 12px; font-weight: 600; text-decoration: none; }
 .done-today { margin: 6px 0 12px; }
+.next-hint { margin: -4px 0 4px; }
 .choices { display: flex; flex-direction: column; gap: 8px; }
 .choice { display: grid; grid-template-columns: 22px 1fr; gap: 10px; align-items: start; border: 1.5px solid var(--line); border-radius: 12px; padding: 12px; cursor: pointer; }
 .choice:has(input:checked) { border-color: var(--table); background: var(--chip); }
