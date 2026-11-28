@@ -283,6 +283,24 @@ a.icon { display: grid; place-items: center; text-decoration: none; color: var(-
 .linkish { display: block; text-align: center; margin-top: 12px; font-weight: 600; text-decoration: none; }
 .done-today { margin: 6px 0 12px; }
 .next-hint { margin: -4px 0 4px; }
+
+/* install guide */
+.install-card { display: grid; grid-template-columns: 64px 1fr; gap: 14px; align-items: start; border: 2px solid var(--table); background: linear-gradient(135deg, var(--surface), var(--chip)); }
+.install-art { width: 64px; height: 64px; }
+.install-body { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.install-body .h { margin: 0; }
+.install-steps { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column; gap: 4px; font-size: .94rem; }
+.install-steps .ico { width: 1.05em; height: 1.05em; vertical-align: -.15em; color: var(--table); }
+.install-for { margin: 4px 0 0; font-weight: 600; }
+.install-other summary, .install-device summary { cursor: pointer; color: var(--table); font-weight: 600; }
+.install-other .install-steps { margin-top: 4px; }
+.install-actions { gap: 18px; }
+.install-btn { align-self: flex-start; width: auto; padding-inline: 22px; }
+.install-device { border-top: 1px solid var(--line); padding: 10px 0; }
+.install-device summary { display: flex; gap: 8px; align-items: center; }
+.install-device .install-steps { margin-top: 8px; }
+.install-done { color: var(--good); font-weight: 600; }
+@media (max-width: 420px) { .install-card { grid-template-columns: 1fr; } .install-art { width: 52px; height: 52px; } }
 .choices { display: flex; flex-direction: column; gap: 8px; }
 .choice { display: grid; grid-template-columns: 22px 1fr; gap: 10px; align-items: start; border: 1.5px solid var(--line); border-radius: 12px; padding: 12px; cursor: pointer; }
 .choice:has(input:checked) { border-color: var(--table); background: var(--chip); }

@@ -17,7 +17,7 @@ Every card cites its source clause, using the official ITTF numbering.
 - **Every answer counts**: answers in Today, Practice and tests all update when each card comes back.
 - **Doubles serving-order trainer**: endless random situations, including later games and the receiving-order switch at 5 in the deciding game. Each answer comes with a worked rotation.
 - **Stats**: answers per day, reviews coming up, progress per level, accuracy by topic, exam history and trainer score.
-- **Works offline** once opened, and can be installed on a phone with "Add to Home Screen".
+- **Works offline** once opened, and can be installed like an app. An **Install on your phone** card on Today (dismissable, hidden once installed) and a full guide on How to use show the steps for iPhone/iPad, Android and computers, with a one-tap Install button where the browser supports it.
 - Progress stays in the browser. **More → Back up your progress** exports and restores it.
 - **How to use** page (the **?** in the menu) explains how studying works, every menu option, the question types and keyboard shortcuts. First-time visitors see a welcome panel on Home that links to it.
 

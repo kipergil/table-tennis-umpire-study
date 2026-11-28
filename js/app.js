@@ -7,6 +7,7 @@ import { initExam, renderExam, examKey, examActive, startTest, historyTable, MIN
 import { initTrainer, renderTrainer } from './trainer.js';
 import { initStats, renderStats } from './stats.js';
 import { initHelp, renderHelp } from './help.js';
+import { initInstall, installCardHTML, wireInstall } from './install.js';
 
 const app = document.getElementById('app');
 const nav = document.getElementById('nav');
@@ -31,6 +32,7 @@ const ctx = {
   get manifest() { return manifest; },
   get byId() { return byId; },
   get prevRoute() { return prevRoute; },
+  helpJump: null,
   save, enabledCards, go, route, startSession, recordAnswer
 };
 
@@ -168,6 +170,7 @@ function renderHome() {
       <button class="btn big-btn" data-act="review">Keep going · ${round.ids.length} more card${round.ids.length === 1 ? '' : 's'}</button>`}
     <a class="linkish" href="#study">Or practise something specific →</a>
   </div>
+  ${installCardHTML('home', { dismissed: !!P.settings.installDismissed })}
   <div class="panel">
     <div class="spread"><h2 class="h">Levels</h2><span class="small">learned / total</span></div>
     <div class="stack">
@@ -200,6 +203,8 @@ function renderHome() {
 
   app.querySelector('[data-act="review"]')?.addEventListener('click', () => startSession('review'));
   app.querySelectorAll('[data-drill-topic]').forEach((b) => b.addEventListener('click', () => startSession('drill', { what: 'topic', topic: b.dataset.drillTopic, count: 20 })));
+  wireInstall(app, { onDismiss: () => { P.settings.installDismissed = true; save(); renderHome(); } });
+  app.querySelector('[data-jump-install]')?.addEventListener('click', () => { ctx.helpJump = 'install'; });
   const welcomed = () => { P.settings.welcomed = true; save(); };
   app.querySelector('[data-act="welcome-help"]')?.addEventListener('click', welcomed);
   app.querySelector('[data-act="welcome-close"]')?.addEventListener('click', () => { welcomed(); renderHome(); });
@@ -721,7 +726,8 @@ function renderMore() {
   </div>
   <div class="panel stack">
     <h2 class="h">Use it offline</h2>
-    <p class="note">Once the site has loaded on a phone or computer, it keeps working without a connection, which helps at venues with poor signal. On a phone, use your browser's “Add to Home Screen” to install it like an app.</p>
+    <p class="note">Once the site has loaded on a phone or computer, it keeps working without a connection, which helps at venues with poor signal. You can also install it on your home screen like an app.</p>
+    <a class="btn ghost" href="#help" data-jump-install>How to install it</a>
     <p class="small" id="offline-status"></p>
   </div>
   <div class="panel stack">
@@ -738,6 +744,7 @@ function renderMore() {
   </div>`;
 
   const msg = (id, t) => { app.querySelector(id).textContent = t; };
+  app.querySelector('[data-jump-install]')?.addEventListener('click', () => { ctx.helpJump = 'install'; });
   const off = app.querySelector('#offline-status');
   off.textContent = navigator.serviceWorker?.controller ? 'Offline mode is active on this device.' : 'Offline mode turns on after the site has been opened once from its web address.';
   app.querySelector('#pref-new').addEventListener('change', (e) => {
@@ -827,6 +834,8 @@ async function boot() {
   }
   setManifest(manifest);
   initExam(ctx); initTrainer(ctx); initStats(ctx); initHelp(ctx);
+  // When the browser offers one-tap install, redraw Today / How to use so the button appears.
+  initInstall(() => { if (['home', 'help'].includes(route()) && !session) render(); });
   window.addEventListener('hashchange', onHashChange);
   render();
   registerOffline();
