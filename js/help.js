@@ -1,4 +1,4 @@
-// "How to use" page: what TT Umpire Study is, how studying works, the menu, question types, shortcuts.
+// "How to use" page: who TT Umpire Study is for, why it helps, how studying works, the menu, question types, shortcuts.
 
 import { supportHTML } from './ui.js';
 import { installCardHTML, wireInstall } from './install.js';
@@ -7,6 +7,8 @@ let ctx = null;
 export function initHelp(c) { ctx = c; }
 
 const SECTIONS = [
+  ['who', 'Who it’s for'],
+  ['why', 'Why players use it'],
   ['start', 'Quick start'],
   ['install', 'Install on your phone'],
   ['learning', 'How learning works'],
@@ -22,13 +24,40 @@ export function renderHelp() {
   <div class="topbar"><span class="brand">How to use</span></div>
 
   <div class="panel help-intro">
-    <p><b>TT Umpire Study</b> helps you learn the rules an umpire needs, from the basics to tricky match situations. Every question comes from the ITTF <i>Laws of Table Tennis</i> or the <i>Handbook for Match Officials</i>, and every answer tells you why and cites its clause.</p>
-    <p class="small">${total} cards are switched on now, in three levels: <span class="tag b">Basic</span> <span class="tag i">Intermediate</span> <span class="tag a">Advanced</span></p>
-    <p class="small">The app is strongest for <b>umpire Levels 1 and 2</b> and a good base for the International Umpire exam. <a href="#umpire">See which levels it covers and how to become an umpire →</a></p>
+    <p class="help-lead">Know the rules. Play fair. Call it right.</p>
+    <p><b>TT Umpire Study</b> is for anyone who wants to know the rules of table tennis properly: <b>umpires</b> preparing for a qualification, and <b>club, league and casual players</b> who want to stop losing points to faults, settle arguments quickly and feel confident in matches and tournaments.</p>
+    <p>Every question comes from the ITTF <i>Laws of Table Tennis</i> or the <i>Handbook for Match Officials</i>, and every answer tells you <b>why</b> and cites its clause, so you learn the real rules, not club folklore.</p>
+    <p class="small">${total} cards are switched on now, in three levels: <span class="tag b">Basic</span> <span class="tag i">Intermediate</span> <span class="tag a">Advanced</span>. Players get most of what they need from <b>Basic</b>.</p>
     <nav class="help-toc" aria-label="On this page">
       ${SECTIONS.map(([id, t]) => `<button class="chip-link" data-jump="${id}">${t}</button>`).join('')}
     </nav>
   </div>
+
+  <section class="panel help" id="h-who">
+    <h2 class="h">Who it’s for</h2>
+    <div class="who-grid">
+      ${whoCard('🏓', 'Club and league players', 'Learn what makes a serve legal, when a point is a let, how scoring and serve changes work, and who serves next in doubles. Stop giving away points you didn’t know you were losing.', '<button class="btn small" data-act="player-start">Start with the basics</button>')}
+      ${whoCard('🌱', 'Beginners and returning players', 'Plain-English questions that start with the essentials: the score, the serve, the edge of the table. Five minutes a day is enough, and nothing assumes you already know the rulebook.', '<button class="btn small ghost" data-act="player-start">Try 10 Basic questions</button>')}
+      ${whoCard('🧑‍⚖️', 'Umpires and officials', 'Structured study with spaced repetition, timed tests and real match decisions. Strongest for <b>umpire Levels 1 and 2</b> and a good base for the International Umpire exam.', '<a class="btn small ghost" href="#umpire">Become an umpire →</a>')}
+      ${whoCard('📣', 'Coaches, captains and organisers', 'Settle a dispute in seconds: search the <a href="#library">Library</a> for “edge”, “let” or “time-out” and show the answer with its clause. Use the cards to teach juniors the rules as they learn to play.', '<a class="btn small ghost" href="#library">Open the Library</a>')}
+    </div>
+  </section>
+
+  <section class="panel help" id="h-why">
+    <h2 class="h">Why players use it</h2>
+    <p class="small">You don’t need to want to be an umpire. Knowing the rules wins you points, saves arguments and makes every match calmer.</p>
+    <ul class="why-list">
+      ${whyItem('Stop losing points to faults', 'Throwing the ball up less than <b>16 cm</b>, serving from a closed hand, hiding the ball with your body, putting your free hand on the table, or touching the net during a rally: each one is a point to your opponent. Learn them once and they stop happening.')}
+      ${whyItem('Settle club arguments for good', 'Edge or side? Is a serve that clips the net a let? What if the ball hits your finger? Who should have served? Every answer comes with the clause, so the discussion ends there.')}
+      ${whyItem('Feel confident in matches', 'Games to 11 with a 2-point lead, serve changing every 2 points (every point from 10–10), changing ends, the doubles serving order, time-outs and the expedite system. No more pausing to argue about the score.')}
+      ${whyItem('Learn by doing, not reading', 'Short questions on real match situations, with umpire signal pictures and table diagrams. You remember far more this way than by reading the rulebook, and the app brings back what you got wrong.')}
+      ${whyItem('Free, private and offline', 'No account, no adverts, no sign-up. It works without a connection once opened, so you can check a rule at the venue. Install it on your phone in two taps.')}
+    </ul>
+    <div class="row">
+      <button class="btn" data-act="player-start">Start with the basics</button>
+      <a class="btn ghost" href="#home">Today’s practice</a>
+    </div>
+  </section>
 
   <section class="panel help" id="h-start">
     <h2 class="h">Quick start</h2>
@@ -120,10 +149,11 @@ export function renderHelp() {
     <p class="small">TT Umpire Study is a study aid. Before officiating, always check the current ITTF Handbook and follow your referee's briefing.</p>
   </section>
 
-  <a class="btn" href="#home">Start studying</a>
+  <div class="row"><a class="btn" href="#home">Start studying</a><button class="btn ghost" data-act="player-start">I’m a player: start with the basics</button></div>
   ${supportHTML('help')}`;
 
   wireInstall(ctx.app);
+  ctx.app.querySelectorAll('[data-act="player-start"]').forEach((b) => b.addEventListener('click', startBasics));
   if (ctx.helpJump) { const id = ctx.helpJump; ctx.helpJump = null; requestAnimationFrame(() => jumpTo(id)); }
   ctx.app.querySelectorAll('[data-jump]').forEach((b) => b.addEventListener('click', (e) => {
     e.preventDefault();
@@ -139,6 +169,24 @@ function jumpTo(id) {
   if (!el) return;
   const navH = document.getElementById('nav')?.offsetHeight || 0;
   window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - navH - 8 });
+}
+
+// For players: start 10 Basic questions straight away, answers shown as you go.
+// The Practice page is left set to the same choice, so "Practise again" is one tap.
+function startBasics() {
+  const P = ctx.P;
+  const filter = { what: 'level', level: 'basic', count: 10 };
+  P.settings.practice = { ...(P.settings.practice || {}), ...filter, test: false };
+  ctx.save();
+  ctx.startSession('drill', filter, 'help');
+}
+
+function whoCard(icon, title, text, action) {
+  return `<div class="who-card"><div class="who-icon" aria-hidden="true">${icon}</div><h3>${title}</h3><p>${text}</p><div class="who-act">${action}</div></div>`;
+}
+
+function whyItem(title, text) {
+  return `<li><b>${title}</b><p>${text}</p></li>`;
 }
 
 function menuItem(route, label, text) {

@@ -187,7 +187,7 @@ function renderHome() {
   <div class="topbar"><span class="brand">TT Umpire <em>Study</em></span><span class="small">${st ? `${st}-day streak` : 'Start a streak today'}</span></div>
   ${P.settings.welcomed ? '' : `<div class="panel welcome">
     <h2 class="h">Welcome to TT Umpire Study</h2>
-    <p class="note">Learn the table tennis rules an umpire needs: a few minutes of practice a day, tests when you're ready, and a doubles serving-order trainer. Take two minutes to see how it works.</p>
+    <p class="note">Learn the rules of table tennis properly, whether you're training to umpire or just want to play fair and stop losing points to faults: a few minutes of practice a day, tests when you're ready, and a doubles serving-order trainer. Take two minutes to see how it works.</p>
     <div class="row"><button class="btn" data-act="welcome-start">Start Now</button><a class="btn ghost" href="#help" data-act="welcome-help">How to use</a></div>
   </div>`}
   <div class="panel today">
