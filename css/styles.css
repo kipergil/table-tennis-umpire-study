@@ -284,6 +284,43 @@ a.icon { display: grid; place-items: center; text-decoration: none; color: var(-
 .done-today { margin: 6px 0 12px; }
 .next-hint { margin: -4px 0 4px; }
 
+/* become an umpire */
+.ump-tile { border-left: 4px solid var(--ball-bar); }
+.ump-intro p { margin: 0 0 8px; }
+.ump-intro p:last-child { margin: 0; }
+.ladder { display: flex; flex-direction: column; gap: 10px; }
+.rung { display: grid; grid-template-columns: 40px 1fr; gap: 12px; align-items: start; padding: 12px 0; border-top: 1px solid var(--line); }
+.rung:first-child { border-top: 0; padding-top: 0; }
+.rung-badge { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font: 700 1.2rem/1 var(--f-display); background: var(--chip); color: var(--ink); border: 2px solid var(--line); }
+.rung-badge.l1, .rung-badge.l2 { background: var(--table); color: var(--table-ink); border-color: var(--table); }
+.rung-badge.white { background: #FFFFFF; color: #142033; border-color: #B8C4D4; }
+.rung-badge.blue { background: #2C6BD6; color: #fff; border-color: #2C6BD6; }
+.rung-badge.gold { background: #D9A60B; color: #2A1F00; border-color: #D9A60B; }
+.rung-body { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.rung-body p { margin: 0; }
+.rung-title { margin: 0; font: 700 1.1rem/1.2 var(--f-display); }
+.badge-chip { font: 600 .66rem/1 var(--f-body); letter-spacing: .06em; text-transform: uppercase; padding: 4px 7px; border-radius: 999px; vertical-align: 2px; border: 1px solid var(--line); }
+.badge-chip.white { background: #FFFFFF; color: #142033; }
+.badge-chip.blue { background: #2C6BD6; color: #fff; border-color: #2C6BD6; }
+.badge-chip.gold { background: #D9A60B; color: #2A1F00; border-color: #D9A60B; }
+.cover { font-size: .88rem; border-radius: 8px; padding: 6px 9px; margin-top: 4px !important; }
+.cover-strong, .cover-good { background: var(--good-soft); }
+.cover-strong b, .cover-good b { color: var(--good); }
+.cover-partial { background: var(--ball-soft); }
+.cover-partial b { color: var(--ball); }
+.cover-none { background: var(--chip); }
+.ump-steps { margin: 0; padding-left: 1.4em; display: flex; flex-direction: column; gap: 12px; }
+.ump-steps li::marker { font-weight: 700; color: var(--table); }
+.ump-steps p { margin: 2px 0 6px; }
+.slim-btn { display: inline-block; width: auto; padding: 9px 14px; }
+.ext { font-weight: 600; }
+.link-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
+.link-card { display: flex; flex-direction: column; gap: 3px; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; text-decoration: none; color: var(--ink); background: var(--surface); min-width: 0; }
+.link-card:hover { border-color: var(--table); }
+.link-card b { color: var(--table); }
+.link-host { font: 500 .72rem/1.2 var(--f-mono); color: var(--muted); overflow-wrap: anywhere; }
+.ump-note { margin: 0; }
+
 /* install guide */
 .install-card { display: grid; grid-template-columns: 64px 1fr; gap: 14px; align-items: start; border: 2px solid var(--table); background: linear-gradient(135deg, var(--surface), var(--chip)); }
 .install-art { width: 64px; height: 64px; }

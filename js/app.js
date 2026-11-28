@@ -8,6 +8,7 @@ import { initTrainer, renderTrainer } from './trainer.js';
 import { initStats, renderStats } from './stats.js';
 import { initHelp, renderHelp } from './help.js';
 import { initInstall, installCardHTML, wireInstall } from './install.js';
+import { initUmpire, renderUmpire } from './umpire.js';
 
 const app = document.getElementById('app');
 const nav = document.getElementById('nav');
@@ -93,9 +94,9 @@ function weakestTopics() {
 }
 
 /* ---------- routing ---------- */
-const VIEWS = { home: renderHome, study: renderStudy, test: renderTestSetup, exam: renderExam, trainer: renderTrainer, library: renderLibrary, stats: renderStats, more: renderMore, help: renderHelp };
+const VIEWS = { home: renderHome, study: renderStudy, test: renderTestSetup, exam: renderExam, trainer: renderTrainer, library: renderLibrary, stats: renderStats, more: renderMore, help: renderHelp, umpire: renderUmpire };
 // Pages that light up another menu item: the trainer, test setup and running tests live under Practice.
-const NAV_FOR = { trainer: 'study', test: 'study', exam: 'study' };
+const NAV_FOR = { trainer: 'study', test: 'study', exam: 'study', umpire: 'help' };
 
 function route() {
   const name = location.hash.slice(1);
@@ -104,7 +105,7 @@ function route() {
 
 // Where the user was before the current page (for "Back" buttons).
 let lastRoute = 'home', prevRoute = 'home';
-const PLACE = { home: 'Today', study: 'Practice', test: 'Practice', exam: 'test results', library: 'Library', stats: 'Stats', more: 'More', trainer: 'Trainer', help: 'How to use' };
+const PLACE = { home: 'Today', study: 'Practice', test: 'Practice', exam: 'test results', library: 'Library', stats: 'Stats', more: 'More', trainer: 'Trainer', help: 'How to use', umpire: 'Become an umpire' };
 
 function render() {
   const r = route();
@@ -189,6 +190,7 @@ function renderHome() {
     <a class="panel tool" href="#test"><b>Test yourself</b><span class="small">${lastExam ? `Last test: ${lastExam.pct}% ${lastExam.passed ? '· pass' : '· not yet'}` : 'Timed, score at the end'}</span></a>
     <a class="panel tool" href="#trainer"><b>Doubles order trainer</b><span class="small">Who serves, who receives?</span></a>
   </div>
+  <a class="panel tool ump-tile" href="#umpire"><b>Become an umpire</b><span class="small">Which levels this app covers, the Level 1 to Gold Badge pathway, step-by-step guide and official links.</span></a>
   <div class="panel">
     <h2 class="h">Weakest topics</h2>
     ${weak.length ? `<div class="stack">${weak.map((t) => `
@@ -737,6 +739,7 @@ function renderMore() {
       '<button class="btn ghost" data-act="reset">Reset all progress…</button>'}
   </div>
   ${supportHTML('more')}
+  <a class="panel tool" href="#umpire"><b>Become an umpire</b><span class="small">Umpire levels, which ones this app covers, the steps to qualify and links to Table Tennis England and the ITTF.</span></a>
   <a class="panel tool" href="#help"><b>How to use TT Umpire Study</b><span class="small">How studying works, the menu, question types and keyboard shortcuts.</span></a>
   <div class="panel">
     <h2 class="h">Sources</h2>
@@ -833,7 +836,7 @@ async function boot() {
     return;
   }
   setManifest(manifest);
-  initExam(ctx); initTrainer(ctx); initStats(ctx); initHelp(ctx);
+  initExam(ctx); initTrainer(ctx); initStats(ctx); initHelp(ctx); initUmpire(ctx);
   // When the browser offers one-tap install, redraw Today / How to use so the button appears.
   initInstall(() => { if (['home', 'help'].includes(route()) && !session) render(); });
   window.addEventListener('hashchange', onHashChange);

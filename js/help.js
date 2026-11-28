@@ -24,6 +24,7 @@ export function renderHelp() {
   <div class="panel help-intro">
     <p><b>TT Umpire Study</b> helps you learn the rules an umpire needs, from the basics to tricky match situations. Every question comes from the ITTF <i>Laws of Table Tennis</i> or the <i>Handbook for Match Officials</i>, and every answer tells you why and cites its clause.</p>
     <p class="small">${total} cards are switched on now, in three levels: <span class="tag b">Basic</span> <span class="tag i">Intermediate</span> <span class="tag a">Advanced</span></p>
+    <p class="small">The app is strongest for <b>umpire Levels 1 and 2</b> and a good base for the International Umpire exam. <a href="#umpire">See which levels it covers and how to become an umpire →</a></p>
     <nav class="help-toc" aria-label="On this page">
       ${SECTIONS.map(([id, t]) => `<button class="chip-link" data-jump="${id}">${t}</button>`).join('')}
     </nav>
@@ -71,7 +72,7 @@ export function renderHelp() {
       ${menuItem('library', 'Library', 'Browse and search every card with its answer and explanation. Search by words (“time-out”), numbers (“16 cm”), clauses (“2.9.1”) or sample exam questions (“Q45”), and filter by level, topic, question type or status.')}
       ${menuItem('stats', 'Stats', 'Answers per day, reviews coming up, progress per level, accuracy by topic (tap a topic to practise it), test history and your trainer score.')}
       ${menuItem('more', 'More', 'Study options (new cards per day, the Para table tennis pack), backup and restore of your progress, offline use, reset, and the sources.')}
-      ${menuItem('help', '?', 'This page.')}
+      ${menuItem('help', '?', 'This page, plus <a href="#umpire">Become an umpire</a>: umpire levels, the steps to qualify and official links.')}
     </div>
   </section>
 
