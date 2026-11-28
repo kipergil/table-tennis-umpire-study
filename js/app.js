@@ -188,7 +188,7 @@ function renderHome() {
   ${P.settings.welcomed ? '' : `<div class="panel welcome">
     <h2 class="h">Welcome to TT Umpire Study</h2>
     <p class="note">Learn the table tennis rules an umpire needs: a few minutes of practice a day, tests when you're ready, and a doubles serving-order trainer. Take two minutes to see how it works.</p>
-    <div class="row"><a class="btn" href="#help" data-act="welcome-help">How to use</a><button class="btn ghost" data-act="welcome-close">Got it, start studying</button></div>
+    <div class="row"><button class="btn" data-act="welcome-start">Start Now</button><a class="btn ghost" href="#help" data-act="welcome-help">How to use</a></div>
   </div>`}
   <div class="panel today">
     <div class="small">Today's practice</div>
@@ -237,7 +237,8 @@ function renderHome() {
   app.querySelector('[data-jump-install]')?.addEventListener('click', () => { ctx.helpJump = 'install'; });
   const welcomed = () => { P.settings.welcomed = true; save(); };
   app.querySelector('[data-act="welcome-help"]')?.addEventListener('click', welcomed);
-  app.querySelector('[data-act="welcome-close"]')?.addEventListener('click', () => { welcomed(); renderHome(); });
+  // "Start Now" closes the welcome panel and starts today's practice straight away.
+  app.querySelector('[data-act="welcome-start"]')?.addEventListener('click', () => { welcomed(); startSession('review', {}, 'home'); });
 }
 
 /* ---------- practice ---------- */
