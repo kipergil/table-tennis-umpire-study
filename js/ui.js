@@ -90,16 +90,16 @@ export function holdToRepeat(btn, fn) {
 }
 
 /**
- * "Support Love-All" donation box (Ko-fi etc.), configured in data/manifest.json → support.url.
+ * "Support TT Umpire Study" donation box (Ko-fi etc.), configured in data/manifest.json → support.url.
  * Returns '' while no link is set, so nothing shows until the owner adds one.
  * `context` picks a short message that fits the page: home, session, exam, help or more.
  */
 const SUPPORT_TEXT = {
-  home: ['Keep Love-All free for every umpire', 'No ads, no paywall: just the rules, made easy to learn. If it’s helping you prepare, a coffee keeps new cards and updates coming.'],
-  session: ['Nice work, that’s another session done!', 'Everything you just studied is free for every umpire. If Love-All is helping you, buy me a coffee and help keep it that way.'],
-  exam: ['Getting ready for the real exam?', 'If these practice exams are helping you, a small coffee helps keep Love-All free and growing.'],
-  help: ['Enjoying Love-All?', 'It’s free for everyone, with no ads. A coffee helps keep it that way and pays for new cards.'],
-  more: ['Support Love-All', 'Love-All is free and has no ads. If it helps you prepare for umpiring, a small donation keeps it running and pays for new cards and updates.']
+  home: ['Keep TT Umpire Study free for every umpire', 'No ads, no paywall: just the rules, made easy to learn. If it’s helping you prepare, a coffee keeps new cards and updates coming.'],
+  session: ['Nice work, that’s another session done!', 'Everything you just studied is free for every umpire. If TT Umpire Study is helping you, buy me a coffee and help keep it that way.'],
+  exam: ['Getting ready for the real exam?', 'If these practice exams are helping you, a small coffee helps keep TT Umpire Study free and growing.'],
+  help: ['Enjoying TT Umpire Study?', 'It’s free for everyone, with no ads. A coffee helps keep it that way and pays for new cards.'],
+  more: ['Support TT Umpire Study', 'TT Umpire Study is free and has no ads. If it helps you prepare for umpiring, a small donation keeps it running and pays for new cards and updates.']
 };
 
 const CUP_SVG = `<svg class="support-art" viewBox="0 0 72 72" aria-hidden="true">
@@ -115,7 +115,7 @@ export function supportHTML(context = 'home') {
   const s = manifest.support;
   if (!s || !/^https:\/\//.test(s.url || '')) return '';
   const [title, text] = SUPPORT_TEXT[context] || SUPPORT_TEXT.home;
-  return `<aside class="support-box" aria-label="Support Love-All">
+  return `<aside class="support-box" aria-label="Support TT Umpire Study">
     ${CUP_SVG}
     <div class="support-body">
       <h2 class="support-title">${esc(title)}</h2>
