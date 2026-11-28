@@ -74,7 +74,7 @@ export function renderTrainer() {
   root.querySelectorAll('[data-p]').forEach((b) => b.addEventListener('click', () => choose(b.dataset.p)));
   root.querySelector('[data-act="check"]')?.addEventListener('click', check);
   root.querySelector('[data-act="clear"]')?.addEventListener('click', () => { pick = { server: null, receiver: null }; renderTrainer(); });
-  const leave = () => { const to = ctx.prevRoute && ctx.prevRoute !== 'trainer' ? ctx.prevRoute : 'study'; q = null; ctx.go(to); };
+  const leave = () => { const to = ctx.prevRoute && !['trainer', 'exam'].includes(ctx.prevRoute) ? ctx.prevRoute : 'study'; q = null; ctx.go(to); };
   root.querySelector('[data-act="back"]').addEventListener('click', leave);
   root.querySelector('[data-act="done"]')?.addEventListener('click', leave);
   root.querySelector('[data-act="next"]')?.addEventListener('click', () => { newQuestion(); renderTrainer(); window.scrollTo(0, 0); });

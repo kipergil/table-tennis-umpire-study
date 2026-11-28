@@ -30,10 +30,10 @@ export function renderHelp() {
   <section class="panel help" id="h-start">
     <h2 class="h">Quick start</h2>
     <ol class="help-steps">
-      <li><b>Study a little every day.</b> On <a href="#home">Home</a>, press <b>Start review</b>. You get the cards that are due today plus up to 10 new ones. It usually takes 5–10 minutes.</li>
+      <li><b>Practise a little every day.</b> On <a href="#home">Today</a>, press <b>Start today's practice</b>. You get the cards due today plus up to 10 new ones. It usually takes 5–10 minutes. When you finish, choose <b>Keep going</b> for more cards or <b>Finish for today</b>. You can always start another round from Today.</li>
       <li><b>Answer, then read why.</b> After each answer you see whether you were right, the explanation, the umpire's signal and call where relevant, and the source clause.</li>
       <li><b>Come back tomorrow.</b> The app decides when you see each card again. Cards you know come back less often; cards you miss come back soon.</li>
-      <li><b>Test yourself.</b> When you feel ready, take a timed <a href="#exam">practice exam</a> and drill the questions you missed.</li>
+      <li><b>Practise anything, any time.</b> On <a href="#study">Practice</a>, choose your mistakes, a level, a topic or everything. Switch on <b>Test mode</b> for a timed test with your score at the end.</li>
     </ol>
   </section>
 
@@ -43,27 +43,26 @@ export function renderHelp() {
       <dt>Spaced repetition</dt>
       <dd>Each card is scheduled on its own. A right answer pushes it further into the future (3 days, then a week, then weeks); a wrong answer brings it back in about 10 minutes and resets it. You remember far more this way than by rereading the rules.</dd>
       <dt>Levels</dt>
-      <dd>New cards are introduced <b>Basic first</b>, then Intermediate, then Advanced. The level to focus on is marked <span class="tag rec">Recommended next</span> on Home. Nothing is locked, so you can drill any level whenever you like.</dd>
+      <dd>New cards are introduced <b>Basic first</b>, then Intermediate, then Advanced. The level to focus on is marked <span class="tag rec">Recommended next</span> on Home. Nothing is locked, so you can practise any level whenever you like.</dd>
       <dt>Learned</dt>
       <dd>A card counts as <b>learned</b> once you still remember it a week or more after studying it. The level bars on Home show learned cards out of the total.</dd>
       <dt>“I guessed”</dt>
       <dd>If you got a card right by luck, tick <b>I guessed</b> before continuing. The card comes back sooner, as if you had found it hard.</dd>
       <dt>Mixed topics</dt>
       <dd>Reviews mix all topics on purpose. At the table you never know which rule comes next, so practising that way trains you to recall the right one.</dd>
-      <dt>Drills don't count</dt>
-      <dd>Drills and exams are extra practice. They never change when your cards are due.</dd>
+      <dt>Every answer counts</dt>
+      <dd>Whether you answer in Today's practice, on the Practice page or in a test, the app uses that answer to decide when the card comes back. Cards you get wrong also collect under <b>My mistakes</b> until you get them right.</dd>
     </dl>
   </section>
 
   <section class="panel help" id="h-menu">
     <h2 class="h">The menu</h2>
-    <p class="small">The menu sits at the top of every page. It hides while you are in a study session or an exam, so you can concentrate. Press ✕ at the top left to leave a session or an exam. When a session ends you get a results page with what to do next, including a button back to where you started.</p>
+    <p class="small">The menu sits at the top of every page. It hides while you are practising or taking a test, so you can concentrate. Press ✕ at the top left to stop. When you finish you get a results page with what to do next, including a button back to where you started.</p>
     <div class="menu-guide">
-      ${menuItem('home', 'Home', 'Your daily starting point: cards due today, new cards available, your streak, progress per level, shortcuts to the exam and the doubles trainer, and your three weakest topics (tap one to drill it).')}
-      ${menuItem('study', 'Study', '<b>Start review</b> (due cards plus new ones), <b>Learn new cards only</b>, or a <b>Drill</b>: pick a level, topic and question type and practise as much as you like. The <b>doubles serving-order trainer</b> is here too.')}
-      ${menuItem('exam', 'Exam', 'A practice exam. Choose the levels, 10–50 questions, a time limit and a pass mark. You get no feedback until you finish; then you see your score by level and topic, every mistake explained, and a button to drill the ones you missed.')}
+      ${menuItem('home', 'Today', 'Your daily practice in one button: the cards due today plus a few new ones. Also your streak, progress per level, shortcuts to a test and the doubles trainer, and your three weakest topics (tap one to practise it).')}
+      ${menuItem('study', 'Practice', 'Practise whatever you want: <b>My mistakes</b>, <b>a level</b>, <b>a topic</b> or <b>everything</b>, and choose how many questions. Switch on <b>Test mode</b> for a timed test with no answers until the end, then your score by level and topic and every mistake explained. The <b>doubles serving-order trainer</b> is here too.')}
       ${menuItem('library', 'Library', 'Browse and search every card with its answer and explanation. Search by words (“time-out”), numbers (“16 cm”), clauses (“2.9.1”) or sample exam questions (“Q45”), and filter by level, topic, question type or status.')}
-      ${menuItem('stats', 'Stats', 'Answers per day, reviews coming up, progress per level, accuracy by topic (tap a topic to drill it), exam history and your trainer score.')}
+      ${menuItem('stats', 'Stats', 'Answers per day, reviews coming up, progress per level, accuracy by topic (tap a topic to practise it), test history and your trainer score.')}
       ${menuItem('more', 'More', 'Study options (new cards per day, the Para table tennis pack), backup and restore of your progress, offline use, reset, and the sources.')}
       ${menuItem('help', '?', 'This page.')}
     </div>
@@ -80,7 +79,7 @@ export function renderHelp() {
       ${typeItem('Your decision', 'Decide what the umpire does: a point to one side, a let, or no action (play on). Singles players are <b>A</b> and <b>X</b>; doubles pairs are <b>A/B</b> and <b>X/Y</b>.', '<span class="mini-opt">A</span><span class="mini-opt on">X</span><span class="mini-opt">Let</span><span class="mini-opt">No action</span>')}
     </div>
     <h3 class="h3">Doubles serving-order trainer</h3>
-    <p>Open it from Study or Home. Each situation tells you who served first in game 1, which game you are in and the score. Tap the <b>server</b>, then the <b>receiver</b>, and check. If you're wrong, the trainer shows the rotation and every change of service in that game. The three rules you need are summarised under the question.</p>
+    <p>Open it from Practice or Today. Each situation tells you who served first in game 1, which game you are in and the score. Tap the <b>server</b>, then the <b>receiver</b>, and check. If you're wrong, the trainer shows the rotation and every change of service in that game. The three rules you need are summarised under the question.</p>
   </section>
 
   <section class="panel help" id="h-keys">
@@ -93,7 +92,7 @@ export function renderHelp() {
         <tr><td><kbd>Enter</kbd></td><td>Check your answer, then continue to the next card</td></tr>
         <tr><td><kbd>Space</kbd></td><td>Tick or untick the highlighted option</td></tr>
         <tr><td><kbd>↑</kbd> <kbd>↓</kbd></td><td>Change a number answer</td></tr>
-        <tr><td><kbd>←</kbd> <kbd>→</kbd></td><td>Previous or next question in an exam</td></tr>
+        <tr><td><kbd>←</kbd> <kbd>→</kbd></td><td>Previous or next question in a test</td></tr>
       </tbody>
     </table></div>
   </section>
@@ -102,7 +101,7 @@ export function renderHelp() {
     <h2 class="h">Your progress and offline use</h2>
     <dl class="help-dl">
       <dt>Saved in this browser</dt>
-      <dd>Your progress, exam results and trainer score are kept in this browser on this device. There is no account. They are not shared with anyone and don't follow you to another device automatically.</dd>
+      <dd>Your progress, test results and trainer score are kept in this browser on this device. There is no account. They are not shared with anyone and don't follow you to another device automatically.</dd>
       <dt>Back up or move</dt>
       <dd>In <a href="#more">More</a>, download a backup file (or copy it as text) and restore it on another device or browser. Do this now and then, so clearing your browser data doesn't wipe your progress.</dd>
       <dt>Offline and on your phone</dt>
