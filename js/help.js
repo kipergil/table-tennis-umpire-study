@@ -72,7 +72,7 @@ export function renderHelp() {
       ${menuItem('library', 'Library', 'Browse and search every card with its answer and explanation. Search by words (“time-out”), numbers (“16 cm”), clauses (“2.9.1”) or sample exam questions (“Q45”), and filter by level, topic, question type or status.')}
       ${menuItem('stats', 'Stats', 'Answers per day, reviews coming up, progress per level, accuracy by topic (tap a topic to practise it), test history and your trainer score.')}
       ${menuItem('more', 'More', 'Study options (new cards per day, the Para table tennis pack), backup and restore of your progress, offline use, reset, and the sources.')}
-      ${menuItem('help', '?', 'This page, plus <a href="#umpire">Become an umpire</a>: umpire levels, the steps to qualify and official links.')}
+      ${menuItem('help', '☰', 'The menu button at the right opens the information pages: <b>How to use</b> (this page), <a href="#umpire">Become an umpire</a> (umpire levels, steps to qualify and official links), <b>Install on your phone</b> and <b>Support on Ko-fi</b>.')}
     </div>
   </section>
 

@@ -96,7 +96,7 @@ function weakestTopics() {
 /* ---------- routing ---------- */
 const VIEWS = { home: renderHome, study: renderStudy, test: renderTestSetup, exam: renderExam, trainer: renderTrainer, library: renderLibrary, stats: renderStats, more: renderMore, help: renderHelp, umpire: renderUmpire };
 // Pages that light up another menu item: the trainer, test setup and running tests live under Practice.
-const NAV_FOR = { trainer: 'study', test: 'study', exam: 'study', umpire: 'help' };
+const NAV_FOR = { trainer: 'study', test: 'study', exam: 'study' };
 
 function route() {
   const name = location.hash.slice(1);
@@ -113,7 +113,10 @@ function render() {
   // A finished session's summary belongs to the Study page; leaving Study clears it.
   if (r !== 'study') lastSummary = null;
   const tab = NAV_FOR[r] || r;
-  nav.querySelectorAll('a').forEach((a) => a.setAttribute('aria-current', a.getAttribute('href') === `#${tab}` ? 'page' : 'false'));
+  nav.querySelectorAll('a:not([data-jump-install]):not(.nav-kofi)').forEach((a) => a.setAttribute('aria-current', a.getAttribute('href') === `#${tab}` ? 'page' : 'false'));
+  // The ☰ button lights up while you're on one of its pages.
+  burger.classList.toggle('active', ['help', 'umpire'].includes(r));
+  closeBurger();
   // Focus mode: hide the menu during a study session or an exam.
   document.body.classList.toggle('in-session', (r === 'study' && !!session) || (r === 'exam' && examActive()));
   VIEWS[r]();
@@ -130,6 +133,31 @@ function onHashChange() {
   if (skipHashChange) { skipHashChange = false; return; }
   render();
 }
+// ☰ menu: the information pages (How to use, Become an umpire, Install, Ko-fi).
+const burger = document.getElementById('nav-burger');
+const burgerPanel = document.getElementById('nav-panel');
+function closeBurger(focusButton = false) {
+  if (burgerPanel.hidden) return;
+  burgerPanel.hidden = true;
+  burger.setAttribute('aria-expanded', 'false');
+  if (focusButton) burger.focus();
+}
+burger.addEventListener('click', (e) => {
+  e.stopPropagation();
+  const open = burgerPanel.hidden;
+  burgerPanel.hidden = !open;
+  burger.setAttribute('aria-expanded', String(open));
+  if (open) burgerPanel.querySelector('a:not([hidden])')?.focus();
+});
+burgerPanel.addEventListener('click', (e) => {
+  const a = e.target.closest('a');
+  if (!a) return;
+  if (a.hasAttribute('data-jump-install')) ctx.helpJump = 'install';
+  if (a.classList.contains('nav-kofi')) closeBurger();
+});
+document.addEventListener('click', (e) => { if (!burgerPanel.hidden && !burgerPanel.contains(e.target) && e.target !== burger) closeBurger(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !burgerPanel.hidden) closeBurger(true); });
+
 // Tapping the menu item of the page you're already on opens that page fresh
 // (e.g. Practice right after a session shows the Practice form, not the results).
 nav.addEventListener('click', (e) => {
@@ -836,6 +864,12 @@ async function boot() {
     return;
   }
   setManifest(manifest);
+  const kofi = document.getElementById('nav-kofi');
+  if (/^https:\/\//.test(manifest.support?.url || '')) {
+    kofi.href = manifest.support.url;
+    kofi.querySelector('b').textContent = `Support on ${manifest.support.platform || 'Ko-fi'} ↗`;
+    kofi.hidden = false;
+  }
   initExam(ctx); initTrainer(ctx); initStats(ctx); initHelp(ctx); initUmpire(ctx);
   // When the browser offers one-tap install, redraw Today / How to use so the button appears.
   initInstall(() => { if (['home', 'help'].includes(route()) && !session) render(); });
