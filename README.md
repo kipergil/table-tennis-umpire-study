@@ -18,6 +18,7 @@ Every card cites its source clause, using the official ITTF numbering.
 - **Doubles serving-order trainer**: endless random situations, including later games and the receiving-order switch at 5 in the deciding game. Each answer comes with a worked rotation.
 - **Stats**: answers per day, reviews coming up, progress per level, accuracy by topic, exam history and trainer score.
 - **Works offline** once opened, and can be installed like an app. An **Install on your phone** card on Today (dismissable, hidden once installed) and a full guide on How to use show the steps for iPhone/iPad, Android and computers, with a one-tap Install button where the browser supports it.
+- **Become an umpire** page: the five umpire levels used by Table Tennis England and the ITTF (Level 1 Basic, Level 2 National, Level 3 International/White Badge, Level 4 Blue Badge, Level 5 Gold Badge), which of them this app covers (strongest for Levels 1 and 2), a step-by-step guide to qualifying, and links to Table Tennis England and ITTF resources. Facts checked November 2026.
 - Progress stays in the browser. **More → Back up your progress** exports and restores it.
 - **How to use** page (the **?** in the menu) explains how studying works, every menu option, the question types and keyboard shortcuts. First-time visitors see a welcome panel on Home that links to it.
 

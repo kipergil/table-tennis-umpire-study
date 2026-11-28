@@ -8,6 +8,7 @@ import { initTrainer, renderTrainer } from './trainer.js';
 import { initStats, renderStats } from './stats.js';
 import { initHelp, renderHelp } from './help.js';
 import { initInstall, installCardHTML, wireInstall } from './install.js';
+import { initUmpire, renderUmpire } from './umpire.js';
 
 const app = document.getElementById('app');
 const nav = document.getElementById('nav');
@@ -93,7 +94,7 @@ function weakestTopics() {
 }
 
 /* ---------- routing ---------- */
-const VIEWS = { home: renderHome, study: renderStudy, test: renderTestSetup, exam: renderExam, trainer: renderTrainer, library: renderLibrary, stats: renderStats, more: renderMore, help: renderHelp };
+const VIEWS = { home: renderHome, study: renderStudy, test: renderTestSetup, exam: renderExam, trainer: renderTrainer, library: renderLibrary, stats: renderStats, more: renderMore, help: renderHelp, umpire: renderUmpire };
 // Pages that light up another menu item: the trainer, test setup and running tests live under Practice.
 const NAV_FOR = { trainer: 'study', test: 'study', exam: 'study' };
 
@@ -104,7 +105,7 @@ function route() {
 
 // Where the user was before the current page (for "Back" buttons).
 let lastRoute = 'home', prevRoute = 'home';
-const PLACE = { home: 'Today', study: 'Practice', test: 'Practice', exam: 'test results', library: 'Library', stats: 'Stats', more: 'More', trainer: 'Trainer', help: 'How to use' };
+const PLACE = { home: 'Today', study: 'Practice', test: 'Practice', exam: 'test results', library: 'Library', stats: 'Stats', more: 'More', trainer: 'Trainer', help: 'How to use', umpire: 'Become an umpire' };
 
 function render() {
   const r = route();
@@ -112,7 +113,10 @@ function render() {
   // A finished session's summary belongs to the Study page; leaving Study clears it.
   if (r !== 'study') lastSummary = null;
   const tab = NAV_FOR[r] || r;
-  nav.querySelectorAll('a').forEach((a) => a.setAttribute('aria-current', a.getAttribute('href') === `#${tab}` ? 'page' : 'false'));
+  nav.querySelectorAll('a:not([data-jump-install]):not(.nav-kofi)').forEach((a) => a.setAttribute('aria-current', a.getAttribute('href') === `#${tab}` ? 'page' : 'false'));
+  // The ☰ button lights up while you're on one of its pages.
+  burger.classList.toggle('active', ['help', 'umpire'].includes(r));
+  closeBurger();
   // Focus mode: hide the menu during a study session or an exam.
   document.body.classList.toggle('in-session', (r === 'study' && !!session) || (r === 'exam' && examActive()));
   VIEWS[r]();
@@ -129,6 +133,31 @@ function onHashChange() {
   if (skipHashChange) { skipHashChange = false; return; }
   render();
 }
+// ☰ menu: the information pages (How to use, Become an umpire, Install, Ko-fi).
+const burger = document.getElementById('nav-burger');
+const burgerPanel = document.getElementById('nav-panel');
+function closeBurger(focusButton = false) {
+  if (burgerPanel.hidden) return;
+  burgerPanel.hidden = true;
+  burger.setAttribute('aria-expanded', 'false');
+  if (focusButton) burger.focus();
+}
+burger.addEventListener('click', (e) => {
+  e.stopPropagation();
+  const open = burgerPanel.hidden;
+  burgerPanel.hidden = !open;
+  burger.setAttribute('aria-expanded', String(open));
+  if (open) burgerPanel.querySelector('a:not([hidden])')?.focus();
+});
+burgerPanel.addEventListener('click', (e) => {
+  const a = e.target.closest('a');
+  if (!a) return;
+  if (a.hasAttribute('data-jump-install')) ctx.helpJump = 'install';
+  if (a.classList.contains('nav-kofi')) closeBurger();
+});
+document.addEventListener('click', (e) => { if (!burgerPanel.hidden && !burgerPanel.contains(e.target) && e.target !== burger) closeBurger(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !burgerPanel.hidden) closeBurger(true); });
+
 // Tapping the menu item of the page you're already on opens that page fresh
 // (e.g. Practice right after a session shows the Practice form, not the results).
 nav.addEventListener('click', (e) => {
@@ -159,7 +188,7 @@ function renderHome() {
   ${P.settings.welcomed ? '' : `<div class="panel welcome">
     <h2 class="h">Welcome to TT Umpire Study</h2>
     <p class="note">Learn the table tennis rules an umpire needs: a few minutes of practice a day, tests when you're ready, and a doubles serving-order trainer. Take two minutes to see how it works.</p>
-    <div class="row"><a class="btn" href="#help" data-act="welcome-help">How to use</a><button class="btn ghost" data-act="welcome-close">Got it, start studying</button></div>
+    <div class="row"><button class="btn" data-act="welcome-start">Start Now</button><a class="btn ghost" href="#help" data-act="welcome-help">How to use</a></div>
   </div>`}
   <div class="panel today">
     <div class="small">Today's practice</div>
@@ -189,6 +218,7 @@ function renderHome() {
     <a class="panel tool" href="#test"><b>Test yourself</b><span class="small">${lastExam ? `Last test: ${lastExam.pct}% ${lastExam.passed ? '· pass' : '· not yet'}` : 'Timed, score at the end'}</span></a>
     <a class="panel tool" href="#trainer"><b>Doubles order trainer</b><span class="small">Who serves, who receives?</span></a>
   </div>
+  <a class="panel tool ump-tile" href="#umpire"><b>Become an umpire</b><span class="small">Which levels this app covers, the Level 1 to Gold Badge pathway, step-by-step guide and official links.</span></a>
   <div class="panel">
     <h2 class="h">Weakest topics</h2>
     ${weak.length ? `<div class="stack">${weak.map((t) => `
@@ -207,7 +237,8 @@ function renderHome() {
   app.querySelector('[data-jump-install]')?.addEventListener('click', () => { ctx.helpJump = 'install'; });
   const welcomed = () => { P.settings.welcomed = true; save(); };
   app.querySelector('[data-act="welcome-help"]')?.addEventListener('click', welcomed);
-  app.querySelector('[data-act="welcome-close"]')?.addEventListener('click', () => { welcomed(); renderHome(); });
+  // "Start Now" closes the welcome panel and starts today's practice straight away.
+  app.querySelector('[data-act="welcome-start"]')?.addEventListener('click', () => { welcomed(); startSession('review', {}, 'home'); });
 }
 
 /* ---------- practice ---------- */
@@ -737,6 +768,7 @@ function renderMore() {
       '<button class="btn ghost" data-act="reset">Reset all progress…</button>'}
   </div>
   ${supportHTML('more')}
+  <a class="panel tool" href="#umpire"><b>Become an umpire</b><span class="small">Umpire levels, which ones this app covers, the steps to qualify and links to Table Tennis England and the ITTF.</span></a>
   <a class="panel tool" href="#help"><b>How to use TT Umpire Study</b><span class="small">How studying works, the menu, question types and keyboard shortcuts.</span></a>
   <div class="panel">
     <h2 class="h">Sources</h2>
@@ -833,7 +865,13 @@ async function boot() {
     return;
   }
   setManifest(manifest);
-  initExam(ctx); initTrainer(ctx); initStats(ctx); initHelp(ctx);
+  const kofi = document.getElementById('nav-kofi');
+  if (/^https:\/\//.test(manifest.support?.url || '')) {
+    kofi.href = manifest.support.url;
+    kofi.querySelector('b').textContent = `Support on ${manifest.support.platform || 'Ko-fi'} ↗`;
+    kofi.hidden = false;
+  }
+  initExam(ctx); initTrainer(ctx); initStats(ctx); initHelp(ctx); initUmpire(ctx);
   // When the browser offers one-tap install, redraw Today / How to use so the button appears.
   initInstall(() => { if (['home', 'help'].includes(route()) && !session) render(); });
   window.addEventListener('hashchange', onHashChange);

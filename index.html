@@ -19,7 +19,15 @@
     <a href="#library">Library</a>
     <a href="#stats">Stats</a>
     <a href="#more">More</a>
-    <a href="#help" class="nav-help" aria-label="How to use" title="How to use">?</a>
+    <button type="button" id="nav-burger" class="nav-burger" aria-label="Help and information" aria-expanded="false" aria-controls="nav-panel" title="Help and information">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div id="nav-panel" class="nav-panel" hidden>
+    <a href="#help"><b>How to use</b><span>How studying works, the menu and shortcuts</span></a>
+    <a href="#umpire"><b>Become an umpire</b><span>Umpire levels, steps to qualify, official links</span></a>
+    <a href="#help" data-jump-install><b>Install on your phone</b><span>Use it like an app, even offline</span></a>
+    <a id="nav-kofi" class="nav-kofi" target="_blank" rel="noopener noreferrer" hidden><b>Support on Ko-fi ↗</b><span>Help keep TT Umpire Study free</span></a>
   </div>
 </nav>
 
