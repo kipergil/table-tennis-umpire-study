@@ -1,12 +1,14 @@
 // "How to use" page: what TT Umpire Study is, how studying works, the menu, question types, shortcuts.
 
 import { supportHTML } from './ui.js';
+import { installCardHTML, wireInstall } from './install.js';
 
 let ctx = null;
 export function initHelp(c) { ctx = c; }
 
 const SECTIONS = [
   ['start', 'Quick start'],
+  ['install', 'Install on your phone'],
   ['learning', 'How learning works'],
   ['menu', 'The menu'],
   ['types', 'Question types'],
@@ -35,6 +37,11 @@ export function renderHelp() {
       <li><b>Come back tomorrow.</b> The app decides when you see each card again. Cards you know come back less often; cards you miss come back soon.</li>
       <li><b>Practise anything, any time.</b> On <a href="#study">Practice</a>, choose your mistakes, a level, a topic or everything. Switch on <b>Test mode</b> for a timed test with your score at the end.</li>
     </ol>
+  </section>
+
+  <section class="panel help install-guide" id="h-install">
+    <h2 class="h">Install on your phone</h2>
+    ${installCardHTML('help')}
   </section>
 
   <section class="panel help" id="h-learning">
@@ -105,7 +112,7 @@ export function renderHelp() {
       <dt>Back up or move</dt>
       <dd>In <a href="#more">More</a>, download a backup file (or copy it as text) and restore it on another device or browser. Do this now and then, so clearing your browser data doesn't wipe your progress.</dd>
       <dt>Offline and on your phone</dt>
-      <dd>After the first visit, TT Umpire Study works without a connection, which helps at venues with poor signal. On a phone, use your browser's <b>Add to Home Screen</b> to open it like an app.</dd>
+      <dd>After the first visit, TT Umpire Study works without a connection, which helps at venues with poor signal. To open it like an app, install it on your home screen: see <a href="#help" data-jump="install">Install on your phone</a>.</dd>
       <dt>Para table tennis</dt>
       <dd>Rules for wheelchair and standing Para players are in an optional pack. Switch it on in <a href="#more">More</a>.</dd>
     </dl>
@@ -115,12 +122,22 @@ export function renderHelp() {
   <a class="btn" href="#home">Start studying</a>
   ${supportHTML('help')}`;
 
-  ctx.app.querySelectorAll('[data-jump]').forEach((b) => b.addEventListener('click', () => {
+  wireInstall(ctx.app);
+  if (ctx.helpJump) { const id = ctx.helpJump; ctx.helpJump = null; requestAnimationFrame(() => jumpTo(id)); }
+  ctx.app.querySelectorAll('[data-jump]').forEach((b) => b.addEventListener('click', (e) => {
+    e.preventDefault();
     const el = document.getElementById(`h-${b.dataset.jump}`);
     const navH = document.getElementById('nav')?.offsetHeight || 0;
     window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - navH - 8, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
     el.setAttribute('tabindex', '-1'); el.focus({ preventScroll: true });
   }));
+}
+
+function jumpTo(id) {
+  const el = document.getElementById(`h-${id}`);
+  if (!el) return;
+  const navH = document.getElementById('nav')?.offsetHeight || 0;
+  window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - navH - 8 });
 }
 
 function menuItem(route, label, text) {
